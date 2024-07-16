@@ -1,4 +1,4 @@
-package com.be.rebook.members.entity;
+package com.be.rebook.domain.members.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

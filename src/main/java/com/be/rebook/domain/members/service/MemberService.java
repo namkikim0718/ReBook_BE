@@ -1,11 +1,11 @@
-package com.be.rebook.members.service;
+package com.be.rebook.domain.members.service;
 
-import com.be.rebook.members.dto.UpdateDTO;
-import com.be.rebook.members.entity.Members;
-import com.be.rebook.members.entity.RefreshTokens;
-import com.be.rebook.members.jwt.JWTUtil;
-import com.be.rebook.members.repository.MembersRepository;
-import com.be.rebook.members.repository.RefreshTokensRepository;
+import com.be.rebook.domain.members.dto.UpdateDTO;
+import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.domain.members.entity.RefreshTokens;
+import com.be.rebook.domain.members.jwt.JWTUtil;
+import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;

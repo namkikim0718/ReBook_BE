@@ -1,7 +1,7 @@
-package com.be.rebook.members.controller;
+package com.be.rebook.domain.members.controller;
 
-import com.be.rebook.members.dto.JoinDTO;
-import com.be.rebook.members.service.JoinService;
+import com.be.rebook.domain.members.service.JoinService;
+import com.be.rebook.domain.members.dto.JoinDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

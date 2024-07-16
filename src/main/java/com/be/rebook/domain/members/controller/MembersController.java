@@ -1,9 +1,8 @@
-package com.be.rebook.members.controller;
+package com.be.rebook.domain.members.controller;
 
-import com.be.rebook.members.dto.UpdateDTO;
-import com.be.rebook.members.jwt.JWTUtil;
-import com.be.rebook.members.service.MemberService;
-import com.be.rebook.members.service.ReissueService;
+import com.be.rebook.domain.members.service.MemberService;
+import com.be.rebook.domain.members.dto.UpdateDTO;
+import com.be.rebook.domain.members.service.ReissueService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

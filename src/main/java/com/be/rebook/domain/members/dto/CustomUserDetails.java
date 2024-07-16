@@ -1,7 +1,7 @@
-package com.be.rebook.members.dto;
+package com.be.rebook.domain.members.dto;
 
 
-import com.be.rebook.members.entity.Members;
+import com.be.rebook.domain.members.entity.Members;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

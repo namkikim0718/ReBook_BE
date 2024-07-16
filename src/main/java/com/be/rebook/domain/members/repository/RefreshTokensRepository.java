@@ -1,6 +1,6 @@
-package com.be.rebook.members.repository;
+package com.be.rebook.domain.members.repository;
 
-import com.be.rebook.members.entity.RefreshTokens;
+import com.be.rebook.domain.members.entity.RefreshTokens;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

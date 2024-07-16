@@ -1,8 +1,8 @@
-package com.be.rebook.members.service;
+package com.be.rebook.domain.members.service;
 
-import com.be.rebook.members.dto.JoinDTO;
-import com.be.rebook.members.entity.Members;
-import com.be.rebook.members.repository.MembersRepository;
+import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.domain.members.dto.JoinDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

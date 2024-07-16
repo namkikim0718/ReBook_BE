@@ -1,4 +1,4 @@
-package com.be.rebook.members.config;
+package com.be.rebook.domain.members.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

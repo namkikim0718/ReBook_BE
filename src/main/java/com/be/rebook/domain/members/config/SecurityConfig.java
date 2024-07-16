@@ -1,10 +1,10 @@
-package com.be.rebook.members.config;
+package com.be.rebook.domain.members.config;
 
-import com.be.rebook.members.jwt.CustomLogoutFilter;
-import com.be.rebook.members.jwt.JWTFilter;
-import com.be.rebook.members.jwt.JWTUtil;
-import com.be.rebook.members.jwt.LoginFilter;
-import com.be.rebook.members.repository.RefreshTokensRepository;
+import com.be.rebook.domain.members.jwt.CustomLogoutFilter;
+import com.be.rebook.domain.members.jwt.JWTFilter;
+import com.be.rebook.domain.members.jwt.JWTUtil;
+import com.be.rebook.domain.members.jwt.LoginFilter;
+import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

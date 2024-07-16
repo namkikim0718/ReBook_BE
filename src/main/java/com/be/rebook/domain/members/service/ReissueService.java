@@ -1,8 +1,8 @@
-package com.be.rebook.members.service;
+package com.be.rebook.domain.members.service;
 
-import com.be.rebook.members.entity.RefreshTokens;
-import com.be.rebook.members.jwt.JWTUtil;
-import com.be.rebook.members.repository.RefreshTokensRepository;
+import com.be.rebook.domain.members.repository.RefreshTokensRepository;
+import com.be.rebook.domain.members.entity.RefreshTokens;
+import com.be.rebook.domain.members.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 
 @Service
 public class ReissueService {

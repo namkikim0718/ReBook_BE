@@ -1,4 +1,4 @@
-package com.be.rebook.members.jwt;
+package com.be.rebook.domain.members.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
