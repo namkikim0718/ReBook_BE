@@ -1,5 +1,6 @@
 package com.be.rebook.members.config;
 
+import com.be.rebook.members.jwt.CustomLogoutFilter;
 import com.be.rebook.members.jwt.JWTFilter;
 import com.be.rebook.members.jwt.JWTUtil;
 import com.be.rebook.members.jwt.LoginFilter;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -86,6 +88,8 @@ public class SecurityConfig {
                         , jwtUtil
                         , refreshTokensRepository)
                 , UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokensRepository), LogoutFilter.class);
 
         http.sessionManagement((session)->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
