@@ -1,5 +1,6 @@
 package com.be.rebook.members.service;
 
+import com.be.rebook.members.dto.UpdateDTO;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.entity.RefreshTokens;
 import com.be.rebook.members.jwt.JWTUtil;
@@ -30,6 +31,35 @@ public class MemberService {
 
     public Members getMemberByUsername(String username) {
         return membersRepository.findByUsername(username);
+    }
+
+    public ResponseEntity<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
+        try {
+            jwtUtil.isExpired(token);
+        } catch (ExpiredJwtException e) {
+            System.out.println("회원 정보 업데이트 오류 : 토큰 만료됨");
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+        }
+
+        String username = jwtUtil.getUsername(token);
+
+        if (membersRepository.existsByUsername(username)) {
+            Members member = membersRepository.findByUsername(username);
+
+            if (membersUpdateDTO.getMemberName() != null) {
+                member.setMemberName(membersUpdateDTO.getMemberName());
+            }
+
+            if (membersUpdateDTO.getUniversity() != null) {
+                member.setUniversity(membersUpdateDTO.getUniversity());
+            }
+
+            Members updatedMember = membersRepository.save(member);
+            return ResponseEntity.ok(updatedMember);
+        } else {
+            System.out.println("회원 정보 업데이트 오류 : 해당 유저 없음");
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // TroubleShooting

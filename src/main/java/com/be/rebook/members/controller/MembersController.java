@@ -1,5 +1,6 @@
 package com.be.rebook.members.controller;
 
+import com.be.rebook.members.dto.UpdateDTO;
 import com.be.rebook.members.jwt.JWTUtil;
 import com.be.rebook.members.service.MemberService;
 import com.be.rebook.members.service.ReissueService;
@@ -24,6 +25,25 @@ public class MembersController {
                              MemberService memberService){
         this.reissueService = reissueService;
         this.memberService = memberService;
+    }
+
+    //Todo : 전공 여러개 입력 어떻게 처리?(jpa 일대다 매칭 추가 구현하기)
+    @PatchMapping
+    public ResponseEntity<?> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
+        System.out.println("회원 정보 업데이트 시작");
+        String accessToken = request.getHeader("access");
+        String refreshToken = null;
+        for(Cookie c : request.getCookies()){
+            if(c.getName().equals("refresh"))
+                refreshToken = c.getValue();
+        }
+
+        if (accessToken == null || refreshToken == null) {
+            System.out.println("회원 정보 업데이트 실패 : 토큰 없음");
+            return ResponseEntity.status(401).build();
+        }
+
+        return memberService.updateUser(accessToken, membersUpdateDTO);
     }
 
     //요청 보낼때 헤더에 키: access, 값 : 로컬스토리지에서 관리되는 access토큰 값 넘어와야함
