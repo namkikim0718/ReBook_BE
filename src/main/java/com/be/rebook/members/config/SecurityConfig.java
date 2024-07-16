@@ -1,5 +1,9 @@
 package com.be.rebook.members.config;
 
+import com.be.rebook.members.jwt.JWTFilter;
+import com.be.rebook.members.jwt.JWTUtil;
+import com.be.rebook.members.jwt.LoginFilter;
+import com.be.rebook.members.repository.RefreshTokensRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -18,12 +23,28 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
+
+    private final RefreshTokensRepository refreshTokensRepository;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration
+            , JWTUtil jwtUtil
+            , RefreshTokensRepository refreshTokensRepository){
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokensRepository = refreshTokensRepository;
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+            throws Exception{
+        return configuration.getAuthenticationManager();
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
@@ -59,7 +80,12 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
         );
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)
+                        , jwtUtil
+                        , refreshTokensRepository)
+                , UsernamePasswordAuthenticationFilter.class);
 
         http.sessionManagement((session)->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
