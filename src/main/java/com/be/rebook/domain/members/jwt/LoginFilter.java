@@ -39,7 +39,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         String username = obtainUsername(request);
-        String password = obtainPassword(request);
+        //솔팅 : 유저 아이디를 각각 붙여서 하나가 뚫리더라도 다른 멤버는 안전하게
+        String password = obtainPassword(request)+username;
 
 
         System.out.println("attemptAuthentication username : " + username);

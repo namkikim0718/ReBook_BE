@@ -28,7 +28,8 @@ public class JoinService {
 
         Members data = new Members();
         data.setUsername(username);
-        data.setPassword(bCryptPasswordEncoder.encode(password));
+        //솔팅 적용
+        data.setPassword(bCryptPasswordEncoder.encode(password+username));
         data.setRole("ROLE_USER");
 
         membersRepository.save(data);
