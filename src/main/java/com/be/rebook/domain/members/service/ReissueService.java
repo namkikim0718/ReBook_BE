@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class ReissueService {
@@ -23,6 +26,14 @@ public class ReissueService {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshTokensRepository;
     }
+    public void deleteRefreshsOlderThanOneDay() {
+        LocalDateTime cutoffDateTime = LocalDateTime.now().minusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+        String cutoff = cutoffDateTime.format(formatter);
+
+        refreshRepository.deleteOldRefresh(cutoff);
+    }
+
     public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
@@ -70,10 +81,9 @@ public class ReissueService {
         //리프레쉬 토큰 저장 db에 기존의 리프레시 토큰 삭제 후 새 리프레시 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
         addRefreshEntity(username,newRefresh,86400000L);
-        //TODO : 하루 지난 토큰 스케줄러 사용해서 지우기
         //리프레시 토큰 저장소에서 기한이 지난 토큰 삭제
         //하루 지난 토큰은 삭제할 수 있게 스케줄링
-        //-> RefreshDeletionScheduler??
+        //-> RefreshDeleteDailyScheduler??
 
         // response
         response.setHeader("access", newAccess);
