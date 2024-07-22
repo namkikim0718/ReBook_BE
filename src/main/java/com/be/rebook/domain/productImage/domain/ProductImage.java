@@ -17,8 +17,10 @@ public class ProductImage extends BaseEntity {
     @Column(name = "image_id")
     private Long id;
 
+    // 원본 파일명
     private String uploadFileName;
 
+    // 저장 파일명
     private String storeFileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
