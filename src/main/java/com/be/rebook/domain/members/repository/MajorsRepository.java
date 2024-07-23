@@ -12,5 +12,5 @@ public interface MajorsRepository extends JpaRepository<Majors, Long> {
     Majors findByMajor(String major);
 
     // id값으로 전공명 조회하기
-    Majors findByMajorId(Long id);
+    Majors findByMajorId(String majorId);
 }
