@@ -4,8 +4,10 @@ import com.be.rebook.domain.members.dto.UpdateDTO;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.jwt.JWTUtil;
+import com.be.rebook.domain.members.repository.MajorsRepository;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
+import com.be.rebook.domain.members.repository.UniversitiesRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +19,22 @@ import java.util.List;
 public class MemberService {
 
     private MembersRepository membersRepository;
+    private UniversitiesRepository universitiesRepository;
+    private MajorsRepository majorsRepository;
     private JWTUtil jwtUtil;
 
     private RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
                          JWTUtil jwtUtil,
-                         RefreshTokensRepository refreshTokensRepository){
+                         RefreshTokensRepository refreshTokensRepository,
+                         UniversitiesRepository universitiesRepository,
+                         MajorsRepository majorsRepository){
         this.membersRepository = membersRepository;
         this.jwtUtil = jwtUtil;
         this.refreshTokensRepository = refreshTokensRepository;
+        this.universitiesRepository = universitiesRepository;
+        this.majorsRepository = majorsRepository;
     }
 
     public Members getMemberByUsername(String username) {
@@ -46,12 +54,28 @@ public class MemberService {
         if (membersRepository.existsByUsername(username)) {
             Members member = membersRepository.findByUsername(username);
 
-            if (membersUpdateDTO.getMemberName() != null) {
-                member.setMemberName(membersUpdateDTO.getMemberName());
+            if (membersUpdateDTO.getNickname() != null) {
+                member.setNickname(membersUpdateDTO.getNickname());
             }
 
+            // string으로 들어온 학교를 universities 테이블에서 조회해서 id값 얻어오고
+            // 그 아이디값 저장
             if (membersUpdateDTO.getUniversity() != null) {
-                member.setUniversity(membersUpdateDTO.getUniversity());
+                String school = membersUpdateDTO.getUniversity();
+                member.setUniversity(universitiesRepository.findByUniversity(school).getUnvId());
+            }
+
+            // , 콤마로 전공명,전공명,전공명 이런식으로 들어온 데이터 ,로 나눠서 각 전공명별로 아이디값 조회해서
+            // 멤버 majors 항목에 1,2,3,4,5 식의 스트링으로 저장하기
+            // -> 이상함 후에 어떻게 처리할지 생각해봐야됨 TODO
+            if (membersUpdateDTO.getMajors() != null){
+                String[] majorList = membersUpdateDTO.getMajors().split(",");
+                StringBuilder sb = new StringBuilder();
+                for(String major : majorList){
+                    sb.append(majorsRepository.findByMajor(major).getMajorId());
+                    sb.append(",");
+                }
+                member.setMajors(sb.toString());
             }
 
             Members updatedMember = membersRepository.save(member);

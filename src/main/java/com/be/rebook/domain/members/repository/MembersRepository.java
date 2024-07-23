@@ -3,7 +3,7 @@ package com.be.rebook.domain.members.repository;
 import com.be.rebook.domain.members.entity.Members;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MembersRepository extends JpaRepository<Members, Integer> {
+public interface MembersRepository extends JpaRepository<Members, Long> {
 
     Boolean existsByUsername(String username);
 
