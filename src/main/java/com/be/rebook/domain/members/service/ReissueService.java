@@ -107,10 +107,12 @@ public class ReissueService {
     }
     private void addRefreshEntity(String username, String refresh, Long expriedMs){
         Date date = new Date(System.currentTimeMillis()+ expriedMs);
-        RefreshTokens refreshTokens = new RefreshTokens();
-        refreshTokens.setUsername(username);
-        refreshTokens.setRefresh(refresh);
-        refreshTokens.setExpiration(date.toString());
+
+        RefreshTokens refreshTokens = RefreshTokens.builder()
+                .username(username)
+                .refresh(refresh)
+                .expiration(date.toString())
+                .build();
 
         refreshRepository.save(refreshTokens);
     }

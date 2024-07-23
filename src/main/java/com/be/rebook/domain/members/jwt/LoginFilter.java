@@ -106,10 +106,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
-        RefreshTokens refreshTokens = new RefreshTokens();
-        refreshTokens.setUsername(username);
-        refreshTokens.setRefresh(refresh);
-        refreshTokens.setExpiration(date.toString());
+        RefreshTokens refreshTokens = RefreshTokens.builder()
+                .username(username)
+                .refresh(refresh)
+                .expiration(date.toString())
+                .build();
 
         refreshTokensRepository.save(refreshTokens);
     }
