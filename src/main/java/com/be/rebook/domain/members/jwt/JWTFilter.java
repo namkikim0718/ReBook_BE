@@ -73,13 +73,15 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        Members members = new Members();
-        members.setUsername(username);
-        members.setRole(role);
+        Members members = Members.builder()
+                .username(username)
+                .role(role)
+                .build();
+
         CustomUserDetails customUserDetails = new CustomUserDetails(members);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        //context에 넣어줘서 관리됨 이제
+
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
 

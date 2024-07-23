@@ -3,6 +3,8 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.dto.JoinDTO;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,22 +18,23 @@ public class JoinService {
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
-    public void joinProcess(JoinDTO joinDTO){
+    public ResponseEntity<Members> joinProcess(JoinDTO joinDTO){
         String username = joinDTO.getUsername();
         String password = joinDTO.getPassword();
 
         Boolean isExist = membersRepository.existsByUsername(username);
 
         if(isExist){
-            return;
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 
-        Members data = new Members();
-        data.setUsername(username);
-        //솔팅 적용
-        data.setPassword(bCryptPasswordEncoder.encode(password+username));
-        data.setRole("ROLE_USER");
+        Members data = Members.builder()
+                .username(username)
+                .password(bCryptPasswordEncoder.encode(password+username))
+                .role("ROLE_USER")
+                .build();
 
         membersRepository.save(data);
+        return ResponseEntity.ok(data);
     }
 }

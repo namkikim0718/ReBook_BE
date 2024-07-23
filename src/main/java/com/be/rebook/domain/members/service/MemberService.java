@@ -12,6 +12,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class MemberService {
         return membersRepository.findByUsername(username);
     }
 
+    @Transactional
     public ResponseEntity<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
         try {
             jwtUtil.isExpired(token);
@@ -53,16 +55,19 @@ public class MemberService {
 
         if (membersRepository.existsByUsername(username)) {
             Members member = membersRepository.findByUsername(username);
+            String nickname = null;
+            Long unvId = -1L;
+            String majors = null;
 
             if (membersUpdateDTO.getNickname() != null) {
-                member.setNickname(membersUpdateDTO.getNickname());
+                nickname = membersUpdateDTO.getNickname();
             }
 
             // string으로 들어온 학교를 universities 테이블에서 조회해서 id값 얻어오고
             // 그 아이디값 저장
             if (membersUpdateDTO.getUniversity() != null) {
-                String school = membersUpdateDTO.getUniversity();
-                member.setUniversity(universitiesRepository.findByUniversity(school).getUnvId());
+                String unv = membersUpdateDTO.getUniversity();
+                unvId = universitiesRepository.findByUniversity(unv).getUnvId();
             }
 
             // , 콤마로 전공명,전공명,전공명 이런식으로 들어온 데이터 ,로 나눠서 각 전공명별로 아이디값 조회해서
@@ -75,10 +80,17 @@ public class MemberService {
                     sb.append(majorsRepository.findByMajor(major).getMajorId());
                     sb.append(",");
                 }
-                member.setMajors(sb.toString());
+                majors = sb.toString();
             }
 
-            Members updatedMember = membersRepository.save(member);
+            //문제 : builder 패턴 써서 특정 레코드 업데이트하는 방법?
+            //해결 -> toBuilder true 썼음
+            //member에 toBuilder 접근하면 그 결과 다시 저장해줘야함
+            //문제 : 자꾸 수정하면 거기다가 수정하는게 아니라 새 데이터가 생성되어버림
+            //해결 -> 빌더 어노테이션 설정한 생성자에 자동으로 증가하는 id값을 쓰더라도 생성자 초기화에서 id값을 빼면 안됨
+            Members updatedMember = member.toBuilder().nickname(nickname).university(unvId).majors(majors).build();
+
+            membersRepository.save(updatedMember);
             return ResponseEntity.ok(updatedMember);
         } else {
             System.out.println("회원 정보 업데이트 오류 : 해당 유저 없음");

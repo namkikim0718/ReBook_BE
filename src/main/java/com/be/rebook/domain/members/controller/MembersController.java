@@ -26,7 +26,6 @@ public class MembersController {
         this.memberService = memberService;
     }
 
-    //Todo : 전공 여러개 입력 어떻게 처리?(jpa 일대다 매칭 추가 구현하기)
     @PatchMapping
     public ResponseEntity<?> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
         System.out.println("회원 정보 업데이트 시작");
