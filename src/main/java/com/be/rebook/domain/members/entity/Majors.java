@@ -9,7 +9,7 @@ import lombok.Setter;
 public class Majors {
     @Id
     @Column(name = "major_id")
-    private Long majorId;
+    private String majorId;
 
     private String major;
 }
