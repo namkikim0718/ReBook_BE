@@ -3,6 +3,7 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.dto.UpdateDTO;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
+import com.be.rebook.domain.members.entity.Universities;
 import com.be.rebook.domain.members.jwt.JWTUtil;
 import com.be.rebook.domain.members.repository.MajorsRepository;
 import com.be.rebook.domain.members.repository.MembersRepository;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -176,6 +178,23 @@ public class MemberService {
         }
         membersRepository.delete(member);
         return new BaseResponse<>(member);
+    }
+
+    public BaseResponse<List<String>> getUniversitiesList(String unvToSearch){
+        if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
+            //BAD_INPUT
+            memberServiceLogger.error("검색어로 대학 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
+            return new BaseResponse<>(ErrorCode.BAD_INPUT.getStatus(),
+                    ErrorCode.BAD_INPUT.getStatus() + " failed",
+                    ErrorCode.BAD_INPUT.getMessage(),
+                    null);
+        }
+        List<Universities> universitiesList = universitiesRepository.searchByUniversity(unvToSearch);
+        List<String> returnList = new ArrayList<>();
+        for(Universities unv : universitiesList){
+            returnList.add(unv.getUniversity());
+        }
+        return new BaseResponse<>(returnList);
     }
 }
 

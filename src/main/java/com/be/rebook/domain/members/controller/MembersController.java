@@ -12,8 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -82,5 +83,10 @@ public class MembersController {
     @PostMapping("/refreshtoken")
     public BaseResponse<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         return reissueService.reissueToken(request, response);
+    }
+
+    @GetMapping("/universities")
+    public BaseResponse<List<String>> searchUniversities(@RequestParam("unvToSearch") String unvToSearch){
+        return memberService.getUniversitiesList(unvToSearch);
     }
 }
