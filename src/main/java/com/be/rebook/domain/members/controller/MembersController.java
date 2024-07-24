@@ -40,6 +40,7 @@ public class MembersController {
         }
 
         if (accessToken == null || refreshToken == null) {
+            //no_token
             memberLogger.error("회원 정보 업데이트 실패 : 토큰 없음");
             return ResponseEntity.status(401).build();
         }

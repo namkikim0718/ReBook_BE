@@ -47,19 +47,20 @@ public class MemberService {
 
     @Transactional
     public ResponseEntity<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
+        String specialStringError = "회원 정보 업데이트 오류 : 입력값에 특수문자 포함됨";
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", HttpServletResponse.SC_BAD_REQUEST);
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+            //EXPIRED_TOKEN
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", HttpServletResponse.SC_UNAUTHORIZED);
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
         }
 
-        //todo : 통합 에러 코드 enum 업데이트할때 해주기
-        final String specialStringError = "회원 정보 업데이트 오류 : 입력값에 특수문자 포함됨";
         String username = jwtUtil.getUsername(token);
         Boolean isUsernameExists = membersRepository.existsByUsername(username);
 
         if (Boolean.FALSE.equals(isUsernameExists)){
+            //NO_USER_INFO
             memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", HttpServletResponse.SC_NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
@@ -74,6 +75,7 @@ public class MemberService {
 
         if ((nicknameToUpdate != null && checkSpecialCharacters(nicknameToUpdate)) ||
                 (unvToUpdate != null && checkSpecialCharacters(unvToUpdate))) {
+            //BAD_INPUT
             memberServiceLogger.error(specialStringError);
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
@@ -90,11 +92,10 @@ public class MemberService {
 
         // , 콤마로 전공명,전공명,전공명 이런식으로 들어온 데이터 ,로 나눠서 각 전공명별로 아이디값 조회해서
         // 멤버 majors 항목에 1,2,3,4,5 식의 스트링으로 저장하기
-        // -> 이상함 후에 어떻게 처리할지 생각해봐야됨 TODO
-
         String majorsToUpdate = membersUpdateDTO.getMajors();
         if (majorsToUpdate != null){
             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,].*")){
+                //BAD_INPUT
                 memberServiceLogger.error(specialStringError);
                 return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
             }
@@ -132,24 +133,27 @@ public class MemberService {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}",HttpServletResponse.SC_BAD_REQUEST);
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+            //EXPIRED_TOKEN
+            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}",HttpServletResponse.SC_UNAUTHORIZED);
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
         }
 
         String username = jwtUtil.getUsername(token);
         Boolean isUsernameExists = membersRepository.existsByUsername(username);
-        if (Boolean.TRUE.equals(isUsernameExists)) {
-            Members member = membersRepository.findByUsername(username);
-            List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
-            for(RefreshTokens tokenToDelete : refreshTokens){
-                refreshTokensRepository.delete(tokenToDelete);
-            }
-            membersRepository.delete(member);
-            return ResponseEntity.ok().build();
-        } else {
+
+        if(Boolean.FALSE.equals(isUsernameExists)){
+            //NO_USER_INFO
             memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", HttpServletResponse.SC_NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
+
+        Members member = membersRepository.findByUsername(username);
+        List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
+        for(RefreshTokens tokenToDelete : refreshTokens){
+            refreshTokensRepository.delete(tokenToDelete);
+        }
+        membersRepository.delete(member);
+        return ResponseEntity.ok().build();
     }
 }
 

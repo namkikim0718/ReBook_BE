@@ -88,6 +88,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(
             HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed){
+        //LOGIN_FAILED
         loginFilterLogger.error("로그인 실패 코드 :{}", 401);
         response.setStatus(401);
     }

@@ -61,6 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtLogger.info("access token expired");
             //response status code = 401
             //프론트에서 알아야됨
+            //EXPIRED_TOKEN
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -69,7 +70,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
-            //response status code
+            //TOKEN_CATEGORY_INCORRECT
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

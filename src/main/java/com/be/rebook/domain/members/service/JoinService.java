@@ -31,6 +31,7 @@ public class JoinService {
         String username = joinDTO.getUsername();
 
         if(Boolean.FALSE.equals(checkUsernameCharacters(username))){
+            //BAD_INPUT
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 
@@ -39,6 +40,7 @@ public class JoinService {
         Boolean isExist = membersRepository.existsByUsername(username);
 
         if(Boolean.FALSE.equals(isExist)){
+            //BAD_INPUT
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 
