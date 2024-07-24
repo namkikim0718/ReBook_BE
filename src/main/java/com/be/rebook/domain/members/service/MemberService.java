@@ -21,13 +21,13 @@ import java.util.List;
 @Service
 public class MemberService {
 
-    private MembersRepository membersRepository;
-    private UniversitiesRepository universitiesRepository;
-    private MajorsRepository majorsRepository;
-    private JWTUtil jwtUtil;
+    private final MembersRepository membersRepository;
+    private final UniversitiesRepository universitiesRepository;
+    private final MajorsRepository majorsRepository;
+    private final JWTUtil jwtUtil;
 
     private static final Logger memberServiceLogger = LoggerFactory.getLogger(MemberService.class);
-    private RefreshTokensRepository refreshTokensRepository;
+    private final RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
                          JWTUtil jwtUtil,
@@ -39,10 +39,6 @@ public class MemberService {
         this.refreshTokensRepository = refreshTokensRepository;
         this.universitiesRepository = universitiesRepository;
         this.majorsRepository = majorsRepository;
-    }
-
-    public Members getMemberByUsername(String username) {
-        return membersRepository.findByUsername(username);
     }
 
     private Boolean checkSpecialCharacters(String input){
