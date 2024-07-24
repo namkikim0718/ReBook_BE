@@ -38,3 +38,6 @@ out/
 
 ### properties ###
 application-API-KEY.properties
+
+### logs ###
+.log

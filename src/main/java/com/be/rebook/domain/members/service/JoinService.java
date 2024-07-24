@@ -3,7 +3,10 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.dto.JoinDTO;
+import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,12 +30,20 @@ public class JoinService {
         int inputLength = input.length();
         return inputLength <= 25 && !Boolean.TRUE.equals(specialCharCheck);
     }
-    public ResponseEntity<Members> joinProcess(JoinDTO joinDTO){
+
+    public BaseResponse<Members> joinProcess(JoinDTO joinDTO){
         String username = joinDTO.getUsername();
+        HttpStatus returnStatus = null;
+        String returnCode = null;
+        String returnMessage = null;
+        Members result = null;
 
         if(Boolean.FALSE.equals(checkUsernameCharacters(username))){
             //BAD_INPUT
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+            returnStatus = ErrorCode.BAD_INPUT.getStatus();
+            returnCode = returnStatus.toString() + " failed";
+            returnMessage = ErrorCode.BAD_INPUT.getMessage();
+            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
         }
 
         String password = joinDTO.getPassword();
@@ -41,7 +52,10 @@ public class JoinService {
 
         if(Boolean.FALSE.equals(isExist)){
             //BAD_INPUT
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+            returnStatus = ErrorCode.EXISTING_USER_INFO.getStatus();
+            returnCode = returnStatus.toString() + " failed";
+            returnMessage = ErrorCode.EXISTING_USER_INFO.getMessage();
+            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
         }
 
         Members data = Members.builder()
@@ -51,6 +65,6 @@ public class JoinService {
                 .build();
 
         membersRepository.save(data);
-        return ResponseEntity.ok(data);
+        return new BaseResponse<>(data);
     }
 }

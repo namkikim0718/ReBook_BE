@@ -3,6 +3,7 @@ package com.be.rebook.domain.members.controller;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.service.JoinService;
 import com.be.rebook.domain.members.dto.JoinDTO;
+import com.be.rebook.global.config.BaseResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class JoinController {
 
     //todo : BaseResponse 추가하기
     @PostMapping("/join")
-    public ResponseEntity<Members> joinProcess(JoinDTO joinDTO) {
+    public BaseResponse<Members> joinProcess(JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
         return joinService.joinProcess(joinDTO);
     }
