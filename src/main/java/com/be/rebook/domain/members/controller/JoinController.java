@@ -21,7 +21,6 @@ public class JoinController {
         this.joinService = joinService;
     }
 
-    //todo : BaseResponse 추가하기
     @PostMapping("/join")
     public BaseResponse<Members> joinProcess(JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());

@@ -54,7 +54,7 @@ public class JoinService {
 
         Boolean isExist = membersRepository.existsByUsername(username);
 
-        if(Boolean.FALSE.equals(isExist)){
+        if(Boolean.TRUE.equals(isExist)){
             //EXISTING_USER_INFO
             joinServiceLogger.error("회원 가입 로직 오류 : 이미 존재하는 아이디, 코드: {}", ErrorCode.EXISTING_USER_INFO);
             returnStatus = ErrorCode.EXISTING_USER_INFO.getStatus();
