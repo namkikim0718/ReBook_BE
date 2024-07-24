@@ -2,6 +2,7 @@ package com.be.rebook.domain.members.jwt;
 
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.dto.CustomUserDetails;
+import com.be.rebook.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -62,7 +63,7 @@ public class JWTFilter extends OncePerRequestFilter {
             //response status code = 401
             //프론트에서 알아야됨
             //EXPIRED_TOKEN
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(ErrorCode.EXPIRED_TOKEN.getStatus().value());
             return;
         }
 
@@ -71,7 +72,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (!category.equals("access")) {
             //TOKEN_CATEGORY_INCORRECT
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(ErrorCode.TOKEN_CATEGORY_INCORRECT.getStatus().value());
             return;
         }
 
