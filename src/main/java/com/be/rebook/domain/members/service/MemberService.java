@@ -43,7 +43,7 @@ public class MemberService {
     }
 
     private Boolean checkSpecialCharacters(String input){
-        return input.matches(".*[^a-zA-Z0-9].*");
+        return input.matches(".*[^a-zA-Z0-9\\uAC00-\\uD7AF].*");
     }
 
     @Transactional
@@ -107,7 +107,7 @@ public class MemberService {
         // 멤버 majors 항목에 1,2,3,4,5 식의 스트링으로 저장하기
         String majorsToUpdate = membersUpdateDTO.getMajors();
         if (majorsToUpdate != null){
-            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,].*")){
+            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF].*")){
                 //BAD_INPUT
                 memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
                 returnStatus = ErrorCode.BAD_INPUT.getStatus();
