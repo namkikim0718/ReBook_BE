@@ -5,9 +5,9 @@ import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.dto.JoinDTO;
 import com.be.rebook.global.config.BaseResponse;
 import com.be.rebook.global.exception.ErrorCode;
-import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,8 @@ public class JoinService {
 
     private  final MembersRepository membersRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final Logger joinServiceLogger = LoggerFactory.getLogger(JoinService.class);
 
     public JoinService(MembersRepository membersRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.membersRepository = membersRepository;
@@ -32,6 +34,7 @@ public class JoinService {
     }
 
     public BaseResponse<Members> joinProcess(JoinDTO joinDTO){
+        joinServiceLogger.info("회원 가입 로직 시작");
         String username = joinDTO.getUsername();
         HttpStatus returnStatus = null;
         String returnCode = null;
@@ -40,6 +43,7 @@ public class JoinService {
 
         if(Boolean.FALSE.equals(checkUsernameCharacters(username))){
             //BAD_INPUT
+            joinServiceLogger.error("회원 가입 로직 오류 : 아이디에 특수문자 포함됨, 코드: {}", ErrorCode.BAD_INPUT);
             returnStatus = ErrorCode.BAD_INPUT.getStatus();
             returnCode = returnStatus.toString() + " failed";
             returnMessage = ErrorCode.BAD_INPUT.getMessage();
@@ -51,7 +55,8 @@ public class JoinService {
         Boolean isExist = membersRepository.existsByUsername(username);
 
         if(Boolean.FALSE.equals(isExist)){
-            //BAD_INPUT
+            //EXISTING_USER_INFO
+            joinServiceLogger.error("회원 가입 로직 오류 : 이미 존재하는 아이디, 코드: {}", ErrorCode.EXISTING_USER_INFO);
             returnStatus = ErrorCode.EXISTING_USER_INFO.getStatus();
             returnCode = returnStatus.toString() + " failed";
             returnMessage = ErrorCode.EXISTING_USER_INFO.getMessage();
