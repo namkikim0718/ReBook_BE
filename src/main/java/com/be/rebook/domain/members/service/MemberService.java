@@ -10,6 +10,8 @@ import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ public class MemberService {
     private MajorsRepository majorsRepository;
     private JWTUtil jwtUtil;
 
+    private static final Logger memberServiceLogger = LoggerFactory.getLogger(MemberService.class);
     private RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
@@ -47,13 +50,13 @@ public class MemberService {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-            System.out.println("회원 정보 업데이트 오류 : 토큰 만료됨");
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", HttpServletResponse.SC_BAD_REQUEST);
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 
         String username = jwtUtil.getUsername(token);
-
-        if (membersRepository.existsByUsername(username)) {
+        Boolean isUsernameExists = membersRepository.existsByUsername(username);
+        if (Boolean.TRUE.equals(isUsernameExists)) {
             Members member = membersRepository.findByUsername(username);
             String nickname = null;
             Long unvId = -1L;
@@ -93,7 +96,7 @@ public class MemberService {
             membersRepository.save(updatedMember);
             return ResponseEntity.ok(updatedMember);
         } else {
-            System.out.println("회원 정보 업데이트 오류 : 해당 유저 없음");
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", HttpServletResponse.SC_NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
     }
@@ -106,13 +109,13 @@ public class MemberService {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-            System.out.println("회원 탈퇴 오류 : 토큰 만료됨");
+            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}",HttpServletResponse.SC_BAD_REQUEST);
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 
         String username = jwtUtil.getUsername(token);
-
-        if (membersRepository.existsByUsername(username)) {
+        Boolean isUsernameExists = membersRepository.existsByUsername(username);
+        if (Boolean.TRUE.equals(isUsernameExists)) {
             Members member = membersRepository.findByUsername(username);
             List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
             for(RefreshTokens tokenToDelete : refreshTokens){
@@ -121,7 +124,7 @@ public class MemberService {
             membersRepository.delete(member);
             return ResponseEntity.ok().build();
         } else {
-            System.out.println("회원 탈퇴 오류 : 유저 없음 ");
+            memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", HttpServletResponse.SC_NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
     }

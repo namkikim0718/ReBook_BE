@@ -45,10 +45,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         String refresh = null;
+        String refreshCategory = "refresh";
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals("refresh")) {
+            if (cookie.getName().equals(refreshCategory)) {
 
                 refresh = cookie.getValue();
             }
@@ -71,7 +72,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
-        if (!category.equals("refresh")) {
+        if (!category.equals(refreshCategory)) {
 
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -80,7 +81,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshTokensRepository.existsByRefresh(refresh);
-        if (!isExist) {
+        if (Boolean.FALSE.equals(isExist)) {
 
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -89,7 +90,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         refreshTokensRepository.deleteByRefresh(refresh);
 
-        Cookie cookie = new Cookie("refresh", null);
+        Cookie cookie = new Cookie(refreshCategory, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
 

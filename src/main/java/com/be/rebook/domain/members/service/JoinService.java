@@ -24,7 +24,7 @@ public class JoinService {
 
         Boolean isExist = membersRepository.existsByUsername(username);
 
-        if(isExist){
+        if(Boolean.FALSE.equals(isExist)){
             return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
         }
 

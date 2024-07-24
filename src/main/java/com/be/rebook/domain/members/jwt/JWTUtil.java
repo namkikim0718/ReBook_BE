@@ -1,6 +1,8 @@
 package com.be.rebook.domain.members.jwt;
 
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +11,11 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+
 @Component
 public class JWTUtil {
     private final SecretKey secretKey;
+    private static final Logger jwtUtilLogger = LoggerFactory.getLogger(JWTUtil.class);
     private JWTUtil(@Value("${spring.jwt.secret}") String secret){
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
@@ -34,12 +38,12 @@ public class JWTUtil {
     }
     public Boolean isExpired(String token){
 
-        System.out.println("JWTUtil isExpired 동작");
-        System.out.println("username "+getUsername(token));
-        System.out.println("role "+getRole(token));
+        jwtUtilLogger.info("JWTUtil isExpired 동작");
+        String username = getUsername(token);
+        jwtUtilLogger.info("expired username :{}", username);
 
         Date now  = new Date();
-        long accessTokenLength = 10*60*1000;
+        long accessTokenLength = 10*60*1000L;
         Date newTime = new Date(now.getTime()+accessTokenLength);
 
         return Jwts.parser()

@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +28,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //jwt 토큰을 사용해야하므로 주입
     private final JWTUtil jwtUtil;
 
+    private static final Logger loginFilterLogger = LoggerFactory.getLogger(LoginFilter.class);
+
     private RefreshTokensRepository refreshTokensRepository;
     public LoginFilter(AuthenticationManager authenticationManager,
                        JWTUtil jwtUtil,
@@ -43,13 +47,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String password = obtainPassword(request)+username;
 
 
-        System.out.println("attemptAuthentication username : " + username);
+        loginFilterLogger.info("attemptAuthentication username : {}", username);
 
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username,password,null);
 
-
-        System.out.println("attemptAuthentication "+ SecurityContextHolder.getContext().getAuthentication());
+        loginFilterLogger.info("attemptAuthentication current auth : {}",
+                SecurityContextHolder.getContext().getAuthentication());
 
         return authenticationManager.authenticate(authToken);
     }
@@ -76,14 +80,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
 
-        System.out.println("successfulAuthentication "+SecurityContextHolder.getContext().getAuthentication());
+        loginFilterLogger.info("successfulAuthentication  current auth : {}",
+                SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Override
     protected void unsuccessfulAuthentication(
             HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed){
-        System.out.println("로그인 실패 ");
+        loginFilterLogger.error("로그인 실패 코드 :{}", 401);
         response.setStatus(401);
     }
 

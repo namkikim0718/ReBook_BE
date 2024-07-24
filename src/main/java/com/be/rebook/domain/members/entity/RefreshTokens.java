@@ -3,7 +3,6 @@ package com.be.rebook.domain.members.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter

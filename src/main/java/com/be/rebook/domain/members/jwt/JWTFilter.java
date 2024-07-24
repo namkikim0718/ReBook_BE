@@ -7,6 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,9 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 public class JWTFilter extends OncePerRequestFilter {
     //필터를 검증할 메서드를 가져오려면 JWTUtil을 주입해야함
-        private final JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
+
+    private static final Logger jwtLogger = LoggerFactory.getLogger(JWTFilter.class);
 
 
     public JWTFilter(JWTUtil jwtUtil){
@@ -40,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String accessToken = request.getHeader("access");
-        System.out.println("JWTFilter access : "+accessToken);
+        //여기서 액세스 토큰 로깅했었는데 지움
 
         if (accessToken == null) {
             //권한이 필요 없는 경우도 있으니까
@@ -53,7 +58,7 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            System.out.println("access token expired");
+            jwtLogger.info("access token expired");
             //response status code = 401
             //프론트에서 알아야됨
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

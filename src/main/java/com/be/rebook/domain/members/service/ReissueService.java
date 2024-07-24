@@ -37,9 +37,11 @@ public class ReissueService {
     public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
+        String refreshCategory = "refresh";
+        String accessCategory = "access";
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh")) {
+            if (cookie.getName().equals(refreshCategory)) {
                 refresh = cookie.getValue();
             }
         }
@@ -60,14 +62,14 @@ public class ReissueService {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
 
-        if (!category.equals("refresh")) {
+        if (!category.equals(refreshCategory)) {
             // response status code
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
         //db에 리프레시 토큰이 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if(!isExist){
+        if(Boolean.FALSE.equals(isExist)){
             //response body
             return new ResponseEntity<>("invaild refresh token", HttpStatus.BAD_REQUEST);
         }
@@ -75,8 +77,8 @@ public class ReissueService {
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt(accessCategory, username, role, 600000L);
+        String newRefresh = jwtUtil.createJwt(refreshCategory, username, role, 86400000L);
 
         //리프레쉬 토큰 저장 db에 기존의 리프레시 토큰 삭제 후 새 리프레시 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
@@ -86,8 +88,8 @@ public class ReissueService {
         //-> RefreshDeleteDailyScheduler??
 
         // response
-        response.setHeader("access", newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+        response.setHeader(accessCategory, newAccess);
+        response.addCookie(createCookie(refreshCategory, newRefresh));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
