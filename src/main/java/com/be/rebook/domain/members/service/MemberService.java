@@ -1,6 +1,7 @@
 package com.be.rebook.domain.members.service;
 
 import com.be.rebook.domain.members.dto.UpdateDTO;
+import com.be.rebook.domain.members.entity.Majors;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.entity.Universities;
@@ -193,6 +194,23 @@ public class MemberService {
         List<String> returnList = new ArrayList<>();
         for(Universities unv : universitiesList){
             returnList.add(unv.getUniversity());
+        }
+        return new BaseResponse<>(returnList);
+    }
+
+    public BaseResponse<List<String>> getMajorsList(String majorToSearch){
+        if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
+            //BAD_INPUT
+            memberServiceLogger.error("검색어로 전공 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
+            return new BaseResponse<>(ErrorCode.BAD_INPUT.getStatus(),
+                    ErrorCode.BAD_INPUT.getStatus() + " failed",
+                    ErrorCode.BAD_INPUT.getMessage(),
+                    null);
+        }
+        List<Majors> majorsList = majorsRepository.searchByMajor(majorToSearch);
+        List<String> returnList = new ArrayList<>();
+        for(Majors major : majorsList){
+            returnList.add(major.getMajor());
         }
         return new BaseResponse<>(returnList);
     }

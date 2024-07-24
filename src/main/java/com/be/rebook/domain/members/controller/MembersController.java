@@ -89,4 +89,9 @@ public class MembersController {
     public BaseResponse<List<String>> searchUniversities(@RequestParam("unvToSearch") String unvToSearch){
         return memberService.getUniversitiesList(unvToSearch);
     }
+
+    @GetMapping("/majors")
+    public BaseResponse<List<String>> searchMajors(@RequestParam("majorToSearch") String majorToSearch){
+        return memberService.getMajorsList(majorToSearch);
+    }
 }
