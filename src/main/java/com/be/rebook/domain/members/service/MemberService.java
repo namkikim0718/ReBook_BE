@@ -8,11 +8,12 @@ import com.be.rebook.domain.members.repository.MajorsRepository;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
+import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,14 +47,20 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
-        String specialStringError = "회원 정보 업데이트 오류 : 입력값에 특수문자 포함됨";
+    public BaseResponse<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
+        HttpStatus returnStatus = null;
+        String returnCode = null;
+        String returnMessage = null;
+
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", HttpServletResponse.SC_UNAUTHORIZED);
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", ErrorCode.EXPIRED_TOKEN);
+            returnStatus = ErrorCode.EXPIRED_TOKEN.getStatus();
+            returnCode = returnStatus + " failed";
+            returnMessage = ErrorCode.EXPIRED_TOKEN.getMessage();
+            return new BaseResponse<>(returnStatus, returnCode, returnMessage, null);
         }
 
         String username = jwtUtil.getUsername(token);
@@ -61,8 +68,11 @@ public class MemberService {
 
         if (Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", HttpServletResponse.SC_NOT_FOUND);
-            return ResponseEntity.notFound().build();
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", ErrorCode.NO_USER_INFO);
+            returnStatus = ErrorCode.NO_USER_INFO.getStatus();
+            returnCode = returnStatus + " failed";
+            returnMessage = ErrorCode.NO_USER_INFO.getMessage();
+            return new BaseResponse<>(returnStatus, returnCode, returnMessage, null);
         }
 
         Members member = membersRepository.findByUsername(username);
@@ -76,8 +86,11 @@ public class MemberService {
         if ((nicknameToUpdate != null && checkSpecialCharacters(nicknameToUpdate)) ||
                 (unvToUpdate != null && checkSpecialCharacters(unvToUpdate))) {
             //BAD_INPUT
-            memberServiceLogger.error(specialStringError);
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+            memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
+            returnStatus = ErrorCode.BAD_INPUT.getStatus();
+            returnCode = returnStatus.toString() + " failed";
+            returnMessage = ErrorCode.BAD_INPUT.getMessage();
+            return new BaseResponse<>(returnStatus,returnCode,returnMessage,null);
         }
 
         if (nicknameToUpdate != null) {
@@ -96,8 +109,11 @@ public class MemberService {
         if (majorsToUpdate != null){
             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,].*")){
                 //BAD_INPUT
-                memberServiceLogger.error(specialStringError);
-                return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+                memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
+                returnStatus = ErrorCode.BAD_INPUT.getStatus();
+                returnCode = returnStatus.toString() + " failed";
+                returnMessage = ErrorCode.BAD_INPUT.getMessage();
+                return new BaseResponse<>(returnStatus,returnCode,returnMessage,null);
             }
 
             String[] majorList = membersUpdateDTO.getMajors().split(",");
@@ -122,20 +138,23 @@ public class MemberService {
                 .build();
 
         membersRepository.save(updatedMember);
-        return ResponseEntity.ok(updatedMember);
+        return new BaseResponse<>(updatedMember);
     }
 
     // TroubleShooting
     //403 오류 해결
     // -> SecurityContextHolder에 토큰 생성할때 등록
     // -> isExpired에서 현재 날짜로 그 전에 토큰의 유효기간이 끝나는게 아니라 현재 날짜 + 유효기간으로 판단.
-    public ResponseEntity<Void> deleteUser(String token) {
+    public BaseResponse<Members> deleteUser(String token) {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}",HttpServletResponse.SC_UNAUTHORIZED);
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
+            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
+            return new BaseResponse<>(ErrorCode.EXPIRED_TOKEN.getStatus(),
+                    ErrorCode.EXPIRED_TOKEN.getStatus() + " failed",
+                    ErrorCode.EXPIRED_TOKEN.getMessage(),
+                    null);
         }
 
         String username = jwtUtil.getUsername(token);
@@ -143,8 +162,11 @@ public class MemberService {
 
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", HttpServletResponse.SC_NOT_FOUND);
-            return ResponseEntity.notFound().build();
+            memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
+            return new BaseResponse<>(ErrorCode.NO_USER_INFO.getStatus(),
+                    ErrorCode.NO_USER_INFO.getStatus() + " failed",
+                    ErrorCode.NO_TOKEN_CONTENT.getMessage(),
+                    null);
         }
 
         Members member = membersRepository.findByUsername(username);
@@ -153,7 +175,7 @@ public class MemberService {
             refreshTokensRepository.delete(tokenToDelete);
         }
         membersRepository.delete(member);
-        return ResponseEntity.ok().build();
+        return new BaseResponse<>(member);
     }
 }
 
