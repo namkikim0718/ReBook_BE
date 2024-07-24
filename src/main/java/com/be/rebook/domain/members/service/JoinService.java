@@ -18,8 +18,22 @@ public class JoinService {
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+
+    //아이디 생성 조건
+    //25자 이하
+    //특수문자 안됨
+    private Boolean checkUsernameCharacters(String input){
+        Boolean specialCharCheck = input.matches(".*[^a-zA-Z0-9].*");
+        int inputLength = input.length();
+        return inputLength <= 25 && !Boolean.TRUE.equals(specialCharCheck);
+    }
     public ResponseEntity<Members> joinProcess(JoinDTO joinDTO){
         String username = joinDTO.getUsername();
+
+        if(Boolean.FALSE.equals(checkUsernameCharacters(username))){
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
+        }
+
         String password = joinDTO.getPassword();
 
         Boolean isExist = membersRepository.existsByUsername(username);
