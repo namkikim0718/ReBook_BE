@@ -2,6 +2,7 @@ package com.be.rebook.domain.members.jwt;
 
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,17 +10,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -30,7 +35,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final Logger loginFilterLogger = LoggerFactory.getLogger(LoginFilter.class);
 
-    private RefreshTokensRepository refreshTokensRepository;
+    private final RefreshTokensRepository refreshTokensRepository;
     public LoginFilter(AuthenticationManager authenticationManager,
                        JWTUtil jwtUtil,
                        RefreshTokensRepository refreshTokensRepository){
@@ -41,19 +46,39 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
-        String username = obtainUsername(request);
-        //솔팅 : 유저 아이디를 각각 붙여서 하나가 뚫리더라도 다른 멤버는 안전하게
-        String password = obtainPassword(request)+username;
+            throws AuthenticationException{
+        loginFilterLogger.info("로그인 시도 시작");
+        String username = null;
+        String password = null;
 
+        // 포스트맨 테스트용
+//        username = obtainUsername(request);
+//        password = obtainPassword(request)+username;
+
+        // JSON 파싱 리액트
+        if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
+            try {
+                InputStream inputStream = request.getInputStream();
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
+
+                username = requestMap.get("username");
+                password = requestMap.get("password")+username;
+
+                loginFilterLogger.info("attemptAuthentication username: {}", username);
+                loginFilterLogger.info("attemptAuthentication password: {}", password);
+
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+                return authenticationManager.authenticate(authRequest);
+            } catch (IOException e) {
+                throw new AuthenticationServiceException("Error parsing JSON request", e);
+            }
+        }
 
         loginFilterLogger.info("attemptAuthentication username : {}", username);
 
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username,password,null);
-
-        loginFilterLogger.info("attemptAuthentication current auth : {}",
-                SecurityContextHolder.getContext().getAuthentication());
 
         return authenticationManager.authenticate(authToken);
     }
@@ -76,12 +101,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         addRefreshEntity(username, refresh, 86400000L);
 
+        loginFilterLogger.info("successfulAuthentication current accessToken: {}", access);
+
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
-
-        loginFilterLogger.info("successfulAuthentication  current auth : {}",
-                SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Override
