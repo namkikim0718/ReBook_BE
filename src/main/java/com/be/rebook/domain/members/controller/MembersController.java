@@ -1,17 +1,19 @@
 package com.be.rebook.domain.members.controller;
 
 import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.service.MemberService;
 import com.be.rebook.domain.members.dto.UpdateDTO;
 import com.be.rebook.domain.members.service.ReissueService;
 import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class MembersController {
     }
 
     @PatchMapping
-    public BaseResponse<Members> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
+    public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
         memberLogger.info("회원 정보 업데이트 시작");
         String accessToken = request.getHeader("access");
         String refreshToken = null;
@@ -42,25 +44,18 @@ public class MembersController {
                 refreshToken = c.getValue();
         }
 
-        HttpStatus returnStatus = null;
-        String returnCode = null;
-        String returnMessage = null;
-
         if (accessToken == null || refreshToken == null) {
             //no_token
             memberLogger.error("회원 정보 업데이트 실패 : 토큰 없음");
-            returnStatus = ErrorCode.NO_TOKEN_CONTENT.getStatus();
-            returnCode = returnStatus + " failed";
-            returnMessage = ErrorCode.NO_TOKEN_CONTENT.getMessage();
-            return new BaseResponse<>(returnStatus, returnCode, returnMessage, null);
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
-        return memberService.updateUser(accessToken, membersUpdateDTO);
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
     }
 
     //요청 보낼때 헤더에 키: access, 값 : 로컬스토리지에서 관리되는 access토큰 값 넘어와야함
     @DeleteMapping
-    public BaseResponse<Members> deleteUser(HttpServletRequest request) {
+    public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
         memberLogger.info("회원 탈퇴 로직 시작");
         String accessToken = request.getHeader("access");
         String refreshToken = null;
@@ -71,27 +66,24 @@ public class MembersController {
 
         if (accessToken == null || refreshToken == null) {
             memberLogger.error("회원 탈퇴 실패 : 토큰 없음 코드 {}", ErrorCode.NO_TOKEN_CONTENT);
-            return new BaseResponse<>(ErrorCode.NO_TOKEN_CONTENT.getStatus(),
-                    ErrorCode.NO_TOKEN_CONTENT.toString() + " failed",
-                    ErrorCode.NO_TOKEN_CONTENT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
-        return memberService.deleteUser(accessToken);
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
     }
 
     @PostMapping("/refreshtoken")
-    public BaseResponse<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        return reissueService.reissueToken(request, response);
+    public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueToken(request, response)));
     }
 
     @GetMapping("/universities")
-    public BaseResponse<List<String>> searchUniversities(@RequestParam("unvToSearch") String unvToSearch){
-        return memberService.getUniversitiesList(unvToSearch);
+    public ResponseEntity<BaseResponse<List<String>>> searchUniversities(@RequestParam("unvToSearch") String unvToSearch){
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUniversitiesList(unvToSearch)));
     }
 
     @GetMapping("/majors")
-    public BaseResponse<List<String>> searchMajors(@RequestParam("majorToSearch") String majorToSearch){
-        return memberService.getMajorsList(majorToSearch);
+    public ResponseEntity<BaseResponse<List<String>>> searchMajors(@RequestParam("majorToSearch") String majorToSearch){
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
     }
 }

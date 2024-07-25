@@ -4,11 +4,10 @@ import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.dto.JoinDTO;
 import com.be.rebook.domain.members.utility.InputVerifier;
-import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,31 +24,21 @@ public class JoinService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public BaseResponse<Members> joinProcess(JoinDTO joinDTO){
+    public Members joinProcess(JoinDTO joinDTO){
         joinServiceLogger.info("회원 가입 로직 시작");
         String username = joinDTO.getUsername();
-        HttpStatus returnStatus = null;
-        String returnCode = null;
-        String returnMessage = null;
-        Members result = null;
 
         if(Boolean.FALSE.equals(InputVerifier.checkUsernameCharacters(username))){
             //BAD_INPUT
             joinServiceLogger.error("회원 가입 로직 오류 : 아이디에 특수문자 포함됨, 코드: {}", ErrorCode.BAD_INPUT);
-            returnStatus = ErrorCode.BAD_INPUT.getStatus();
-            returnCode = returnStatus.toString() + " failed";
-            returnMessage = ErrorCode.BAD_INPUT.getMessage();
-            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
+            throw new BaseException(ErrorCode.BAD_INPUT);
         }
 
         String password = joinDTO.getPassword();
         if(Boolean.FALSE.equals(InputVerifier.checkPasswordCharacters(password))){
             //BAD_INPUT
             joinServiceLogger.error("회원 가입 로직 오류 : 비밀번호 너무 짧음, 코드: {}", ErrorCode.BAD_INPUT);
-            returnStatus = ErrorCode.BAD_INPUT.getStatus();
-            returnCode = returnStatus.toString() + " failed";
-            returnMessage = ErrorCode.BAD_INPUT.getMessage();
-            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
+            throw new BaseException(ErrorCode.BAD_INPUT);
         }
         //todo : test -> 여기서 공격은 아닌데 비밀번호가 왜곡될 가능성이 있는지?
         //password = InputVerifier.sanitizeInput(password);
@@ -60,10 +49,7 @@ public class JoinService {
         if(Boolean.TRUE.equals(isExist)){
             //EXISTING_USER_INFO
             joinServiceLogger.error("회원 가입 로직 오류 : 이미 존재하는 아이디, 코드: {}", ErrorCode.EXISTING_USER_INFO);
-            returnStatus = ErrorCode.EXISTING_USER_INFO.getStatus();
-            returnCode = returnStatus.toString() + " failed";
-            returnMessage = ErrorCode.EXISTING_USER_INFO.getMessage();
-            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
+            throw new BaseException(ErrorCode.EXISTING_USER_INFO);
         }
 
         Members data = Members.builder()
@@ -73,6 +59,6 @@ public class JoinService {
                 .build();
 
         membersRepository.save(data);
-        return new BaseResponse<>(data);
+        return data;
     }
 }

@@ -10,12 +10,11 @@ import com.be.rebook.domain.members.repository.MajorsRepository;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
-import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,20 +50,13 @@ public class MemberService {
     }
 
     @Transactional
-    public BaseResponse<Members> updateUser(String token, UpdateDTO membersUpdateDTO) {
-        HttpStatus returnStatus = null;
-        String returnCode = null;
-        String returnMessage = null;
-
+    public Members updateUser(String token, UpdateDTO membersUpdateDTO) {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             //EXPIRED_TOKEN
             memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", ErrorCode.EXPIRED_TOKEN);
-            returnStatus = ErrorCode.EXPIRED_TOKEN.getStatus();
-            returnCode = returnStatus + " failed";
-            returnMessage = ErrorCode.EXPIRED_TOKEN.getMessage();
-            return new BaseResponse<>(returnStatus, returnCode, returnMessage, null);
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
         String username = jwtUtil.getUsername(token);
@@ -73,10 +65,7 @@ public class MemberService {
         if (Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
             memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", ErrorCode.NO_USER_INFO);
-            returnStatus = ErrorCode.NO_USER_INFO.getStatus();
-            returnCode = returnStatus + " failed";
-            returnMessage = ErrorCode.NO_USER_INFO.getMessage();
-            return new BaseResponse<>(returnStatus, returnCode, returnMessage, null);
+            throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
         Members member = membersRepository.findByUsername(username);
@@ -91,10 +80,7 @@ public class MemberService {
                 (unvToUpdate != null && checkSpecialCharacters(unvToUpdate))) {
             //BAD_INPUT
             memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
-            returnStatus = ErrorCode.BAD_INPUT.getStatus();
-            returnCode = returnStatus.toString() + " failed";
-            returnMessage = ErrorCode.BAD_INPUT.getMessage();
-            return new BaseResponse<>(returnStatus,returnCode,returnMessage,null);
+            throw new BaseException(ErrorCode.BAD_INPUT);
         }
 
         if (nicknameToUpdate != null) {
@@ -114,10 +100,7 @@ public class MemberService {
             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF].*")){
                 //BAD_INPUT
                 memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
-                returnStatus = ErrorCode.BAD_INPUT.getStatus();
-                returnCode = returnStatus.toString() + " failed";
-                returnMessage = ErrorCode.BAD_INPUT.getMessage();
-                return new BaseResponse<>(returnStatus,returnCode,returnMessage,null);
+                throw new BaseException(ErrorCode.BAD_INPUT);
             }
 
             String[] majorList = membersUpdateDTO.getMajors().split(",");
@@ -137,19 +120,16 @@ public class MemberService {
                 .build();
 
         membersRepository.save(updatedMember);
-        return new BaseResponse<>(updatedMember);
+        return updatedMember;
     }
 
-    public BaseResponse<Members> deleteUser(String token) {
+    public Members deleteUser(String token) {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             //EXPIRED_TOKEN
             memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
-            return new BaseResponse<>(ErrorCode.EXPIRED_TOKEN.getStatus(),
-                    ErrorCode.EXPIRED_TOKEN.getStatus() + " failed",
-                    ErrorCode.EXPIRED_TOKEN.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
         String username = jwtUtil.getUsername(token);
@@ -158,10 +138,7 @@ public class MemberService {
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
             memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
-            return new BaseResponse<>(ErrorCode.NO_USER_INFO.getStatus(),
-                    ErrorCode.NO_USER_INFO.getStatus() + " failed",
-                    ErrorCode.NO_TOKEN_CONTENT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
         Members member = membersRepository.findByUsername(username);
@@ -170,41 +147,35 @@ public class MemberService {
             refreshTokensRepository.delete(tokenToDelete);
         }
         membersRepository.delete(member);
-        return new BaseResponse<>(member);
+        return member;
     }
 
-    public BaseResponse<List<String>> getUniversitiesList(String unvToSearch){
+    public List<String> getUniversitiesList(String unvToSearch){
         if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
             memberServiceLogger.error("검색어로 대학 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
-            return new BaseResponse<>(ErrorCode.BAD_INPUT.getStatus(),
-                    ErrorCode.BAD_INPUT.getStatus() + " failed",
-                    ErrorCode.BAD_INPUT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Universities> universitiesList = universitiesRepository.searchByUniversity(unvToSearch);
         List<String> returnList = new ArrayList<>();
         for(Universities unv : universitiesList){
             returnList.add(unv.getUniversity());
         }
-        return new BaseResponse<>(returnList);
+        return returnList;
     }
 
-    public BaseResponse<List<String>> getMajorsList(String majorToSearch){
+    public List<String> getMajorsList(String majorToSearch){
         if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
             memberServiceLogger.error("검색어로 전공 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
-            return new BaseResponse<>(ErrorCode.BAD_INPUT.getStatus(),
-                    ErrorCode.BAD_INPUT.getStatus() + " failed",
-                    ErrorCode.BAD_INPUT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Majors> majorsList = majorsRepository.searchByMajor(majorToSearch);
         List<String> returnList = new ArrayList<>();
         for(Majors major : majorsList){
             returnList.add(major.getMajor());
         }
-        return new BaseResponse<>(returnList);
+        return returnList;
     }
 }
 

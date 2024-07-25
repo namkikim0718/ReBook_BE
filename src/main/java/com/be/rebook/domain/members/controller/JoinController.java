@@ -22,8 +22,8 @@ public class JoinController {
     }
 
     @PostMapping("/join")
-    public BaseResponse<Members> joinProcess(JoinDTO joinDTO) {
+    public ResponseEntity<BaseResponse<Members>> joinProcess(JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
-        return joinService.joinProcess(joinDTO);
+        return ResponseEntity.ok().body(new BaseResponse<>(joinService.joinProcess(joinDTO)));
     }
 }

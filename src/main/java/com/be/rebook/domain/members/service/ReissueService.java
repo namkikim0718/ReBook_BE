@@ -3,7 +3,7 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.jwt.JWTUtil;
-import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -34,7 +34,7 @@ public class ReissueService {
         refreshRepository.deleteOldRefresh(cutoff);
     }
 
-    public BaseResponse<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+    public RefreshTokens reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
         String refreshCategory = "refresh";
@@ -48,10 +48,7 @@ public class ReissueService {
 
         if (refresh == null) {
             //NO_TOKEN_CONTENT
-            return new BaseResponse<>(ErrorCode.NO_TOKEN_CONTENT.getStatus(),
-                    ErrorCode.NO_TOKEN_CONTENT.getStatus() + " failed",
-                    ErrorCode.NO_TOKEN_CONTENT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         // expired check
@@ -59,10 +56,7 @@ public class ReissueService {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
             //EXPIRED_TOKEN
-            return new BaseResponse<>(ErrorCode.EXPIRED_TOKEN.getStatus(),
-                    ErrorCode.EXPIRED_TOKEN.getStatus() + " failed",
-                    ErrorCode.EXPIRED_TOKEN.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
@@ -70,20 +64,14 @@ public class ReissueService {
 
         if (!category.equals(refreshCategory)) {
             //TOKEN_CATEGORY_INCORRECT
-            return new BaseResponse<>(ErrorCode.TOKEN_CATEGORY_INCORRECT.getStatus(),
-                    ErrorCode.TOKEN_CATEGORY_INCORRECT.getStatus()+" failed",
-                    ErrorCode.TOKEN_CATEGORY_INCORRECT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.TOKEN_CATEGORY_INCORRECT);
         }
 
         //db에 리프레시 토큰이 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if(Boolean.FALSE.equals(isExist)){
             //NO_TOKEN_CONTENT
-            return new BaseResponse<>(ErrorCode.NO_TOKEN_CONTENT.getStatus(),
-                    ErrorCode.NO_TOKEN_CONTENT.getStatus()+" failed",
-                    ErrorCode.NO_TOKEN_CONTENT.getMessage(),
-                    null);
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         String username = jwtUtil.getUsername(refresh);
@@ -102,8 +90,7 @@ public class ReissueService {
         // response
         response.setHeader(accessCategory, newAccess);
         response.addCookie(createCookie(refreshCategory, newRefresh));
-
-        return new BaseResponse<>(null);
+        return RefreshTokens.builder().username(username).refresh(refresh).build();
     }
     private Cookie createCookie(String key, String value) {
 
