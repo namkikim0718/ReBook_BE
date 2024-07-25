@@ -36,8 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### properties ###
+### properties, yml ###
 application-API-KEY.properties
-
+application-API-KEY.yml
 ### logs ###
 .log
