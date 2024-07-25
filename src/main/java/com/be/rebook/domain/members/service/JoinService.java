@@ -3,6 +3,7 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.dto.JoinDTO;
+import com.be.rebook.domain.members.utility.InputVerifier;
 import com.be.rebook.global.config.BaseResponse;
 import com.be.rebook.global.exception.ErrorCode;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JoinService {
 
-    private  final MembersRepository membersRepository;
+    private final MembersRepository membersRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final Logger joinServiceLogger = LoggerFactory.getLogger(JoinService.class);
@@ -22,15 +23,6 @@ public class JoinService {
     public JoinService(MembersRepository membersRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    //아이디 생성 조건
-    //25자 이하
-    //특수문자 안됨
-    private Boolean checkUsernameCharacters(String input){
-        Boolean specialCharCheck = input.matches(".*[^a-zA-Z0-9].*");
-        int inputLength = input.length();
-        return inputLength <= 25 && !Boolean.TRUE.equals(specialCharCheck);
     }
 
     public BaseResponse<Members> joinProcess(JoinDTO joinDTO){
@@ -41,7 +33,7 @@ public class JoinService {
         String returnMessage = null;
         Members result = null;
 
-        if(Boolean.FALSE.equals(checkUsernameCharacters(username))){
+        if(Boolean.FALSE.equals(InputVerifier.checkUsernameCharacters(username))){
             //BAD_INPUT
             joinServiceLogger.error("회원 가입 로직 오류 : 아이디에 특수문자 포함됨, 코드: {}", ErrorCode.BAD_INPUT);
             returnStatus = ErrorCode.BAD_INPUT.getStatus();
@@ -51,6 +43,17 @@ public class JoinService {
         }
 
         String password = joinDTO.getPassword();
+        if(Boolean.FALSE.equals(InputVerifier.checkPasswordCharacters(password))){
+            //BAD_INPUT
+            joinServiceLogger.error("회원 가입 로직 오류 : 비밀번호 너무 짧음, 코드: {}", ErrorCode.BAD_INPUT);
+            returnStatus = ErrorCode.BAD_INPUT.getStatus();
+            returnCode = returnStatus.toString() + " failed";
+            returnMessage = ErrorCode.BAD_INPUT.getMessage();
+            return new BaseResponse<>(returnStatus,returnCode,returnMessage,result);
+        }
+        //todo : test -> 여기서 공격은 아닌데 비밀번호가 왜곡될 가능성이 있는지?
+        //password = InputVerifier.sanitizeInput(password);
+        //joinServiceLogger.info("회원 가입 로직 : 바뀐 비밀번호 {}", password);
 
         Boolean isExist = membersRepository.existsByUsername(username);
 

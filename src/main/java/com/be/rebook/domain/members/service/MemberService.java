@@ -45,6 +45,7 @@ public class MemberService {
         this.majorsRepository = majorsRepository;
     }
 
+    //todo : 특문 걸러내는거 inputVerifier에 통합할건지?
     private Boolean checkSpecialCharacters(String input){
         return input.matches(".*[^a-zA-Z0-9\\uAC00-\\uD7AF].*");
     }
@@ -128,11 +129,6 @@ public class MemberService {
             majors = sb.toString();
         }
 
-        //문제 : builder 패턴 써서 특정 레코드 업데이트하는 방법?
-        //해결 -> toBuilder true 썼음
-        //member에 toBuilder 접근하면 그 결과 다시 저장해줘야함
-        //문제 : 자꾸 수정하면 거기다가 수정하는게 아니라 새 데이터가 생성되어버림
-        //해결 -> 빌더 어노테이션 설정한 생성자에 자동으로 증가하는 id값을 쓰더라도 생성자 초기화에서 id값을 빼면 안됨
         Members updatedMember = member
                 .toBuilder()
                 .nickname(nickname)
@@ -144,10 +140,6 @@ public class MemberService {
         return new BaseResponse<>(updatedMember);
     }
 
-    // TroubleShooting
-    //403 오류 해결
-    // -> SecurityContextHolder에 토큰 생성할때 등록
-    // -> isExpired에서 현재 날짜로 그 전에 토큰의 유효기간이 끝나는게 아니라 현재 날짜 + 유효기간으로 판단.
     public BaseResponse<Members> deleteUser(String token) {
         try {
             jwtUtil.isExpired(token);
