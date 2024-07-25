@@ -7,6 +7,7 @@ import com.be.rebook.global.config.BaseResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class JoinController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<BaseResponse<Members>> joinProcess(JoinDTO joinDTO) {
+    public ResponseEntity<BaseResponse<Members>> joinProcess(@RequestBody JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
         return ResponseEntity.ok().body(new BaseResponse<>(joinService.joinProcess(joinDTO)));
     }
