@@ -88,7 +88,6 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
     }
 
-    //todo : 마이페이지에서 보여줄 회원 정보 가져오기
     @GetMapping
     public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request){
         memberLogger.info("회원 정보 조회 로직 시작");

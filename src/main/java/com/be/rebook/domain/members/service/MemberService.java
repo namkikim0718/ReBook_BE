@@ -199,22 +199,37 @@ public class MemberService {
         }
         Members foundMember = membersRepository.findByUsername(username);
 
-        List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
-        StringBuilder majorList = new StringBuilder();
-        for(String id : majorIdList){
-            majorList.append(majorsRepository.findByMajorId(id).getMajor());
-            majorList.append(", ");
+        String returnNickname = "닉네임을 설정하세요.";
+        if(foundMember.getNickname() != null){
+            returnNickname = foundMember.getNickname();
         }
-        if (!majorList.isEmpty()) {
-            majorList.setLength(majorList.length() - 2);
+
+        String returnUnv = "대학교를 설정하세요.";
+        if(foundMember.getUniversity() != null){
+            returnUnv = universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity();
+        }
+
+        String returnMajors = "관심 전공을 설정하세요.";
+        StringBuilder majorList = new StringBuilder();
+        if(foundMember.getMajors()!= null){
+            memberServiceLogger.info("foundMember.getMajors() : {}", foundMember.getMajors());
+            List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
+            for(String id : majorIdList){
+                majorList.append(majorsRepository.findByMajorId(id).getMajor());
+                majorList.append(", ");
+            }
+            if (!majorList.isEmpty()) {
+                majorList.setLength(majorList.length() - 2);
+            }
+            returnMajors = majorList.toString();
         }
 
         return UserinfoDTO
                 .builder()
                 .username(foundMember.getUsername())
-                .nickname(foundMember.getNickname())
-                .university(universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity())
-                .majors(majorList.toString())
+                .nickname(returnNickname)
+                .university(returnUnv)
+                .majors(returnMajors)
                 .build();
     }
 }
