@@ -1,6 +1,7 @@
 package com.be.rebook.domain.members.service;
 
 import com.be.rebook.domain.members.dto.UpdateDTO;
+import com.be.rebook.domain.members.dto.UserinfoDTO;
 import com.be.rebook.domain.members.entity.Majors;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -176,6 +178,44 @@ public class MemberService {
             returnList.add(major.getMajor());
         }
         return returnList;
+    }
+
+    public UserinfoDTO getUserinfo(String token){
+        try {
+            jwtUtil.isExpired(token);
+        } catch (ExpiredJwtException e) {
+            //EXPIRED_TOKEN
+            memberServiceLogger.error("회원 정보 조회 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        String username = jwtUtil.getUsername(token);
+        Boolean isUsernameExists = membersRepository.existsByUsername(username);
+
+        if(Boolean.FALSE.equals(isUsernameExists)){
+            //NO_USER_INFO
+            memberServiceLogger.error("회원 정보 조회 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
+            throw new BaseException(ErrorCode.NO_USER_INFO);
+        }
+        Members foundMember = membersRepository.findByUsername(username);
+
+        List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
+        StringBuilder majorList = new StringBuilder();
+        for(String id : majorIdList){
+            majorList.append(majorsRepository.findByMajorId(id).getMajor());
+            majorList.append(", ");
+        }
+        if (!majorList.isEmpty()) {
+            majorList.setLength(majorList.length() - 2);
+        }
+
+        return UserinfoDTO
+                .builder()
+                .username(foundMember.getUsername())
+                .nickname(foundMember.getNickname())
+                .university(universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity())
+                .majors(majorList.toString())
+                .build();
     }
 }
 

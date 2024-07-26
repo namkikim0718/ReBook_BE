@@ -1,5 +1,6 @@
 package com.be.rebook.domain.members.controller;
 
+import com.be.rebook.domain.members.dto.UserinfoDTO;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.service.MemberService;
@@ -85,5 +86,19 @@ public class MembersController {
     @GetMapping("/majors")
     public ResponseEntity<BaseResponse<List<String>>> searchMajors(@RequestParam("majorToSearch") String majorToSearch){
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
+    }
+
+    //todo : 마이페이지에서 보여줄 회원 정보 가져오기
+    @GetMapping
+    public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request){
+        memberLogger.info("회원 정보 조회 로직 시작");
+        String accessToken = request.getHeader("access");
+
+        if (accessToken == null){
+            memberLogger.error("회원 정보 조회 실패 : 토큰 없음 코드 {}", ErrorCode.NO_TOKEN_CONTENT);
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
     }
 }

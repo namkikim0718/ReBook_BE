@@ -18,5 +18,5 @@ public interface UniversitiesRepository extends JpaRepository<Universities, Long
     Universities findByUniversity(String university);
 
     //id값으로 학교 이름가져오기 (데이터 조회시에 필요)
-    Optional<Universities> findByUnvId(Long id);
+    Universities findByUnvId(Long id);
 }
