@@ -3,13 +3,13 @@ spring:
     name: reBook
 
   profiles:
-    include: API-KEY
+    active: API-KEY
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/${mysql-db-name}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: ${mysql-id}
-    password: ${mysql-pw}
+    username: ${MYSQL_ID}
+    url: jdbc:mysql://127.0.0.1:3306/${MYSQL_DB_NAME}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    password: ${MYSQL_PW}
 
   jpa:
     hibernate:
@@ -18,4 +18,8 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   jwt:
-    secret: ${jwt-secret}
+    secret: ${JWT_SECRET_KEY}
+
+
+
+

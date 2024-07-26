@@ -16,7 +16,7 @@ import java.util.Date;
 public class JWTUtil {
     private final SecretKey secretKey;
     private static final Logger jwtUtilLogger = LoggerFactory.getLogger(JWTUtil.class);
-    private JWTUtil(@Value("${spring.jwt.secret}") String secret){
+    private JWTUtil(@Value("${JWT_SECRET_KEY}") String secret){
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
