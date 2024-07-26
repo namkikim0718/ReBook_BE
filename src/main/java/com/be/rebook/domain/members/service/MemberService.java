@@ -211,6 +211,7 @@ public class MemberService {
 
         return UserinfoDTO
                 .builder()
+                .username(foundMember.getUsername())
                 .nickname(foundMember.getNickname())
                 .university(universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity())
                 .majors(majorList.toString())
