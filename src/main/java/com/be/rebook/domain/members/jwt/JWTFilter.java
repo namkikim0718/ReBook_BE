@@ -56,9 +56,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))){
             jwtLogger.info("access token expired");
             //response status code = 401
             //프론트에서 알아야됨

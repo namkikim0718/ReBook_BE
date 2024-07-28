@@ -42,15 +42,11 @@ public class JWTUtil {
         String username = getUsername(token);
         jwtUtilLogger.info("expired username :{}", username);
 
-        Date now  = new Date();
-        long accessTokenLength = 10*60*1000L;
-        Date newTime = new Date(now.getTime()+accessTokenLength);
-
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build().parseSignedClaims(token)
                 .getPayload()
-                .getExpiration().before(newTime);
+                .getExpiration().before(new Date());
     }
 
     //토큰 종류 구별용

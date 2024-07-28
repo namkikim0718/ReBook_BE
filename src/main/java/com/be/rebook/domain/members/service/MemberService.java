@@ -53,9 +53,7 @@ public class MemberService {
 
     @Transactional
     public Members updateUser(String token, UpdateDTO membersUpdateDTO) {
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
             memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
@@ -126,9 +124,7 @@ public class MemberService {
     }
 
     public Members deleteUser(String token) {
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
             memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
@@ -181,9 +177,7 @@ public class MemberService {
     }
 
     public UserinfoDTO getUserinfo(String token){
-        try {
-            jwtUtil.isExpired(token);
-        } catch (ExpiredJwtException e) {
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
             memberServiceLogger.error("회원 정보 조회 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
