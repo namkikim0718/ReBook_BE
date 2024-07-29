@@ -13,7 +13,6 @@ import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,6 @@ public class MemberService {
         this.majorsRepository = majorsRepository;
     }
 
-    //todo : 특문 걸러내는거 inputVerifier에 통합할건지?
     private Boolean checkSpecialCharacters(String input){
         return input.matches(".*[^a-zA-Z0-9\\uAC00-\\uD7AF].*");
     }
