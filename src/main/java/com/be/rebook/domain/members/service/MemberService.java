@@ -197,7 +197,7 @@ public class MemberService {
         }
 
         String returnUnv = "대학교를 설정하세요.";
-        if(foundMember.getUniversity() != null){
+        if(foundMember.getUniversity() != null && foundMember.getUniversity() != -1L){
             returnUnv = universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity();
         }
 
