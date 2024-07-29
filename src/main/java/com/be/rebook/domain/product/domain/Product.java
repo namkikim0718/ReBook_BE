@@ -1,5 +1,7 @@
 package com.be.rebook.domain.product.domain;
 
+import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.domain.product.dto.ProductRequestDTO;
 import com.be.rebook.domain.productImage.domain.ProductImage;
 import com.be.rebook.global.config.BaseEntity;
 import jakarta.persistence.*;
@@ -42,12 +44,40 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
-    /*
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "seller_id")
-        private Member member;
-    */
-    @OneToMany(mappedBy = "product")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private Members seller;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages = new ArrayList<>();
+
+    public static Product of(Members member, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
+        return Product.builder()
+                .title(productSaveRequestDTO.getTitle())
+                .content(productSaveRequestDTO.getContent())
+                .price(productSaveRequestDTO.getPrice())
+                .isbn(productSaveRequestDTO.getIsbn())
+                .bookTitle(productSaveRequestDTO.getBookTitle())
+                .author(productSaveRequestDTO.getAuthor())
+                .publisher(productSaveRequestDTO.getPublisher())
+                .publishDate(productSaveRequestDTO.getPublishDate())
+                .university(productSaveRequestDTO.getUniversity())
+                .major(productSaveRequestDTO.getMajor())
+                .status(ProductStatus.PENDING)
+                .seller(member)
+                .build();
+    }
+
+    /**
+     * 상태변경 로직
+     */
+    public void changeStatus(String status) {
+        if (status.equals("Completed")) {
+            this.status = ProductStatus.COMPLETED;
+        } else if (status.equals("Pending")) {
+            this.status = ProductStatus.PENDING;
+        }
+    }
 }
 
