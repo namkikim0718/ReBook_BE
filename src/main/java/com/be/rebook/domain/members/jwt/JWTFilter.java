@@ -3,13 +3,10 @@ package com.be.rebook.domain.members.jwt;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.dto.CustomUserDetails;
 import com.be.rebook.global.exception.ErrorCode;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,8 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String accessToken = request.getHeader("access");
-        //여기서 액세스 토큰 로깅했었는데 지움
+        String accessToken = request.getHeader("Authorization").substring(7);
 
         if (accessToken == null) {
             //권한이 필요 없는 경우도 있으니까
