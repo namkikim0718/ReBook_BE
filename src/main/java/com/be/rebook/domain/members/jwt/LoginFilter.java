@@ -7,8 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,8 +31,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //jwt 토큰을 사용해야하므로 주입
     private final JWTUtil jwtUtil;
 
-    private static final Logger loginFilterLogger = LoggerFactory.getLogger(LoginFilter.class);
-
     private final RefreshTokensRepository refreshTokensRepository;
     public LoginFilter(AuthenticationManager authenticationManager,
                        JWTUtil jwtUtil,
@@ -47,7 +43,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException{
-        loginFilterLogger.info("로그인 시도 시작");
         String username = null;
         String password = null;
 
@@ -65,17 +60,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 username = requestMap.get("username");
                 password = requestMap.get("password")+username;
 
-                loginFilterLogger.info("attemptAuthentication username: {}", username);
-                loginFilterLogger.info("attemptAuthentication password: {}", password);
-
                 UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
                 return authenticationManager.authenticate(authRequest);
             } catch (IOException e) {
                 throw new AuthenticationServiceException("Error parsing JSON request", e);
             }
         }
-
-        loginFilterLogger.info("attemptAuthentication username : {}", username);
 
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username,password,null);
@@ -101,8 +91,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         addRefreshEntity(username, refresh, 86400000L);
 
-        loginFilterLogger.info("successfulAuthentication current accessToken: {}", access);
-
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
@@ -113,7 +101,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed){
         //LOGIN_FAILED
-        loginFilterLogger.error("로그인 실패 코드 :{}", 401);
         response.setStatus(401);
     }
 
