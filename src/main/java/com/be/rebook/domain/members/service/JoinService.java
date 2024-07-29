@@ -6,8 +6,6 @@ import com.be.rebook.domain.members.dto.JoinDTO;
 import com.be.rebook.domain.members.utility.InputVerifier;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -16,7 +16,6 @@ import java.io.IOException;
 
 
 public class JWTFilter extends OncePerRequestFilter {
-    //필터를 검증할 메서드를 가져오려면 JWTUtil을 주입해야함
     private final JWTUtil jwtUtil;
 
 
@@ -67,7 +66,6 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // username, role 값을 획득
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 

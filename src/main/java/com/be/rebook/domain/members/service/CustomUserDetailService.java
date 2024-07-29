@@ -3,8 +3,6 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.dto.CustomUserDetails;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
