@@ -1,13 +1,15 @@
 package com.be.rebook.domain.product.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class ProductRequestDTO {
 
     @Getter
     @Builder
-    public static class ProductRequest {
+    public static class ProductSaveRequestDTO {
         private String title;
 
         private String content;
@@ -27,5 +29,13 @@ public class ProductRequestDTO {
         private String university;
 
         private String major;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductStatusRequestDTO {
+        private String status;
     }
 }
