@@ -5,10 +5,11 @@ import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.jwt.JWTUtil;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
+
 @Service
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RefreshTokensRepository refreshRepository;
+
+    private final Logger reissueServiceLogger = LoggerFactory.getLogger(ReissueService.class);
 
     public ReissueService(JWTUtil jwtUtil,
                           RefreshTokensRepository refreshTokensRepository) {
@@ -47,13 +51,16 @@ public class ReissueService {
         }
 
         if (refresh == null) {
+            reissueServiceLogger.error("리프레시 토큰 없음");
             //NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         // expired check
-        if(Boolean.TRUE.equals(jwtUtil.isExpired(refresh)))
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(refresh))) {
+            reissueServiceLogger.error("리프레시 토큰 만료");
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
@@ -83,6 +90,7 @@ public class ReissueService {
         //하루 지난 토큰은 삭제할 수 있게 스케줄링
         //-> RefreshDeleteDailyScheduler??
 
+        reissueServiceLogger.info("새 액세스 토큰과 리프레시 토큰 발급 완료");
         // response
         response.setHeader(accessCategory, newAccess);
         response.addCookie(createCookie(refreshCategory, newRefresh));
