@@ -39,13 +39,8 @@ public class MembersController {
     public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
         memberLogger.info("회원 정보 업데이트 시작");
         String accessToken = request.getHeader("access");
-        String refreshToken = null;
-        for(Cookie c : request.getCookies()){
-            if(c.getName().equals("refresh"))
-                refreshToken = c.getValue();
-        }
 
-        if (accessToken == null || refreshToken == null) {
+        if (accessToken == null) {
             //no_token
             memberLogger.error("회원 정보 업데이트 실패 : 토큰 없음");
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
