@@ -9,15 +9,22 @@ import com.be.rebook.domain.members.service.ReissueService;
 import com.be.rebook.global.config.BaseResponse;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/members")
@@ -36,7 +43,7 @@ public class MembersController {
     }
 
     @PatchMapping
-    public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request, UpdateDTO membersUpdateDTO) {
+    public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
         memberLogger.info("회원 정보 업데이트 시작");
         String accessToken = request.getHeader("access");
 
@@ -45,6 +52,26 @@ public class MembersController {
             memberLogger.error("회원 정보 업데이트 실패 : 토큰 없음");
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
+
+        UpdateDTO membersUpdateDTO = new UpdateDTO();
+        if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
+            try {
+                InputStream inputStream = request.getInputStream();
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
+
+                membersUpdateDTO.setNickname(requestMap.get("nickname"));
+                membersUpdateDTO.setUniversity(requestMap.get("university"));
+                membersUpdateDTO.setMajors(requestMap.get("majors"));
+
+            } catch (IOException e) {
+                throw new AuthenticationServiceException("Error parsing JSON request", e);
+            }
+        }
+
+        memberLogger.info("dto 1 {}", membersUpdateDTO.getNickname());
+        memberLogger.info("dto 2 {}", membersUpdateDTO.getUniversity());
+        memberLogger.info("dto 3 {}", membersUpdateDTO.getMajors());
 
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
     }
