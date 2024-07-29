@@ -23,8 +23,6 @@ public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RefreshTokensRepository refreshRepository;
 
-    private final Logger reissueServiceLogger = LoggerFactory.getLogger(ReissueService.class);
-
     public ReissueService(JWTUtil jwtUtil,
                           RefreshTokensRepository refreshTokensRepository) {
         this.jwtUtil = jwtUtil;
@@ -51,14 +49,12 @@ public class ReissueService {
         }
 
         if (refresh == null) {
-            reissueServiceLogger.error("리프레시 토큰 없음");
             //NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         // expired check
         if(Boolean.TRUE.equals(jwtUtil.isExpired(refresh))) {
-            reissueServiceLogger.error("리프레시 토큰 만료");
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -90,7 +86,6 @@ public class ReissueService {
         //하루 지난 토큰은 삭제할 수 있게 스케줄링
         //-> RefreshDeleteDailyScheduler??
 
-        reissueServiceLogger.info("새 액세스 토큰과 리프레시 토큰 발급 완료");
         // response
         response.setHeader(accessCategory, newAccess);
         response.addCookie(createCookie(refreshCategory, newRefresh));

@@ -13,12 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,8 +26,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/members")
 public class MembersController {
-
-    private static final Logger memberLogger = LoggerFactory.getLogger(MembersController.class);
     private final ReissueService reissueService;
 
     private final MemberService memberService;
@@ -44,12 +39,11 @@ public class MembersController {
 
     @PatchMapping
     public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
-        memberLogger.info("회원 정보 업데이트 시작");
+
         String accessToken = request.getHeader("access");
 
         if (accessToken == null) {
             //no_token
-            memberLogger.error("회원 정보 업데이트 실패 : 토큰 없음");
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
@@ -69,17 +63,12 @@ public class MembersController {
             }
         }
 
-        memberLogger.info("dto 1 {}", membersUpdateDTO.getNickname());
-        memberLogger.info("dto 2 {}", membersUpdateDTO.getUniversity());
-        memberLogger.info("dto 3 {}", membersUpdateDTO.getMajors());
-
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
     }
 
     //요청 보낼때 헤더에 키: access, 값 : 로컬스토리지에서 관리되는 access토큰 값 넘어와야함
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
-        memberLogger.info("회원 탈퇴 로직 시작");
         String accessToken = request.getHeader("access");
         String refreshToken = null;
         for(Cookie c : request.getCookies()){
@@ -88,7 +77,6 @@ public class MembersController {
         }
 
         if (accessToken == null || refreshToken == null) {
-            memberLogger.error("회원 탈퇴 실패 : 토큰 없음 코드 {}", ErrorCode.NO_TOKEN_CONTENT);
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
@@ -112,11 +100,9 @@ public class MembersController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request){
-        memberLogger.info("회원 정보 조회 로직 시작");
         String accessToken = request.getHeader("access");
 
         if (accessToken == null){
-            memberLogger.error("회원 정보 조회 실패 : 토큰 없음 코드 {}", ErrorCode.NO_TOKEN_CONTENT);
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 

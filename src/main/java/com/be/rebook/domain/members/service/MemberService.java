@@ -30,7 +30,6 @@ public class MemberService {
     private final MajorsRepository majorsRepository;
     private final JWTUtil jwtUtil;
 
-    private static final Logger memberServiceLogger = LoggerFactory.getLogger(MemberService.class);
     private final RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
@@ -53,7 +52,6 @@ public class MemberService {
     public Members updateUser(String token, UpdateDTO membersUpdateDTO) {
         if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 토큰 만료됨 {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -62,7 +60,6 @@ public class MemberService {
 
         if (Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 해당 유저 없음, 코드 {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
@@ -73,8 +70,6 @@ public class MemberService {
 
         String nicknameToUpdate = membersUpdateDTO.getNickname();
         String unvToUpdate = membersUpdateDTO.getUniversity();
-        memberServiceLogger.info("nickname to update : {}", nicknameToUpdate);
-        memberServiceLogger.info("unversity to update : {}", unvToUpdate);
 
         if (nicknameToUpdate != null) {
             nickname = membersUpdateDTO.getNickname();
@@ -92,7 +87,6 @@ public class MemberService {
         if (majorsToUpdate != null){
             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF].*")){
                 //BAD_INPUT
-                memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
                 throw new BaseException(ErrorCode.BAD_INPUT);
             }
 
@@ -104,7 +98,6 @@ public class MemberService {
             }
             majors = sb.toString();
         }
-        memberServiceLogger.info("majors to update : {}", majors);
 
         Members updatedMember = member
                 .toBuilder()
@@ -120,7 +113,6 @@ public class MemberService {
     public Members deleteUser(String token) {
         if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 탈퇴 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -129,7 +121,6 @@ public class MemberService {
 
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 탈퇴 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
 
@@ -145,7 +136,6 @@ public class MemberService {
     public List<String> getUniversitiesList(String unvToSearch){
         if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
-            memberServiceLogger.error("검색어로 대학 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Universities> universitiesList = universitiesRepository.searchByUniversity(unvToSearch);
@@ -159,7 +149,6 @@ public class MemberService {
     public List<String> getMajorsList(String majorToSearch){
         if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
-            memberServiceLogger.error("검색어로 전공 목록 불러오기 오류 : 입력 형식 잘못됨, 코드: {}", ErrorCode.BAD_INPUT);
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Majors> majorsList = majorsRepository.searchByMajor(majorToSearch);
@@ -173,7 +162,6 @@ public class MemberService {
     public UserinfoDTO getUserinfo(String token){
         if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
             //EXPIRED_TOKEN
-            memberServiceLogger.error("회원 정보 조회 오류 : 토큰 만료됨, 코드: {}", ErrorCode.EXPIRED_TOKEN);
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
@@ -182,7 +170,6 @@ public class MemberService {
 
         if(Boolean.FALSE.equals(isUsernameExists)){
             //NO_USER_INFO
-            memberServiceLogger.error("회원 정보 조회 오류 : 유저 없음, 코드: {}", ErrorCode.NO_USER_INFO);
             throw new BaseException(ErrorCode.NO_USER_INFO);
         }
         Members foundMember = membersRepository.findByUsername(username);
@@ -200,7 +187,6 @@ public class MemberService {
         String returnMajors = "관심 전공을 설정하세요.";
         StringBuilder majorList = new StringBuilder();
         if(foundMember.getMajors()!= null){
-            memberServiceLogger.info("foundMember.getMajors() : {}", foundMember.getMajors());
             List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
             for(String id : majorIdList){
                 majorList.append(majorsRepository.findByMajorId(id).getMajor());

@@ -15,8 +15,6 @@ public class CustomUserDetailService implements UserDetailsService {
 
     private final MembersRepository membersRepository;
 
-    private static final Logger customUserDetailServiceLogger = LoggerFactory.getLogger(CustomUserDetailService.class);
-
     public CustomUserDetailService(MembersRepository membersRepository){
         this.membersRepository = membersRepository;
     }
@@ -24,11 +22,9 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Members userData = membersRepository.findByUsername(username);
-        customUserDetailServiceLogger.info("디비에서 인증받아왔고 이제 받은 데이터 가공해서 필터로 보낼준비중임");
         if(userData != null){
             return new CustomUserDetails(userData);
         }
-
         return null;
     }
 }
