@@ -70,13 +70,8 @@ public class MembersController {
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
         String accessToken = request.getHeader("access");
-        String refreshToken = null;
-        for(Cookie c : request.getCookies()){
-            if(c.getName().equals("refresh"))
-                refreshToken = c.getValue();
-        }
 
-        if (accessToken == null || refreshToken == null) {
+        if (accessToken == null) {
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
