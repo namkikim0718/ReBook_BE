@@ -46,7 +46,7 @@ public class MemberService {
     }
 
     private Boolean checkSpecialCharacters(String input){
-        return input.matches(".*[^a-zA-Z0-9\\uAC00-\\uD7AF].*");
+        return input.matches(".*[^가-힣a-zA-Z0-9].*");
     }
 
     @Transactional
@@ -73,13 +73,8 @@ public class MemberService {
 
         String nicknameToUpdate = membersUpdateDTO.getNickname();
         String unvToUpdate = membersUpdateDTO.getUniversity();
-
-        if ((nicknameToUpdate != null && checkSpecialCharacters(nicknameToUpdate)) ||
-                (unvToUpdate != null && checkSpecialCharacters(unvToUpdate))) {
-            //BAD_INPUT
-            memberServiceLogger.error("회원 정보 업데이트 오류 : 입력 형식 잘못됨, 코드 {}", ErrorCode.BAD_INPUT);
-            throw new BaseException(ErrorCode.BAD_INPUT);
-        }
+        memberServiceLogger.info("nickname to update : {}", nicknameToUpdate);
+        memberServiceLogger.info("unversity to update : {}", unvToUpdate);
 
         if (nicknameToUpdate != null) {
             nickname = membersUpdateDTO.getNickname();
@@ -109,6 +104,7 @@ public class MemberService {
             }
             majors = sb.toString();
         }
+        memberServiceLogger.info("majors to update : {}", majors);
 
         Members updatedMember = member
                 .toBuilder()
