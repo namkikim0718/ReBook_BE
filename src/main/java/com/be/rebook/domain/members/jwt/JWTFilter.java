@@ -17,6 +17,7 @@ import java.io.IOException;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
+    private static final String ACCESSTOKEN_HEADER = "Authorization";
 
     public JWTFilter(JWTUtil jwtUtil){
         this.jwtUtil = jwtUtil;
@@ -38,7 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String accessToken = request.getHeader("Authorization").substring(7);
+        String accessToken = request.getHeader(ACCESSTOKEN_HEADER);
 
         if (accessToken == null) {
             //권한이 필요 없는 경우도 있으니까
@@ -46,6 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             return;
         }
+        accessToken = accessToken.substring(7);
 
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         if(Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))){

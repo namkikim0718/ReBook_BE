@@ -1,7 +1,6 @@
 package com.be.rebook.domain.members.jwt;
 
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

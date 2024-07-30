@@ -8,8 +8,6 @@ import com.be.rebook.global.exception.ErrorCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -92,9 +90,7 @@ public class ReissueService {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
-        //쿠키가 적용될 범위
-        //cookie.setPath("/");
-        //자바스크립트로 해당 쿠키 접근 못하게 하는 옵션
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;

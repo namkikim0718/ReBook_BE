@@ -7,8 +7,6 @@ import com.be.rebook.domain.members.service.MemberService;
 import com.be.rebook.domain.members.dto.UpdateDTO;
 import com.be.rebook.domain.members.service.ReissueService;
 import com.be.rebook.global.config.BaseResponse;
-import com.be.rebook.global.exception.BaseException;
-import com.be.rebook.global.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +27,8 @@ public class MembersController {
 
     private final MemberService memberService;
 
+    private static final String ACCESSTOKEN_HEADER = "Authorization";
+
     public MembersController(ReissueService reissueService,
                              MemberService memberService){
         this.reissueService = reissueService;
@@ -38,7 +38,7 @@ public class MembersController {
     @PatchMapping
     public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
 
-        String accessToken = request.getHeader("Authorization").substring(7);
+        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
 
         UpdateDTO membersUpdateDTO = new UpdateDTO();
         if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
@@ -62,7 +62,7 @@ public class MembersController {
     //요청 보낼때 헤더에 키: access, 값 : 로컬스토리지에서 관리되는 Authorization토큰 값 넘어와야함
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").substring(7);
+        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
     }
 
@@ -83,7 +83,7 @@ public class MembersController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request){
-        String accessToken = request.getHeader("Authorization").substring(7);
+        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
     }
 }

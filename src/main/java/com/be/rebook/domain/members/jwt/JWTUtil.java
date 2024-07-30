@@ -37,11 +37,6 @@ public class JWTUtil {
                 .get("Role",String.class);
     }
     public Boolean isExpired(String token){
-
-        jwtUtilLogger.info("JWTUtil isExpired 동작");
-        String username = getUsername(token);
-        jwtUtilLogger.info("expired username :{}", username);
-
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build().parseSignedClaims(token)
