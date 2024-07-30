@@ -73,14 +73,10 @@ public class MemberService {
             nickname = membersUpdateDTO.getNickname();
         }
 
-        // string으로 들어온 학교를 universities 테이블에서 조회해서 id값 얻어오고
-        // 그 아이디값 저장
         if (unvToUpdate != null) {
             unvId = universitiesRepository.findByUniversity(unvToUpdate).getUnvId();
         }
 
-        // , 콤마로 전공명,전공명,전공명 이런식으로 들어온 데이터 ,로 나눠서 각 전공명별로 아이디값 조회해서
-        // 멤버 majors 항목에 1,2,3,4,5 식의 스트링으로 저장하기
         String majorsToUpdate = membersUpdateDTO.getMajors();
         if (majorsToUpdate != null){
             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF].*")){

@@ -91,10 +91,7 @@ public class ReissueService {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        //한시간짜리
         cookie.setMaxAge(24*60*60);
-        //https에서만 되게 하는 옵션
-        //cookie.setSecure(true);
         //쿠키가 적용될 범위
         //cookie.setPath("/");
         //자바스크립트로 해당 쿠키 접근 못하게 하는 옵션

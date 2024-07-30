@@ -10,7 +10,6 @@ import com.be.rebook.global.config.BaseResponse;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -41,11 +40,6 @@ public class MembersController {
 
         String accessToken = request.getHeader("Authorization").substring(7);
 
-        if (accessToken == null) {
-            //no_token
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
-
         UpdateDTO membersUpdateDTO = new UpdateDTO();
         if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
             try {
@@ -69,11 +63,6 @@ public class MembersController {
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
-
-        if (accessToken == null) {
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
-
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
     }
 
@@ -95,11 +84,6 @@ public class MembersController {
     @GetMapping
     public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request){
         String accessToken = request.getHeader("Authorization").substring(7);
-
-        if (accessToken == null){
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
-
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
     }
 }
