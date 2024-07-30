@@ -45,10 +45,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = null;
         String password = null;
 
-        // 포스트맨 테스트용
-//        username = obtainUsername(request);
-//        password = obtainPassword(request)+username;
-
         // JSON 파싱 리액트
         if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
             try {
@@ -107,8 +103,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
-        //쿠키가 적용될 범위
-        cookie.setPath("/");
         //자바스크립트로 해당 쿠키 접근 못하게
         cookie.setHttpOnly(true);
 

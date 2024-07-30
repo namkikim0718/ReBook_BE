@@ -59,7 +59,6 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
     }
 
-    //요청 보낼때 헤더에 키: access, 값 : 로컬스토리지에서 관리되는 Authorization토큰 값 넘어와야함
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
         String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
