@@ -79,7 +79,7 @@ public class MemberService {
 
         String majorsToUpdate = membersUpdateDTO.getMajors();
         if (majorsToUpdate != null){
-            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF ()].*")){
+            if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF\\u4E00-\\u9FFF ()\\u00B7-].*")){
                 //BAD_INPUT
                 throw new BaseException(ErrorCode.BAD_INPUT);
             }
