@@ -5,6 +5,7 @@ import com.be.rebook.global.config.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static com.be.rebook.domain.product.dto.ProductRequestDTO.*;
 import static com.be.rebook.domain.product.dto.ProductResponseDTO.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class ProductController {
     /**
      * 상품 등록
      */
-    @PostMapping("/members/{memberId}/product")
+    @PostMapping("/members/{memberId}/products")
     public ResponseEntity<BaseResponse<Long>> createProduct(@PathVariable("memberId") Long memberId,
                                                             @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
@@ -47,6 +49,14 @@ public class ProductController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) String order) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByFilter(university, major, title, minPrice, maxPrice, order)));
+    }
+
+    /**
+     * 내가 쓴 글 조회
+     */
+    @GetMapping("/members/{memberId}/products")
+    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@PathVariable("memberId") Long memberId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByMember(memberId)));
     }
 
     /**
