@@ -3,6 +3,8 @@ package com.be.rebook.domain.members.service;
 import com.be.rebook.domain.members.dto.CustomUserDetails;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.global.exception.BaseException;
+import com.be.rebook.global.exception.ErrorCode;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,11 +20,8 @@ public class CustomUserDetailService implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        Members userData = membersRepository.findByUsername(username);
-        if(userData != null){
-            return new CustomUserDetails(userData);
-        }
-        return null;
+        return new CustomUserDetails(membersRepository
+                .findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO)));
     }
 }
