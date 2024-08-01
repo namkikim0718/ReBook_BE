@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: reBook
+
+  profiles:
+    active: API-KEY
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_ID}
+    url: jdbc:mysql://127.0.0.1:3306/${MYSQL_DB_NAME}?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    password: ${MYSQL_PW}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+
+
+
+
