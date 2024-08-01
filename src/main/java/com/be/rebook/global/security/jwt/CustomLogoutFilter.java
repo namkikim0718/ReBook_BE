@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.jwt;
+package com.be.rebook.global.security.jwt;
 
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import jakarta.servlet.FilterChain;

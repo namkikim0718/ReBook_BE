@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.jwt;
+package com.be.rebook.global.security.jwt;
 
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.dto.CustomUserDetails;

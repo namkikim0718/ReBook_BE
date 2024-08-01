@@ -6,13 +6,14 @@ import com.be.rebook.domain.members.entity.Majors;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.entity.RefreshTokens;
 import com.be.rebook.domain.members.entity.Universities;
-import com.be.rebook.domain.members.jwt.JWTUtil;
 import com.be.rebook.domain.members.repository.MajorsRepository;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
 import com.be.rebook.domain.members.repository.UniversitiesRepository;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
+import com.be.rebook.global.security.jwt.JWTUtil;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
