@@ -1,10 +1,11 @@
-package com.be.rebook.domain.members.config;
+package com.be.rebook.global.security.config;
 
-import com.be.rebook.domain.members.jwt.CustomLogoutFilter;
-import com.be.rebook.domain.members.jwt.JWTFilter;
-import com.be.rebook.domain.members.jwt.JWTUtil;
-import com.be.rebook.domain.members.jwt.LoginFilter;
 import com.be.rebook.domain.members.repository.RefreshTokensRepository;
+import com.be.rebook.global.security.jwt.CustomLogoutFilter;
+import com.be.rebook.global.security.jwt.JWTFilter;
+import com.be.rebook.global.security.jwt.JWTUtil;
+import com.be.rebook.global.security.jwt.LoginFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
