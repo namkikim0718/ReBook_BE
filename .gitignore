@@ -43,3 +43,6 @@ application-API-KEY.properties
 application-API-KEY.yml
 ### logs ###
 .log
+
+### envs ###
+.env
