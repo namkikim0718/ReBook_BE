@@ -93,6 +93,20 @@ public class ProductService {
     }
 
     /**
+     * 내가 쓴 글 조회
+     */
+    public List<ProductListResponseDTO> findAllProductByMember(Long memberId) {
+        Members member = membersRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
+
+        List<Product> products = productRepository.findProductsBySeller(member);
+
+        return products.stream()
+                .map(ProductListResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 상품 단건 조회
      */
     public ProductDetailResponseDTO findProductById(Long productId) {
