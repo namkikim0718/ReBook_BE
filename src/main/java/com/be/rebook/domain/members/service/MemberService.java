@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -54,14 +55,8 @@ public class MemberService {
         }
 
         String username = jwtUtil.getUsername(token);
-        Boolean isUsernameExists = membersRepository.existsByUsername(username);
-
-        if (Boolean.FALSE.equals(isUsernameExists)){
-            //NO_USER_INFO
-            throw new BaseException(ErrorCode.NO_USER_INFO);
-        }
-
-        Members member = membersRepository.findByUsername(username);
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
         String nickname = null;
         Long unvId = -1L;
         String majors = null;
@@ -74,7 +69,10 @@ public class MemberService {
         }
 
         if (unvToUpdate != null) {
-            unvId = universitiesRepository.findByUniversity(unvToUpdate).getUnvId();
+            unvId = universitiesRepository
+                    .findByUniversity(unvToUpdate)
+                    .orElseThrow(()->new BaseException(ErrorCode.NO_UNIVERSITY_INFO))
+                    .getUnvId();
         }
 
         String majorsToUpdate = membersUpdateDTO.getMajors();
@@ -87,7 +85,10 @@ public class MemberService {
             String[] majorList = membersUpdateDTO.getMajors().split(",");
             StringBuilder sb = new StringBuilder();
             for(String major : majorList){
-                sb.append(majorsRepository.findByMajor(major).getMajorId());
+                sb.append(majorsRepository
+                        .findByMajor(major)
+                        .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO))
+                        .getMajorId());
                 sb.append(",");
             }
             majors = sb.toString();
@@ -111,14 +112,10 @@ public class MemberService {
         }
 
         String username = jwtUtil.getUsername(token);
-        Boolean isUsernameExists = membersRepository.existsByUsername(username);
 
-        if(Boolean.FALSE.equals(isUsernameExists)){
-            //NO_USER_INFO
-            throw new BaseException(ErrorCode.NO_USER_INFO);
-        }
-
-        Members member = membersRepository.findByUsername(username);
+        Members member = membersRepository
+                .findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
         List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
         for(RefreshTokens tokenToDelete : refreshTokens){
             refreshTokensRepository.delete(tokenToDelete);
@@ -132,9 +129,12 @@ public class MemberService {
             //BAD_INPUT
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
-        List<Universities> universitiesList = universitiesRepository.searchByUniversity(unvToSearch);
+        List<Universities> universities = universitiesRepository
+                .searchByUniversity(unvToSearch)
+                .orElseThrow(() -> new BaseException(ErrorCode.NO_UNIVERSITY_INFO));
+
         List<String> returnList = new ArrayList<>();
-        for(Universities unv : universitiesList){
+        for(Universities unv : universities){
             returnList.add(unv.getUniversity());
         }
         return returnList;
@@ -145,9 +145,12 @@ public class MemberService {
             //BAD_INPUT
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
-        List<Majors> majorsList = majorsRepository.searchByMajor(majorToSearch);
+        List<Majors> majors = majorsRepository
+                .searchByMajor(majorToSearch)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO));
+
         List<String> returnList = new ArrayList<>();
-        for(Majors major : majorsList){
+        for(Majors major : majors){
             returnList.add(major.getMajor());
         }
         return returnList;
@@ -160,13 +163,10 @@ public class MemberService {
         }
 
         String username = jwtUtil.getUsername(token);
-        Boolean isUsernameExists = membersRepository.existsByUsername(username);
 
-        if(Boolean.FALSE.equals(isUsernameExists)){
-            //NO_USER_INFO
-            throw new BaseException(ErrorCode.NO_USER_INFO);
-        }
-        Members foundMember = membersRepository.findByUsername(username);
+        Members foundMember = membersRepository
+                .findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
         String returnNickname = "닉네임을 설정하세요.";
         if(foundMember.getNickname() != null){
@@ -175,7 +175,10 @@ public class MemberService {
 
         String returnUnv = "대학교를 설정하세요.";
         if(foundMember.getUniversity() != null && foundMember.getUniversity() != -1L){
-            returnUnv = universitiesRepository.findByUnvId(foundMember.getUniversity()).getUniversity();
+            Universities foundUnv = universitiesRepository
+                    .findByUnvId(foundMember.getUniversity())
+                    .orElseThrow(()->new BaseException(ErrorCode.NO_UNIVERSITY_INFO));
+            returnUnv = foundUnv.getUniversity();
         }
 
         String returnMajors = "관심 전공을 설정하세요.";
@@ -183,7 +186,10 @@ public class MemberService {
         if(foundMember.getMajors()!= null){
             List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));
             for(String id : majorIdList){
-                majorList.append(majorsRepository.findByMajorId(id).getMajor());
+                majorList.append(majorsRepository
+                        .findByMajorId(id)
+                        .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO))
+                        .getMajor());
                 majorList.append(", ");
             }
             if (!majorList.isEmpty()) {
