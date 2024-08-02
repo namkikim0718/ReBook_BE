@@ -1,7 +1,7 @@
 package com.be.rebook.domain.product.dto;
 
-import com.be.rebook.domain.product.domain.Product;
-import com.be.rebook.domain.product.domain.ProductStatus;
+import com.be.rebook.domain.product.entity.Product;
+import com.be.rebook.domain.product.entity.ProductStatus;
 import com.be.rebook.domain.productImage.domain.ProductImage;
 import lombok.Getter;
 

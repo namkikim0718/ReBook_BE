@@ -4,9 +4,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.members.repository.MembersRepository;
-import com.be.rebook.domain.product.domain.Product;
+import com.be.rebook.domain.product.entity.Product;
 import com.be.rebook.domain.product.dto.ProductRequestDTO;
-import com.be.rebook.domain.product.dto.ProductResponseDTO;
 import com.be.rebook.domain.product.repository.ProductRepository;
 import com.be.rebook.domain.productImage.domain.ProductImage;
 import com.be.rebook.domain.productImage.repository.ProductImageRepository;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
