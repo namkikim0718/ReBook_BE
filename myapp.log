@@ -554,7 +554,7 @@ com.be.rebook.domain.product.controller.ProductController#findAllProduct() mappe
 14:06:35.651 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 14:06:35.652 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
 14:06:36.246 [http-nio-8080-exec-2] WARN  com.amazonaws.util.Base64 - JAXB is unavailable. Will fallback to SDK implementation which may be less performant.If you are using Java 9+, you will need to include javax.xml.bind:jaxb-api as a dependency.
-14:06:36.277 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.domain.Product.getProductImages()" is null
+14:06:36.277 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.entity.Product.getProductImages()" is null
 14:10:16.054 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 14:10:16.058 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 14:10:16.065 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
@@ -587,7 +587,7 @@ com.be.rebook.domain.product.controller.ProductController#findAllProduct() mappe
 14:10:34.136 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 14:10:34.139 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
 14:10:34.512 [http-nio-8080-exec-2] WARN  com.amazonaws.util.Base64 - JAXB is unavailable. Will fallback to SDK implementation which may be less performant.If you are using Java 9+, you will need to include javax.xml.bind:jaxb-api as a dependency.
-14:10:34.520 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.domain.Product.getProductImages()" is null
+14:10:34.520 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.entity.Product.getProductImages()" is null
 14:13:04.942 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 14:13:04.945 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 14:13:04.953 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
@@ -620,7 +620,7 @@ com.be.rebook.domain.product.controller.ProductController#findAllProduct() mappe
 14:13:47.861 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 14:13:47.864 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
 14:13:48.343 [http-nio-8080-exec-2] WARN  com.amazonaws.util.Base64 - JAXB is unavailable. Will fallback to SDK implementation which may be less performant.If you are using Java 9+, you will need to include javax.xml.bind:jaxb-api as a dependency.
-14:13:48.357 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.domain.Product.getProductImages()" is null
+14:13:48.357 [http-nio-8080-exec-2] ERROR c.b.r.g.e.GlobalExceptionHandler - handleException: Cannot invoke "java.util.List.add(Object)" because the return value of "com.be.rebook.domain.product.entity.Product.getProductImages()" is null
 14:14:26.286 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 14:14:26.289 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 14:14:26.294 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
