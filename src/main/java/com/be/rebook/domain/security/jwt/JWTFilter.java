@@ -1,7 +1,7 @@
-package com.be.rebook.global.security.jwt;
+package com.be.rebook.domain.security.jwt;
 
 import com.be.rebook.domain.members.entity.Members;
-import com.be.rebook.domain.members.dto.CustomUserDetails;
+import com.be.rebook.domain.security.dto.CustomUserDetails;
 import com.be.rebook.global.exception.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

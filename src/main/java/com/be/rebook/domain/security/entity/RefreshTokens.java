@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.entity;
+package com.be.rebook.domain.security.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;

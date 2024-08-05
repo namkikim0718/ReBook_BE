@@ -1,8 +1,8 @@
-package com.be.rebook.domain.members.controller;
+package com.be.rebook.domain.security.controller;
 
 import com.be.rebook.domain.members.entity.Members;
-import com.be.rebook.domain.members.service.JoinService;
-import com.be.rebook.domain.members.dto.JoinDTO;
+import com.be.rebook.domain.security.service.JoinService;
+import com.be.rebook.domain.security.dto.JoinDTO;
 import com.be.rebook.global.config.BaseResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

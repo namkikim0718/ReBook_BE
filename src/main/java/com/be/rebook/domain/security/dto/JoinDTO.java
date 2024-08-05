@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.dto;
+package com.be.rebook.domain.security.dto;
 
 import lombok.Getter;
 import lombok.Setter;

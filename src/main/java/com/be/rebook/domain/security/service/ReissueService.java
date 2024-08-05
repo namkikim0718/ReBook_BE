@@ -1,10 +1,10 @@
-package com.be.rebook.domain.members.service;
+package com.be.rebook.domain.security.service;
 
-import com.be.rebook.domain.members.repository.RefreshTokensRepository;
-import com.be.rebook.domain.members.entity.RefreshTokens;
+import com.be.rebook.domain.security.repository.RefreshTokensRepository;
+import com.be.rebook.domain.security.entity.RefreshTokens;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import com.be.rebook.global.security.jwt.JWTUtil;
+import com.be.rebook.domain.security.jwt.JWTUtil;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

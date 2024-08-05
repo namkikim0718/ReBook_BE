@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.utility;
+package com.be.rebook.domain.security.utility;
 
 public class InputVerifier {
     private static final String[] SQL_INJECTION_CHARS = {"'", "\"", ";", "--", "\\"};
