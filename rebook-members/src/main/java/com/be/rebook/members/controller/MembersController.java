@@ -65,11 +65,6 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
     }
 
-    @PostMapping("/refreshtoken")
-    public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueToken(request, response)));
-    }
-
     @GetMapping("/universities")
     public ResponseEntity<BaseResponse<List<String>>> searchUniversities(@RequestParam("unvToSearch") String unvToSearch){
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUniversitiesList(unvToSearch)));
