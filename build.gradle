@@ -33,6 +33,13 @@ subprojects {
     }
 }
 
+// Spring Boot 애플리케이션을 패키징하는데 사용
+// 실행 가능한 Spring Boot 애플리케이션을 포함하는 모듈
+bootJar { enabled = false }
+// 일반 Java 라이브러리 jar 파일 생성
+// 다른 모듈이나 애플리케이션에서 사용될 공통 라이브러리 코드를 포함하는 모듈
+jar { enabled = true }
+
 // gradle clean 시에 QClass 디렉토리 삭제
 clean {
     delete file('src/main/generated')
