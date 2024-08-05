@@ -1,7 +1,8 @@
-package com.be.rebook.domain.product.domain;
+package com.be.rebook.domain.product.entity;
 
 import com.be.rebook.domain.members.entity.Members;
 import com.be.rebook.domain.product.dto.ProductRequestDTO;
+import com.be.rebook.domain.product.type.ProductStatus;
 import com.be.rebook.domain.productImage.domain.ProductImage;
 import com.be.rebook.global.config.BaseEntity;
 import jakarta.persistence.*;

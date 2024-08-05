@@ -1,4 +1,4 @@
-package com.be.rebook.domain.product.domain;
+package com.be.rebook.domain.product.type;
 
 public enum ProductStatus {
     PENDING, COMPLETED

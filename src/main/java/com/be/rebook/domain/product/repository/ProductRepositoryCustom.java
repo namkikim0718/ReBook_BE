@@ -1,6 +1,6 @@
 package com.be.rebook.domain.product.repository;
 
-import com.be.rebook.domain.product.domain.Product;
+import com.be.rebook.domain.product.entity.Product;
 
 import java.util.List;
 
