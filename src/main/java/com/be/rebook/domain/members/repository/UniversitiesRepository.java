@@ -12,7 +12,7 @@ public interface UniversitiesRepository extends JpaRepository<Universities, Long
     @Query("SELECT u FROM Universities u WHERE u.university LIKE %:unvToSearch%")
     List<Universities> searchByUniversity(@Param("unvToSearch") String unvToSearch);
 
-    Universities findByUniversity(String university);
+    Optional<Universities> findByUniversity(String university);
 
-    Universities findByUnvId(Long id);
+    Optional<Universities> findByUnvId(Long id);
 }

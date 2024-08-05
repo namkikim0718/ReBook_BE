@@ -15,6 +15,8 @@ public enum ErrorCode {
     BAD_INPUT(HttpStatus.BAD_REQUEST, "입력 형식이 잘못되었습니다."),
     NO_USER_INFO(HttpStatus.NOT_FOUND, "사용자 정보가 존재하지 않습니다."),
     EXISTING_USER_INFO(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다."),
+    NO_UNIVERSITY_INFO(HttpStatus.NOT_FOUND, "해당 대학교 정보가 존재하지 않습니다."),
+    NO_MAJOR_INFO(HttpStatus.NOT_FOUND, "해당 전공 정보가 존재하지 않습니다."),
 
     /**
      * 토큰 에러

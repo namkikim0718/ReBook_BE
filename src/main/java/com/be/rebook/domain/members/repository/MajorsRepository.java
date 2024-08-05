@@ -6,13 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface MajorsRepository extends JpaRepository<Majors, Long> {
     @Query("SELECT m FROM Majors m WHERE m.major LIKE %:majorToSearch%")
     List<Majors> searchByMajor(@Param("majorToSearch") String majorToSearch);
 
-    Majors findByMajor(String major);
+    Optional<Majors> findByMajor(String major);
 
-    Majors findByMajorId(String majorId);
+    Optional<Majors> findByMajorId(String majorId);
 }
