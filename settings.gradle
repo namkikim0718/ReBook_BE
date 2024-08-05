@@ -1,3 +1,4 @@
 rootProject.name = 'reBook'
 include 'rebook-members'
+include 'rebook-security'
 
