@@ -1,6 +1,6 @@
-package com.be.rebook.domain.security.scheduler;
+package com.be.rebook.security.scheduler;
 
-import com.be.rebook.domain.security.service.ReissueService;
+import com.be.rebook.security.service.ReissueService;
 import org.springframework.scheduling.annotation.Scheduled;
 
 public class RefreshDeleteDailyScheduler {

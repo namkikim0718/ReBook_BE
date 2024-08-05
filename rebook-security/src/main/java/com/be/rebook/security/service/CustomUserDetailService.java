@@ -1,6 +1,6 @@
-package com.be.rebook.domain.security.service;
+package com.be.rebook.security.service;
 
-import com.be.rebook.domain.security.dto.CustomUserDetails;
+import com.be.rebook.security.dto.CustomUserDetails;
 import com.be.rebook.domain.members.repository.MembersRepository;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;

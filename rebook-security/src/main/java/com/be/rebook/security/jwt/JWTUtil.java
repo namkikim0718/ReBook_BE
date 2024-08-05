@@ -1,4 +1,4 @@
-package com.be.rebook.domain.security.jwt;
+package com.be.rebook.security.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;

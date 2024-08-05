@@ -1,6 +1,6 @@
-package com.be.rebook.domain.security.repository;
+package com.be.rebook.security.repository;
 
-import com.be.rebook.domain.security.entity.RefreshTokens;
+import com.be.rebook.security.entity.RefreshTokens;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
