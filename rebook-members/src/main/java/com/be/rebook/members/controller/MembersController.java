@@ -1,10 +1,10 @@
-package com.be.rebook.domain.members.controller;
+package com.be.rebook.members.controller;
 
-import com.be.rebook.domain.members.dto.UserinfoDTO;
-import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.members.dto.UserinfoDTO;
+import com.be.rebook.members.entity.Members;
 import com.be.rebook.domain.security.entity.RefreshTokens;
-import com.be.rebook.domain.members.service.MemberService;
-import com.be.rebook.domain.members.dto.UpdateDTO;
+import com.be.rebook.members.service.MemberService;
+import com.be.rebook.members.dto.UpdateDTO;
 import com.be.rebook.domain.security.service.ReissueService;
 import com.be.rebook.global.config.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

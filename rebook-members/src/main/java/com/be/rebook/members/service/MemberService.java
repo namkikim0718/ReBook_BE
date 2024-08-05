@@ -1,15 +1,15 @@
-package com.be.rebook.domain.members.service;
+package com.be.rebook.members.service;
 
-import com.be.rebook.domain.members.dto.UpdateDTO;
-import com.be.rebook.domain.members.dto.UserinfoDTO;
-import com.be.rebook.domain.members.entity.Majors;
-import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.members.dto.UpdateDTO;
+import com.be.rebook.members.dto.UserinfoDTO;
+import com.be.rebook.members.entity.Majors;
+import com.be.rebook.members.entity.Members;
 import com.be.rebook.domain.security.entity.RefreshTokens;
-import com.be.rebook.domain.members.entity.Universities;
-import com.be.rebook.domain.members.repository.MajorsRepository;
-import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.members.entity.Universities;
+import com.be.rebook.members.repository.MajorsRepository;
+import com.be.rebook.members.repository.MembersRepository;
 import com.be.rebook.domain.security.repository.RefreshTokensRepository;
-import com.be.rebook.domain.members.repository.UniversitiesRepository;
+import com.be.rebook.members.repository.UniversitiesRepository;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import com.be.rebook.domain.security.jwt.JWTUtil;

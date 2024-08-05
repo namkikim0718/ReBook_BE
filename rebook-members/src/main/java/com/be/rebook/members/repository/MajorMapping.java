@@ -1,4 +1,4 @@
-package com.be.rebook.domain.members.repository;
+package com.be.rebook.members.repository;
 
 public interface MajorMapping {
     String getMajor();
