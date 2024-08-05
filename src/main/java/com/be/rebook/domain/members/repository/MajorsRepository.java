@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MajorsRepository extends JpaRepository<Majors, Long> {
     @Query("SELECT m FROM Majors m WHERE m.major LIKE %:majorToSearch%")
-    Optional<List<Majors>> searchByMajor(@Param("majorToSearch") String majorToSearch);
+    List<Majors> searchByMajor(@Param("majorToSearch") String majorToSearch);
 
     Optional<Majors> findByMajor(String major);
 

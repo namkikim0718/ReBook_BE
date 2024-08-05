@@ -130,8 +130,10 @@ public class MemberService {
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Universities> universities = universitiesRepository
-                .searchByUniversity(unvToSearch)
-                .orElseThrow(() -> new BaseException(ErrorCode.NO_UNIVERSITY_INFO));
+                .searchByUniversity(unvToSearch);
+        if(universities.isEmpty()){
+            throw new BaseException(ErrorCode.NO_UNIVERSITY_INFO);
+        }
 
         List<String> returnList = new ArrayList<>();
         for(Universities unv : universities){
@@ -146,8 +148,11 @@ public class MemberService {
             throw new BaseException(ErrorCode.BAD_INPUT);
         }
         List<Majors> majors = majorsRepository
-                .searchByMajor(majorToSearch)
-                .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO));
+                .searchByMajor(majorToSearch);
+
+        if(majors.isEmpty()){
+            throw new BaseException(ErrorCode.NO_MAJOR_INFO);
+        }
 
         List<String> returnList = new ArrayList<>();
         for(Majors major : majors){

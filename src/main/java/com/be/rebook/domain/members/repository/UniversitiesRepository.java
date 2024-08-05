@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface UniversitiesRepository extends JpaRepository<Universities, Long> {
     @Query("SELECT u FROM Universities u WHERE u.university LIKE %:unvToSearch%")
-    Optional<List<Universities>> searchByUniversity(@Param("unvToSearch") String unvToSearch);
+    List<Universities> searchByUniversity(@Param("unvToSearch") String unvToSearch);
 
     Optional<Universities> findByUniversity(String university);
 
