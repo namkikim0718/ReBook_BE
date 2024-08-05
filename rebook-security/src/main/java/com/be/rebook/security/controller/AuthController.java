@@ -1,9 +1,11 @@
 package com.be.rebook.security.controller;
 
 import com.be.rebook.domain.members.entity.Members;
+import com.be.rebook.security.entity.RefreshTokens;
 import com.be.rebook.security.service.JoinService;
 import com.be.rebook.security.dto.JoinDTO;
 import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.security.service.ReissueService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
@@ -20,10 +22,15 @@ public class AuthController {
     private static final Logger joinLogger = LoggerFactory.getLogger(AuthController.class);
     private final JoinService joinService;
 
-    public AuthController(JoinService joinService){
+    private final ReissueService reissueService;
+
+    public AuthController(JoinService joinService,
+                          ReissueService reissueService){
         this.joinService = joinService;
+        this.reissueService = reissueService;
     }
 
+    //이거 Members Entity 여기다가 생성해줘야됨?
     @PostMapping("/join")
     public ResponseEntity<BaseResponse<Members>> joinProcess(@RequestBody JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
