@@ -5,8 +5,9 @@ import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.service.JoinService;
 import com.be.rebook.auth.dto.JoinDTO;
-import com.be.rebook.global.config.BaseResponse;
 import com.be.rebook.auth.service.ReissueService;
+import com.be.rebook.common.config.BaseResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;

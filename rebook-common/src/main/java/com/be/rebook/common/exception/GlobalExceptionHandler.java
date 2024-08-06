@@ -1,4 +1,4 @@
-package com.be.rebook.utils.exception;
+package com.be.rebook.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

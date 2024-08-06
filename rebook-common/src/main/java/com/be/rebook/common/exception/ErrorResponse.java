@@ -1,4 +1,4 @@
-package com.be.rebook.utils.exception;
+package com.be.rebook.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
