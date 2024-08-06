@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.be.rebook.domain.product.entity.QProduct.product;
+import static com.be.rebook.product.entity.QProduct.product;
 
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
