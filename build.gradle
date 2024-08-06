@@ -47,12 +47,12 @@ clean {
 
 project(':rebook-members'){
     dependencies {
-        implementation project(':rebook-security')
+        implementation project(':rebook-auth')
 //        implementation project(':rebook-global')
     }
 }
 
-project(':rebook-security'){
+project(':rebook-auth'){
     dependencies {
 //        implementation project(':rebook-global')
     }
