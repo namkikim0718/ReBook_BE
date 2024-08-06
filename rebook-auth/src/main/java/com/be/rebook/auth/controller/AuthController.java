@@ -34,13 +34,13 @@ public class AuthController {
     }
 
     //이거 Members Entity 여기다가 생성해줘야됨?
-    @PostMapping("/join")
+    @PostMapping("/members/signup")
     public ResponseEntity<BaseResponse<Members>> joinProcess(@RequestBody JoinDTO joinDTO) {
         joinLogger.info(joinDTO.getUsername());
         return ResponseEntity.ok().body(new BaseResponse<>(joinService.joinProcess(joinDTO)));
     }
 
-    @PostMapping("members/refreshtoken")
+    @PostMapping("/members/refreshtoken")
     public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request, HttpServletResponse response) {
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueToken(request, response)));
     }

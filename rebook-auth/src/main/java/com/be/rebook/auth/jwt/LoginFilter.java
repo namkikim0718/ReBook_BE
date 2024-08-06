@@ -37,11 +37,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.refreshTokensRepository = refreshTokensRepository;
+        setFilterProcessesUrl("/auth/signin");
     }
+
     @Override
-    public Authentication attemptAuthentication(
-            HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException{
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
         String username = null;
         String password = null;
 
@@ -53,7 +54,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
 
                 username = requestMap.get("username");
-                password = requestMap.get("password")+username;
+                password = requestMap.get("password") + username;
 
                 UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
                 return authenticationManager.authenticate(authRequest);
