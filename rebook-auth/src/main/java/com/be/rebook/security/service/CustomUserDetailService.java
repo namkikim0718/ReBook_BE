@@ -1,9 +1,10 @@
 package com.be.rebook.security.service;
 
 import com.be.rebook.security.dto.CustomUserDetails;
-import com.be.rebook.domain.members.repository.MembersRepository;
+
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
+import com.be.rebook.security.repository.MembersRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

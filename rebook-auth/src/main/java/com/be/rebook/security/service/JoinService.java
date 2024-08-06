@@ -1,8 +1,8 @@
 package com.be.rebook.security.service;
 
-import com.be.rebook.domain.members.entity.Members;
-import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.security.entity.Members;
 import com.be.rebook.security.dto.JoinDTO;
+import com.be.rebook.security.repository.MembersRepository;
 import com.be.rebook.security.utility.InputVerifier;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;

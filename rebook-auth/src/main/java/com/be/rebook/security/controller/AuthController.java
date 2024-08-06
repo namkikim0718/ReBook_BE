@@ -1,6 +1,7 @@
 package com.be.rebook.security.controller;
 
-import com.be.rebook.domain.members.entity.Members;
+
+import com.be.rebook.security.entity.Members;
 import com.be.rebook.security.entity.RefreshTokens;
 import com.be.rebook.security.service.JoinService;
 import com.be.rebook.security.dto.JoinDTO;
