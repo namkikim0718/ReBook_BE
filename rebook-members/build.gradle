@@ -14,4 +14,5 @@ jar {
 
 dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation project(":rebook-common")
 }

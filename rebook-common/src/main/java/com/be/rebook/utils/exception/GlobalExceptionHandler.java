@@ -1,4 +1,4 @@
-package com.be.rebook.global.exception;
+package com.be.rebook.utils.exception;
 
 import com.be.rebook.global.config.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
