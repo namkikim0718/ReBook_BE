@@ -2,10 +2,10 @@ package com.be.rebook.product.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.be.rebook.domain.members.entity.Members;
-import com.be.rebook.domain.members.repository.MembersRepository;
+import com.be.rebook.product.entity.Members;
 import com.be.rebook.product.entity.Product;
 import com.be.rebook.product.dto.ProductRequestDTO;
+import com.be.rebook.product.repository.MembersRepository;
 import com.be.rebook.product.repository.ProductRepository;
 import com.be.rebook.product.entity.ProductImage;
 import com.be.rebook.product.repository.ProductImageRepository;
