@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'com.be'
+group = 'com.be.rebook'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -22,28 +22,28 @@ allprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
-    group = 'com.be'
+    group = 'com.be.rebook'
     version = '0.0.1-SNAPSHOT'
 
     repositories {
         mavenCentral()
     }
+}
 
+subprojects {
     dependencies {
         // 공통 의존성 정의
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-security'
         implementation 'org.springframework.boot:spring-boot-starter-web'
+
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
+
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.security:spring-security-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    }
-}
 
-subprojects {
-    dependencies {
         // 공통 의존성 추가
         implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
         annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
