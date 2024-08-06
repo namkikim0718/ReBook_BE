@@ -1,6 +1,6 @@
-package com.be.rebook.domain.product.repository;
+package com.be.rebook.product.repository;
 
-import com.be.rebook.domain.product.entity.Members;
+import com.be.rebook.product.entity.Members;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

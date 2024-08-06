@@ -1,6 +1,6 @@
-package com.be.rebook.domain.product.repository;
+package com.be.rebook.product.repository;
 
-import com.be.rebook.domain.product.entity.Product;
+import com.be.rebook.product.entity.Product;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
