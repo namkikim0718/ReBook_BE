@@ -1,4 +1,4 @@
-package com.be.rebook.security.dto;
+package com.be.rebook.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;

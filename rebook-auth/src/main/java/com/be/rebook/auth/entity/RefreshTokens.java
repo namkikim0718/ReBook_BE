@@ -1,4 +1,4 @@
-package com.be.rebook.security.entity;
+package com.be.rebook.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;

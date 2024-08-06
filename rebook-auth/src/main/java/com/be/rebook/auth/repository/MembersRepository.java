@@ -1,6 +1,6 @@
-package com.be.rebook.security.repository;
+package com.be.rebook.auth.repository;
 
-import com.be.rebook.security.entity.Members;
+import com.be.rebook.auth.entity.Members;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

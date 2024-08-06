@@ -1,7 +1,7 @@
-package com.be.rebook.security.jwt;
+package com.be.rebook.auth.jwt;
 
-import com.be.rebook.security.entity.RefreshTokens;
-import com.be.rebook.security.repository.RefreshTokensRepository;
+import com.be.rebook.auth.entity.RefreshTokens;
+import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;

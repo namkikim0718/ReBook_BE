@@ -1,9 +1,9 @@
-package com.be.rebook.security.service;
+package com.be.rebook.auth.service;
 
-import com.be.rebook.security.entity.Members;
-import com.be.rebook.security.dto.JoinDTO;
-import com.be.rebook.security.repository.MembersRepository;
-import com.be.rebook.security.utility.InputVerifier;
+import com.be.rebook.auth.entity.Members;
+import com.be.rebook.auth.dto.JoinDTO;
+import com.be.rebook.auth.repository.MembersRepository;
+import com.be.rebook.auth.utility.InputVerifier;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

@@ -1,4 +1,4 @@
-package com.be.rebook.security;
+package com.be.rebook.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

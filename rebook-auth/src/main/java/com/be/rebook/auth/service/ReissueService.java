@@ -1,10 +1,10 @@
-package com.be.rebook.security.service;
+package com.be.rebook.auth.service;
 
-import com.be.rebook.security.repository.RefreshTokensRepository;
-import com.be.rebook.security.entity.RefreshTokens;
+import com.be.rebook.auth.repository.RefreshTokensRepository;
+import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.global.exception.BaseException;
 import com.be.rebook.global.exception.ErrorCode;
-import com.be.rebook.security.jwt.JWTUtil;
+import com.be.rebook.auth.jwt.JWTUtil;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
