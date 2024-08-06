@@ -1,4 +1,4 @@
-package com.be.rebook.domain.productImage.domain;
+package com.be.rebook.domain.product.entity;
 
 import com.be.rebook.domain.product.entity.Product;
 import com.be.rebook.global.config.BaseEntity;

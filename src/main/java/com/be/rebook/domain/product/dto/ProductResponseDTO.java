@@ -2,7 +2,7 @@ package com.be.rebook.domain.product.dto;
 
 import com.be.rebook.domain.product.entity.Product;
 import com.be.rebook.domain.product.type.ProductStatus;
-import com.be.rebook.domain.productImage.domain.ProductImage;
+import com.be.rebook.domain.product.entity.ProductImage;
 import lombok.Getter;
 
 import java.util.List;
