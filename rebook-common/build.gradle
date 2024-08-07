@@ -9,4 +9,7 @@ jar {
 dependencies {
     // AWS
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // 공통모듈
+    implementation project(":rebook-common")
 }
