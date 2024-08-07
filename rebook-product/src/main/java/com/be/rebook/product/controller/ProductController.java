@@ -1,7 +1,7 @@
 package com.be.rebook.product.controller;
 
 import com.be.rebook.product.service.ProductService;
-import com.be.rebook.global.config.BaseResponse;
+import com.be.rebook.common.config.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
