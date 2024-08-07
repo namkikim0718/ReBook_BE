@@ -24,6 +24,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // yml 환경변수 주입 라이브러리
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
     // 공통모듈
     implementation project(":rebook-common")
 }
