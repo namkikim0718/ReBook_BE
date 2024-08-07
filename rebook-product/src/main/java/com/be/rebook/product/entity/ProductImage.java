@@ -1,6 +1,6 @@
 package com.be.rebook.product.entity;
 
-import com.be.rebook.global.config.BaseEntity;
+import com.be.rebook.common.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

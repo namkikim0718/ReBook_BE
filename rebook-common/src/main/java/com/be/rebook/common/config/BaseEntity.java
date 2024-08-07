@@ -1,4 +1,4 @@
-package com.be.rebook.global.config;
+package com.be.rebook.common.config;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

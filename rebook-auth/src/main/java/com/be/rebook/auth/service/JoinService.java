@@ -4,8 +4,9 @@ import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.dto.JoinDTO;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.utility.InputVerifier;
-import com.be.rebook.global.exception.BaseException;
-import com.be.rebook.global.exception.ErrorCode;
+import com.be.rebook.common.exception.BaseException;
+import com.be.rebook.common.exception.ErrorCode;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

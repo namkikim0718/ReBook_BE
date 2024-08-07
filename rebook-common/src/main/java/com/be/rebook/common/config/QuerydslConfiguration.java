@@ -1,4 +1,4 @@
-package com.be.rebook.global.config;
+package com.be.rebook.common.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

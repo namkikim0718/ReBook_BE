@@ -9,7 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class SecurityApplication {
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        // Spring Boot 애플리케이션 실행
         SpringApplication.run(SecurityApplication.class, args);
     }
 }

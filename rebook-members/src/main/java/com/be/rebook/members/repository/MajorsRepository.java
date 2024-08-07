@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface MajorsRepository extends JpaRepository<Majors, Long> {
+public interface MajorsRepository extends JpaRepository<Majors, String> {
     @Query("SELECT m FROM Majors m WHERE m.major LIKE %:majorToSearch%")
     List<Majors> searchByMajor(@Param("majorToSearch") String majorToSearch);
 
