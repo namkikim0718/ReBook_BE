@@ -1,19 +1,18 @@
-package com.be.rebook.domain.product.controller;
+package com.be.rebook.product.controller;
 
-import com.be.rebook.domain.product.service.ProductService;
+import com.be.rebook.product.service.ProductService;
 import com.be.rebook.global.config.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.be.rebook.domain.product.dto.ProductRequestDTO.*;
-import static com.be.rebook.domain.product.dto.ProductResponseDTO.*;
+import static com.be.rebook.product.dto.ProductRequestDTO.*;
+import static com.be.rebook.product.dto.ProductResponseDTO.*;
 
 
 @RestController

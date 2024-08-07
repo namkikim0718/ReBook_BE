@@ -1,4 +1,4 @@
-package com.be.rebook.domain.product.dto;
+package com.be.rebook.product.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
