@@ -57,11 +57,15 @@ subprojects {
     clean {
         delete file('src/main/generated')
     }
-
     tasks.named('test') {
         useJUnitPlatform()
     }
 }
+
+tasks.named('bootJar') {
+    enabled = false
+}
+
 
 // plugins {
 //     id 'java'
@@ -124,3 +128,23 @@ subprojects {
 // tasks.named('test') {
 //     useJUnitPlatform()
 // }
+
+// 기존 src 삭제시 지울것!
+sourceSets {
+    main {
+        java {
+            setSrcDirs([]) // 루트 프로젝트에서 src 디렉토리를 제외
+        }
+        resources {
+            setSrcDirs([]) // 루트 프로젝트에서 src 디렉토리를 제외
+        }
+    }
+    test {
+        java {
+            setSrcDirs([]) // 루트 프로젝트에서 src 디렉토리를 제외
+        }
+        resources {
+            setSrcDirs([]) // 루트 프로젝트에서 src 디렉토리를 제외
+        }
+    }
+}
