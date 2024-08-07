@@ -17,7 +17,7 @@ import static com.be.rebook.product.dto.ProductResponseDTO.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/product")
 public class ProductController {
 
     private final ProductService productService;
