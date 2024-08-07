@@ -31,35 +31,35 @@ public class MembersController {
         this.memberService = memberService;
     }
 
-    @PatchMapping
-    public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
+    // @PatchMapping
+    // public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
 
-        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
+    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
 
-        UpdateDTO membersUpdateDTO = new UpdateDTO();
-        if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
-            try {
-                InputStream inputStream = request.getInputStream();
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
+    //     UpdateDTO membersUpdateDTO = new UpdateDTO();
+    //     if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
+    //         try {
+    //             InputStream inputStream = request.getInputStream();
+    //             ObjectMapper mapper = new ObjectMapper();
+    //             Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
 
-                membersUpdateDTO.setNickname(requestMap.get("nickname"));
-                membersUpdateDTO.setUniversity(requestMap.get("university"));
-                membersUpdateDTO.setMajors(requestMap.get("majors"));
+    //             membersUpdateDTO.setNickname(requestMap.get("nickname"));
+    //             membersUpdateDTO.setUniversity(requestMap.get("university"));
+    //             membersUpdateDTO.setMajors(requestMap.get("majors"));
 
-            } catch (IOException e) {
-                throw new BaseException(ErrorCode.BAD_REQUEST); // TODO: 적절한 에러코드로 변경
-            }
-        }
+    //         } catch (IOException e) {
+    //             throw new BaseException(ErrorCode.BAD_REQUEST); // TODO: 적절한 에러코드로 변경
+    //         }
+    //     }
 
-        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
-    }
+    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
+    // }
 
-    @DeleteMapping
-    public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
-        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
-        return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
-    }
+    // @DeleteMapping
+    // public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
+    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
+    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
+    // }
 
     @GetMapping("/universities")
     public ResponseEntity<BaseResponse<List<String>>> searchUniversities(
@@ -73,9 +73,9 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
     }
 
-    @GetMapping
-    public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request) {
-        String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
-        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
-    }
+    // @GetMapping
+    // public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request) {
+    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
+    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
+    // }
 }
