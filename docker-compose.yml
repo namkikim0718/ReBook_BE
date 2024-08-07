@@ -16,7 +16,7 @@ services:
   be-rebook-auth:
     restart: always
     build:
-      context: ./backend
+      context: ./rebook-auth
       dockerfile: Dockerfile
     depends_on:
       - mysql
@@ -26,7 +26,7 @@ services:
   be-rebook-members:
     restart: always
     build:
-      context: ./backend
+      context: ./rebook-members
       dockerfile: Dockerfile
     depends_on:
       - mysql
@@ -36,7 +36,7 @@ services:
   be-rebook-product:
     restart: always
     build:
-      context: ./backend
+      context: ./rebook-product
       dockerfile: Dockerfile
     depends_on:
       - mysql
