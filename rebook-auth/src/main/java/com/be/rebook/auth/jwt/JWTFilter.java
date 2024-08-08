@@ -35,11 +35,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //로그인이나 관련 요청이 왔을땐 다음 필터로 넘겨서
         //재로그인 무한 루프를 방지함
-        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+        // if (requestUri.matches("^\\/signin(?:\\/.*)?$")) {
 
-            filterChain.doFilter(request, response);
-            return;
-        }
+        //     filterChain.doFilter(request, response);
+        //     return;
+        // }
 
         String accessToken = request.getHeader(ACCESSTOKEN_HEADER);
 
@@ -83,6 +83,5 @@ public class JWTFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
-
     }
 }
