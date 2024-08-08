@@ -1,12 +1,15 @@
 package com.be.rebook.auth.jwt;
 
 import com.be.rebook.auth.entity.RefreshTokens;
+import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -87,8 +90,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String access = jwtUtil.createJwt("access", username, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String access = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, 600000L);
+        String refresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, 86400000L);
 
         addRefreshEntity(username, refresh, 86400000L);
 

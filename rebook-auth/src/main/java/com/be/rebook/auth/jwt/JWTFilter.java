@@ -3,6 +3,7 @@ package com.be.rebook.auth.jwt;
 
 import com.be.rebook.auth.dto.CustomUserDetails;
 import com.be.rebook.auth.entity.Members;
+import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.common.exception.ErrorCode;
 
 import jakarta.servlet.FilterChain;
@@ -61,9 +62,9 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // 토큰이 access인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(accessToken);
+        TokenCategory category = jwtUtil.getCategory(accessToken);
 
-        if (!category.equals("access")) {
+        if (category != TokenCategory.ACCESS) {
             //TOKEN_CATEGORY_INCORRECT
             response.setStatus(ErrorCode.TOKEN_CATEGORY_INCORRECT.getStatus().value());
             return;

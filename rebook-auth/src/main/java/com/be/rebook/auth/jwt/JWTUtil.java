@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.be.rebook.auth.jwt.type.TokenCategory;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -48,14 +50,16 @@ public class JWTUtil {
     }
 
     //토큰 종류 구별용
-    public String getCategory(String token){
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    public TokenCategory getCategory(String token){
+        String category = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+        return TokenCategory.getEnumFromValue(category);
+
     }
 
-    public String createJwt(String category, String username, String role, Long expiredMs) {
+    public String createJwt(TokenCategory category, String username, String role, Long expiredMs) {
 
         return Jwts.builder()
-                .claim("category", category)
+                .claim("category", category.getName())
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
