@@ -16,6 +16,7 @@ import java.util.Date;
 public class JWTUtil {
     private final SecretKey secretKey;
     private static final Logger jwtUtilLogger = LoggerFactory.getLogger(JWTUtil.class);
+    
     private JWTUtil(@Value("${jwt.secret}") String secret){
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
@@ -29,6 +30,7 @@ public class JWTUtil {
                 .getPayload()
                 .get("username",String.class);
     }
+
     public String getRole(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -36,6 +38,7 @@ public class JWTUtil {
                 .getPayload()
                 .get("Role",String.class);
     }
+
     public Boolean isExpired(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)
