@@ -9,6 +9,7 @@ import com.be.rebook.auth.service.SignupService;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
+import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,19 +48,21 @@ public class AuthController {
     }
 
     @PostMapping("/members/refreshtoken/reissue")
-    public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request,
+            HttpServletResponse response) {
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueToken(request, response)));
     }
 
     @PostMapping("/members/authenticate")
-    public ResponseEntity<BaseResponse<CustomUserDetails>> authenticate() {
+    public ResponseEntity<BaseResponse<MemberLoginInfo>> authenticate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof CustomUserDetails) {
             CustomUserDetails userDetails = (CustomUserDetails) principal;
             // 필요한 데이터를 DTO로 변환
-            return ResponseEntity.ok().body(new BaseResponse<>(userDetails));
+            MemberLoginInfo memberLoginInfo = new MemberLoginInfo(userDetails.getUsername(), userDetails.getRoleName());
+            return ResponseEntity.ok().body(new BaseResponse<>(memberLoginInfo));
         } else {
             throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO: 적절한 Exception 처리
         }
