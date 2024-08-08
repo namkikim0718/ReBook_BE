@@ -53,8 +53,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
 
-                username = requestMap.get("username");
-                password = requestMap.get("password") + username;
+                username = requestMap.getOrDefault("username", null);
+                password = requestMap.getOrDefault("password", null);
+                if (username == null || password == null) {
+                    throw new AuthenticationServiceException("Need username and password");
+                }
+                password = password + username;
+
 
                 UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
                 return authenticationManager.authenticate(authRequest);
