@@ -17,7 +17,7 @@ import static com.be.rebook.product.dto.ProductResponseDTO.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -25,7 +25,7 @@ public class ProductController {
     /**
      * 상품 등록
      */
-    @PostMapping("/members/{memberId}/products")
+    @PostMapping("/members/{memberId}") // TODO:유저정보는 Auth 모듈 활용해서 가져오기
     public ResponseEntity<BaseResponse<Long>> createProduct(@PathVariable("memberId") Long memberId,
                                                             @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
@@ -39,7 +39,7 @@ public class ProductController {
     /**
      * 상품 목록 조회
      */
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findAllProduct(
             @RequestParam(required = false) String university,
             @RequestParam(required = false) String major,
@@ -61,7 +61,7 @@ public class ProductController {
     /**
      * 상품 단건 조회
      */
-    @GetMapping("/products/{productId}")
+    @GetMapping("/{productId}")
     public ResponseEntity<BaseResponse<ProductDetailResponseDTO>> findProductById(@PathVariable("productId") Long productId) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.findProductById(productId)));
     }
@@ -69,7 +69,7 @@ public class ProductController {
     /**
      * 상품 상태 변경
      */
-    @PatchMapping("/products/{productId}")
+    @PatchMapping("/{productId}")
     public ResponseEntity<BaseResponse<Long>> changeProductStatus(@PathVariable("productId") Long productId, @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.changeStatus(productId, productStatusRequestDTO.getStatus())));
     }
@@ -77,7 +77,7 @@ public class ProductController {
     /**
      * 상품 삭제
      */
-    @DeleteMapping("/products/{productId}")
+    @DeleteMapping("/{productId}")
     public ResponseEntity<BaseResponse<String>> deleteProductById(@PathVariable("productId") Long productId) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.deleteById(productId)));
     }
