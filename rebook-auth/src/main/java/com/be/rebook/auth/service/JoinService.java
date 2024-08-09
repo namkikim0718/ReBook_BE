@@ -113,7 +113,7 @@ public class JoinService {
 
         if (!storedVerificationCode.equals(code)) {
             // BAD_REQUEST
-            throw new BaseException(ErrorCode.BAD_REQUEST);
+            throw new BaseException(ErrorCode.MAIL_AUTH_CODE_INCORRECT);
         }
 
         // 인증번호가 일치하면 회원 정보 생성 및 저장
