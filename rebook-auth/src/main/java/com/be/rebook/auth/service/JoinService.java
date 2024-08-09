@@ -76,11 +76,6 @@ public class JoinService {
 
     public Members sendVerification(String username) {
 
-        if (Boolean.FALSE.equals(InputVerifier.checkUsernameCharacters(username))) {
-            // BAD_INPUT
-            throw new BaseException(ErrorCode.BAD_INPUT);
-        }
-
         Boolean isExist = membersRepository.existsByUsername(username);
 
         if (Boolean.TRUE.equals(isExist)) {
