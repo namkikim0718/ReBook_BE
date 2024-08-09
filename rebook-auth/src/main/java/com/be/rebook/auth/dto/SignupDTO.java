@@ -1,5 +1,6 @@
 package com.be.rebook.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,8 @@ public class SignupDTO {
     @NotNull(message = "Username cannot be null")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Username can only contain alphanumeric characters")
+    @Email(message = "Invalid email format")
+    private String email;
     private String username;
 
     @NotNull(message = "Password cannot be null")
