@@ -8,13 +8,10 @@ import com.be.rebook.auth.utility.InputVerifier;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class JoinService {
@@ -88,12 +85,6 @@ public class JoinService {
 
 
         // Redis에 인증번호 저장 (키: username, 값: verificationCode, 유효시간: 3분)
-        // todo
-        // manager class 하나 만들기
-        // redisTemplate는 숨기고 RedisManager를 노출시켜서 기능 이용하게 하기.
-        // -> 요렇게 해서 common 에 놓기.
-        // RedisManager로 이런 DB 접근로직을 감싸고 지금 raw하게 나와있는 것들 숨기기.
-        // yml에서 code정책을 조정할 수 있고 코드를 직접 조정하지 않아도 됨. timeout 같은거 상수 필드로 재정의하기
         redisManager.setValuesWithDuration(username,verificationCode);
 
         // 이메일 전송
