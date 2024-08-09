@@ -2,10 +2,8 @@ package com.be.rebook.product.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.be.rebook.product.entity.Members;
 import com.be.rebook.product.entity.Product;
 import com.be.rebook.product.dto.ProductRequestDTO;
-import com.be.rebook.product.repository.MembersRepository;
 import com.be.rebook.product.repository.ProductRepository;
 import com.be.rebook.product.entity.ProductImage;
 import com.be.rebook.product.repository.ProductImageRepository;
@@ -34,7 +32,6 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final AmazonS3Client amazonS3Client;
     private final ProductRepository productRepository;
-    private final MembersRepository membersRepository;
 
     /**
      *  S3
@@ -42,16 +39,14 @@ public class ProductService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-
-    // TODO -> 이미지파일 업로드 후 product 엔티티 저장
     @Transactional
-    public Long createProduct(Long memberId, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO, List<MultipartFile> imageFiles) throws IOException {
+    public Long createProduct(Long sellerId,
+                              ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO,
+                              List<MultipartFile> imageFiles) throws IOException {
 
-        Members member = membersRepository.findById(memberId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
 
         // Product 먼저 저장
-        Product product = Product.of(member, productSaveRequestDTO);
+        Product product = Product.of(sellerId, productSaveRequestDTO);
         Long savedProductId = productRepository.save(product).getId();
 
         // 각 이미지 파일을 S3에 업로드 한 후 prductImage로 저장(Product에도 추가)
@@ -82,7 +77,12 @@ public class ProductService {
     /**
      * 상품 목록 조회
      */
-    public List<ProductListResponseDTO> findAllProductByFilter(String university, String major, String title, Integer minPrice, Integer maxPrice, String order) {
+    public List<ProductListResponseDTO> findAllProductByFilter(String university,
+                                                               String major,
+                                                               String title,
+                                                               Integer minPrice,
+                                                               Integer maxPrice,
+                                                               String order) {
         List<Product> products = productRepository.findProductsByFilter(university, major, title, minPrice, maxPrice, order);
 
         return products.stream()
@@ -93,11 +93,8 @@ public class ProductService {
     /**
      * 내가 쓴 글 조회
      */
-    public List<ProductListResponseDTO> findAllProductByMember(Long memberId) {
-        Members member = membersRepository.findById(memberId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
-
-        List<Product> products = productRepository.findProductsBySeller(member);
+    public List<ProductListResponseDTO> findAllProductBySellerId(Long sellerId) {
+        List<Product> products = productRepository.findProductsBySellerId(sellerId);
 
         return products.stream()
                 .map(ProductListResponseDTO::new)
