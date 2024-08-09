@@ -17,6 +17,7 @@ public enum ErrorCode {
     EXISTING_USER_INFO(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다."),
     NO_UNIVERSITY_INFO(HttpStatus.NOT_FOUND, "해당 대학교 정보가 존재하지 않습니다."),
     NO_MAJOR_INFO(HttpStatus.NOT_FOUND, "해당 전공 정보가 존재하지 않습니다."),
+    NO_MAIL_AUTH_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 요청된 인증 코드가 존재하지 않습니다."),
 
     /**
      * 토큰 에러
