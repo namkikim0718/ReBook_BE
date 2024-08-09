@@ -73,7 +73,7 @@ public class SecurityConfig {
         http.httpBasic(auth->auth.disable());
 
         http.authorizeHttpRequests(auth-> auth
-                .requestMatchers("/auth/signin", "/", "/auth/members/signup").permitAll()
+                .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
                 .requestMatchers("/auth/members/refreshtoken").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
