@@ -23,17 +23,17 @@ public class JoinService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     //todo : RedisTemplate 사용하는 인터페이스 만들기
-    private final RedisTemplate redisTemplate;
+    private final RedisManagerImpl redisManager;
 
     private final EmailService emailService;
 
     public JoinService(MembersRepository membersRepository,
                        BCryptPasswordEncoder bCryptPasswordEncoder,
-                       RedisTemplate redisTemplate,
+                       RedisManagerImpl redisManager,
                        EmailService emailService){
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.redisTemplate = redisTemplate;
+        this.redisManager = redisManager;
         this.emailService = emailService;
     }
 
@@ -94,12 +94,7 @@ public class JoinService {
         // -> 요렇게 해서 common 에 놓기.
         // RedisManager로 이런 DB 접근로직을 감싸고 지금 raw하게 나와있는 것들 숨기기.
         // yml에서 code정책을 조정할 수 있고 코드를 직접 조정하지 않아도 됨. timeout 같은거 상수 필드로 재정의하기
-        try{
-            redisTemplate.opsForValue().set(username, verificationCode, 3, TimeUnit.MINUTES);
-        }
-        catch (Exception e){
-            throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        redisManager.setValuesWithDuration(username,verificationCode);
 
         // 이메일 전송
         emailService.sendVerificationEmail(username, verificationCode);
@@ -114,14 +109,7 @@ public class JoinService {
         String storedVerificationCode = null;
 
         // Redis에서 username을 키로 가지는 저장된 인증번호 불러오기
-        try{
-            storedVerificationCode = redisTemplate
-                    .opsForValue()
-                    .get(username)
-                    .toString();
-        }catch (Exception e){
-            throw new BaseException(ErrorCode.NOT_FOUND);
-        }
+        storedVerificationCode = redisManager.getValue(username);
 
         if (!storedVerificationCode.equals(code)) {
             // BAD_REQUEST
