@@ -1,4 +1,4 @@
-package com.be.rebook.auth.config;
+package com.be.rebook.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,9 +8,10 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-// todo : common에 공통모듈로 인터페이스화해서 올리기
 @Configuration
 public class RedisConfig {
+    //docker 환경에서는
+    //rebook_be-redis-1 으로 host 설정
     @Value("${spring.redis.host}")
     private String host;
 

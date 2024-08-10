@@ -1,4 +1,4 @@
-package com.be.rebook.auth.service;
+package com.be.rebook.common.service;
 
 import org.springframework.stereotype.Service;
 
@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 public interface RedisManager {
     void setValues(String key, String value);
 
-    //key, value, 시간, 시간단위
-    //e.g. test@naver.com 123456 3 TimeUnit.MINUTES
+    //구현체에서 Long, TimeUnit 상수로 duration 관리하기
     void setValuesWithDuration(String key, String value);
 
     String getValue(String key);
