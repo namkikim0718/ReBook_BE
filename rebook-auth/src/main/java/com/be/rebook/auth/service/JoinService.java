@@ -106,6 +106,9 @@ public class JoinService {
             // BAD_REQUEST
             throw new BaseException(ErrorCode.MAIL_AUTH_CODE_INCORRECT);
         }
+        else
+            redisManager.deleteValue(username);
+
 
         // 인증번호가 일치하면 회원 정보 생성 및 저장
         Members data = Members.builder()
