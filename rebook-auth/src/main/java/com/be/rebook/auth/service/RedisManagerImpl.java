@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@ComponentScan(basePackages = "com.example.common") // common 모듈 패키지를 스캔
+@ComponentScan(basePackages = {"com.be.rebook.common", "com.be.rebook.auth"})
 public class RedisManagerImpl implements RedisManager {
     private final RedisTemplate<String, Object> redisTemplate;
 
