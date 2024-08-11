@@ -1,4 +1,4 @@
-package com.be.rebook.common.service;
+package com.be.rebook.auth.service;
 
 import org.springframework.stereotype.Service;
 

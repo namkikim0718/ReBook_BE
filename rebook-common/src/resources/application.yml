@@ -8,7 +8,7 @@ cloud:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
 
-spring:
-  redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
+#spring:
+#  redis:
+#    host: ${REDIS_HOST}
+#    port: ${REDIS_PORT}

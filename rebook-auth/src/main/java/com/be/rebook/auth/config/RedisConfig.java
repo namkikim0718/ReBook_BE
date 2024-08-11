@@ -1,4 +1,4 @@
-package com.be.rebook.common.config;
+package com.be.rebook.auth.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

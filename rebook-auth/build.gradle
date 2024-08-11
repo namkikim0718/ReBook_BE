@@ -27,6 +27,9 @@ dependencies {
     //mail
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.3.1'
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.1'
+
     // 공통모듈
     implementation project(":rebook-common")
 }

@@ -2,8 +2,9 @@ package com.be.rebook.auth.service;
 
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
-import com.be.rebook.common.service.RedisManager;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
