@@ -35,9 +35,9 @@ public class SignupService {
     }
 
     @Transactional
-    public Members signupProcess(SignupDTO singupDTO){
-        String username = singupDTO.getUsername();
-        String password = singupDTO.getPassword();
+    public Members signupProcess(SignupDTO signupDTO){
+        String username = signupDTO.getUsername();
+        String password = signupDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
         if(Boolean.TRUE.equals(isExist)){
             //EXISTING_USER_INFO
