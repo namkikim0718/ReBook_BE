@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.amazonaws.Response;
+import com.be.rebook.common.argumentresolver.auth.Auth;
+import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
@@ -18,6 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/members")
@@ -30,6 +36,13 @@ public class MembersController {
     public MembersController(MemberService memberService) {
         this.memberService = memberService;
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<MemberLoginInfo>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
+        //TODO : 추가 개인정보가 필요하다면 DTO를 만들어서 반환하도록 수정
+        return ResponseEntity.ok().body(new BaseResponse<>(memberLoginInfo));
+    }
+    
 
     // @PatchMapping
     // public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
