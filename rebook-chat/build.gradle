@@ -1,0 +1,26 @@
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+bootJar {
+    enabled = true
+    mainClass = 'com.be.rebook.auth.SecurityApplication'
+}
+
+jar {
+    enabled = false
+}
+
+dependencies {
+
+    // ScoketIO
+    implementation 'com.corundumstudio.socketio:netty-socketio:1.7.18'
+
+    // Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // 공통모듈
+    implementation project(":rebook-common")
+}
