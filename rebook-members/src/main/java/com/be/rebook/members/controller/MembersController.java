@@ -1,26 +1,14 @@
 package com.be.rebook.members.controller;
 
-import com.be.rebook.members.dto.UserinfoDTO;
-import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
-import com.be.rebook.members.dto.UpdateDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import com.amazonaws.Response;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
-import com.be.rebook.common.exception.BaseException;
-import com.be.rebook.common.exception.ErrorCode;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
