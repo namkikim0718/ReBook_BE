@@ -32,12 +32,29 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
     }
 
-    @PatchMapping
-    public ResponseEntity<BaseResponse<Members>> updateUser(@Auth MemberLoginInfo memberLoginInfo,
-            @RequestBody UpdateDTO updateDTO) {
-        return ResponseEntity.ok()
-                .body(new BaseResponse<>(memberService.updateUser(memberLoginInfo.getUsername(), updateDTO)));
+    @PatchMapping("/nickname")
+    public ResponseEntity<BaseResponse<Members>> updateUserNickname(@Auth MemberLoginInfo memberLoginInfo,
+                                                            @RequestParam("nicknameToUpdate") String nicknameToUpdate){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserNickname(username, nicknameToUpdate)));
     }
+
+    @PatchMapping("/university")
+    public ResponseEntity<BaseResponse<Members>> updateUserUniversity(@Auth MemberLoginInfo memberLoginInfo,
+                                                            @RequestParam("universityToUpdate") String universityToUpdate){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserUniversity(username, universityToUpdate)));
+    }
+
+    @PatchMapping("/majors")
+    public ResponseEntity<BaseResponse<Members>> updateUserMajors(@Auth MemberLoginInfo memberLoginInfo,
+                                                            @RequestParam("majorsToUpdate") String majorsToUpdate){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
+    }
+
+    //todo : 비밀번호 변경 로직 추가하기
+    //todo : 프로필 사진 변경 로직 추가하기
 
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(@Auth MemberLoginInfo memberLoginInfo) {

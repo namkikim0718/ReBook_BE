@@ -36,54 +36,70 @@ public class MemberService {
         this.majorsRepository = majorsRepository;
     }
 
-     @Transactional
-     public Members updateUser(String username, UpdateDTO membersUpdateDTO) {
-         Members member = membersRepository.findByUsername(username)
-                 .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+    @Transactional
+    public Members updateUserNickname(String username, String nicknameToUpdate) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
-         String nickname = null;
-         Long unvId = -1L;
-         String majors = null;
+        Members updatedMember = member
+                .toBuilder()
+                .nickname(nicknameToUpdate)
+                .build();
 
-         String nicknameToUpdate = membersUpdateDTO.getNickname();
-         String unvToUpdate = membersUpdateDTO.getUniversity();
+        membersRepository.save(updatedMember);
+        return updatedMember;
+    }
 
-         if (nicknameToUpdate != null) {
-             nickname = membersUpdateDTO.getNickname();
-         }
+    @Transactional
+    public Members updateUserUniversity(String username, String universityToUpdate) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
-         if (unvToUpdate != null) {
-             unvId = universitiesRepository
-                     .findByUniversity(unvToUpdate)
-                     .orElseThrow(()->new BaseException(ErrorCode.NO_UNIVERSITY_INFO))
-                     .getUnvId();
-         }
+        Long unvId = -1L;
+        if (universityToUpdate != null) {
+            unvId = universitiesRepository
+                    .findByUniversity(universityToUpdate)
+                    .orElseThrow(()->new BaseException(ErrorCode.NO_UNIVERSITY_INFO))
+                    .getUnvId();
+        }
 
-         String majorsToUpdate = membersUpdateDTO.getMajors();
-         if (majorsToUpdate != null){
+        Members updatedMember = member
+                .toBuilder()
+                .university(unvId)
+                .build();
 
-             String[] majorList = membersUpdateDTO.getMajors().split(",");
-             StringBuilder sb = new StringBuilder();
-             for(String major : majorList){
-                 sb.append(majorsRepository
-                         .findByMajor(major)
-                         .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO))
-                         .getMajorId());
-                 sb.append(",");
-             }
-             majors = sb.toString();
-         }
+        membersRepository.save(updatedMember);
+        return updatedMember;
+    }
 
-         Members updatedMember = member
-                 .toBuilder()
-                 .nickname(nickname)
-                 .university(unvId)
-                 .majors(majors)
-                 .build();
+    @Transactional
+    public Members updateUserMajors(String username, String majorsToUpdate) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
-         membersRepository.save(updatedMember);
-         return updatedMember;
-     }
+        String majors = null;
+
+        if (majorsToUpdate != null){
+            String[] majorList = majorsToUpdate.split(",");
+            StringBuilder sb = new StringBuilder();
+            for(String major : majorList){
+                sb.append(majorsRepository
+                        .findByMajor(major)
+                        .orElseThrow(()->new BaseException(ErrorCode.NO_MAJOR_INFO))
+                        .getMajorId());
+                sb.append(",");
+            }
+            majors = sb.toString();
+        }
+
+        Members updatedMember = member
+                .toBuilder()
+                .majors(majors)
+                .build();
+
+        membersRepository.save(updatedMember);
+        return updatedMember;
+    }
 
     public Members deleteUser(String username) {
         Members member = membersRepository
@@ -92,7 +108,7 @@ public class MemberService {
         // List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
         // for(RefreshTokens tokenToDelete : refreshTokens){
         //     refreshTokensRepository.delete(tokenToDelete);
-        // } // TODO : RefreshToken 삭제 해야되요?
+        // }
         membersRepository.delete(member);
         return member;
     }
