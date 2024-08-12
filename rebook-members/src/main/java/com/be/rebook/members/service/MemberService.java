@@ -27,17 +27,11 @@ public class MemberService {
     private final MembersRepository membersRepository;
     private final UniversitiesRepository universitiesRepository;
     private final MajorsRepository majorsRepository;
-//    private final JWTUtil jwtUtil;
-//    private final RefreshTokensRepository refreshTokensRepository;
 
     public MemberService(MembersRepository membersRepository,
-                        //  JWTUtil jwtUtil,
-                        //  RefreshTokensRepository refreshTokensRepository,
                          UniversitiesRepository universitiesRepository,
                          MajorsRepository majorsRepository){
         this.membersRepository = membersRepository;
-        // this.jwtUtil = jwtUtil;
-        // this.refreshTokensRepository = refreshTokensRepository;
         this.universitiesRepository = universitiesRepository;
         this.majorsRepository = majorsRepository;
     }
