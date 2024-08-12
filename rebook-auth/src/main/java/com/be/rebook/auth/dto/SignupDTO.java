@@ -14,7 +14,7 @@ public class SignupDTO {
 
     @NotNull(message = "Username cannot be null")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Username can only contain alphanumeric characters")
+    @Pattern(regexp = "^[a-zA-Z0-9.@]*$", message = "Username can only contain alphanumeric characters")
     @Email(message = "Invalid email format")
     private String username;
 
