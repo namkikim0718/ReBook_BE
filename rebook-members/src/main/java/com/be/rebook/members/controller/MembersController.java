@@ -1,8 +1,10 @@
 package com.be.rebook.members.controller;
 
+import com.be.rebook.members.dto.UpdateMajorsDTO;
+import com.be.rebook.members.dto.UpdateNicknameDTO;
+import com.be.rebook.members.dto.UpdateUniversityDTO;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
-import com.be.rebook.members.dto.UpdateDTO;
 import com.be.rebook.members.dto.UserinfoDTO;
 
 import jakarta.validation.constraints.Pattern;
@@ -33,23 +35,23 @@ public class MembersController {
     }
 
     @PatchMapping("/nickname")
-    public ResponseEntity<BaseResponse<Members>> updateUserNickname(@Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestParam("nicknameToUpdate") String nicknameToUpdate){
+    public ResponseEntity<BaseResponse<Members>> updateUserNickname(@Auth MemberLoginInfo memberLoginInfo, UpdateNicknameDTO nicknameDTO){
         String username = memberLoginInfo.getUsername();
+        String nicknameToUpdate = nicknameDTO.getNickname();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserNickname(username, nicknameToUpdate)));
     }
 
     @PatchMapping("/university")
-    public ResponseEntity<BaseResponse<Members>> updateUserUniversity(@Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestParam("universityToUpdate") String universityToUpdate){
+    public ResponseEntity<BaseResponse<Members>> updateUserUniversity(@Auth MemberLoginInfo memberLoginInfo, UpdateUniversityDTO universityDTO){
         String username = memberLoginInfo.getUsername();
+        String universityToUpdate = universityDTO.getUniversity();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserUniversity(username, universityToUpdate)));
     }
 
     @PatchMapping("/majors")
-    public ResponseEntity<BaseResponse<Members>> updateUserMajors(@Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestParam("majorsToUpdate") String majorsToUpdate){
+    public ResponseEntity<BaseResponse<Members>> updateUserMajors(@Auth MemberLoginInfo memberLoginInfo, UpdateMajorsDTO majorsDTO){
         String username = memberLoginInfo.getUsername();
+        String majorsToUpdate = majorsDTO.getMajors();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
     }
 

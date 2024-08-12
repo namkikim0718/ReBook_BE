@@ -1,6 +1,5 @@
 package com.be.rebook.members.service;
 
-import com.be.rebook.members.dto.UpdateDTO;
 import com.be.rebook.members.dto.UserinfoDTO;
 import com.be.rebook.members.entity.Majors;
 import com.be.rebook.members.entity.Members;
