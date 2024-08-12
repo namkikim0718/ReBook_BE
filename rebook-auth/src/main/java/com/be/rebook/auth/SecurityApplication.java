@@ -9,10 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages = {"com.be.rebook.common", "com.be.rebook.auth"})
-public class AuthApplication {
+@ComponentScan(basePackages = {"com.be.rebook.auth"})
+public class SecurityApplication {
     public static void main(String[] args) {
         // Spring Boot 애플리케이션 실행
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(SecurityApplication.class, args);
     }
 }
