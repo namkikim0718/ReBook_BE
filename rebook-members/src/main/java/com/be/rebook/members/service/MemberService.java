@@ -9,6 +9,7 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 
 // TODO: 시큐리티 로직 auth 서버에 의존하도록 리팩토링
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MembersRepository membersRepository;
