@@ -36,15 +36,6 @@ public class MemberService {
         this.majorsRepository = majorsRepository;
     }
 
-    private Boolean checkSpecialCharacters(String input){
-        return input.matches(".*[^가-힣a-zA-Z0-9].*");
-    }
-
-    // jwtutil
-    // isExpired
-    // getUsername(token)
-    //
-
      @Transactional
      public Members updateUser(String username, UpdateDTO membersUpdateDTO) {
          Members member = membersRepository.findByUsername(username)
