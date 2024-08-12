@@ -26,6 +26,27 @@ spring:
       max-file-size: 30MB
       resolve-lazily: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 180000  # 3 * 60 * 1000 == 3분
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+
 jwt:
   secret: ${JWT_SECRET_KEY}
   access-token-expiration: 3600000 # ms
