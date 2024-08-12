@@ -46,16 +46,7 @@ public class MemberService {
     //
 
      @Transactional
-     public Members updateUser(String token, UpdateDTO membersUpdateDTO) {
-        boolean isTokenExpired = false;
-        //if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
-         if(Boolean.TRUE.equals(isTokenExpired)){
-             //EXPIRED_TOKEN
-             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
-         }
-
-//         String username = jwtUtil.getUsername(token);
-         String username = "austinsupra@gmail.com";
+     public Members updateUser(String username, UpdateDTO membersUpdateDTO) {
          Members member = membersRepository.findByUsername(username)
                  .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
@@ -79,10 +70,6 @@ public class MemberService {
 
          String majorsToUpdate = membersUpdateDTO.getMajors();
          if (majorsToUpdate != null){
-             if(majorsToUpdate.matches(".*[^a-zA-Z0-9,\\uAC00-\\uD7AF\\u4E00-\\u9FFF ()\\u00B7-].*")){
-                 //BAD_INPUT
-                 throw new BaseException(ErrorCode.BAD_INPUT);
-             }
 
              String[] majorList = membersUpdateDTO.getMajors().split(",");
              StringBuilder sb = new StringBuilder();
@@ -107,30 +94,19 @@ public class MemberService {
          return updatedMember;
      }
 
-    // public Members deleteUser(String token) {
-    //     if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
-    //         //EXPIRED_TOKEN
-    //         throw new BaseException(ErrorCode.EXPIRED_TOKEN);
-    //     }
-
-    //     String username = jwtUtil.getUsername(token);
-
-    //     Members member = membersRepository
-    //             .findByUsername(username)
-    //             .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
-    //     List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
-    //     for(RefreshTokens tokenToDelete : refreshTokens){
-    //         refreshTokensRepository.delete(tokenToDelete);
-    //     }
-    //     membersRepository.delete(member);
-    //     return member;
-    // }
+    public Members deleteUser(String username) {
+        Members member = membersRepository
+                .findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+        // List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
+        // for(RefreshTokens tokenToDelete : refreshTokens){
+        //     refreshTokensRepository.delete(tokenToDelete);
+        // } // TODO : RefreshToken 삭제 해야되요?
+        membersRepository.delete(member);
+        return member;
+    }
 
     public List<String> getUniversitiesList(String unvToSearch){
-        if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
-            //BAD_INPUT
-            throw new BaseException(ErrorCode.BAD_INPUT);
-        }
         List<Universities> universities = universitiesRepository
                 .searchByUniversity(unvToSearch);
         if(universities.isEmpty()){
@@ -145,10 +121,6 @@ public class MemberService {
     }
 
     public List<String> getMajorsList(String majorToSearch){
-        if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
-            //BAD_INPUT
-            throw new BaseException(ErrorCode.BAD_INPUT);
-        }
         List<Majors> majors = majorsRepository
                 .searchByMajor(majorToSearch);
 
@@ -163,17 +135,7 @@ public class MemberService {
         return returnList;
     }
 
-     public UserinfoDTO getUserinfo(String token){
-        boolean isTokenExpired = false;
-         //if(Boolean.TRUE.equals(jwtUtil.isExpired(token))){
-         if(Boolean.TRUE.equals(isTokenExpired)){
-             //EXPIRED_TOKEN
-             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
-         }
-
-//         String username = jwtUtil.getUsername(token);
-         String username = "austinsupra@gmail.com";
-
+     public UserinfoDTO getUserinfo(String username){
          Members foundMember = membersRepository
                  .findByUsername(username)
                  .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));

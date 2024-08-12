@@ -1,29 +1,20 @@
 package com.be.rebook.members.controller;
 
-import com.be.rebook.members.dto.UserinfoDTO;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
 import com.be.rebook.members.dto.UpdateDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.MediaType;
+import com.be.rebook.members.dto.UserinfoDTO;
+
+import jakarta.validation.constraints.Pattern;
+
 import org.springframework.http.ResponseEntity;
 
-import com.amazonaws.Response;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
-import com.be.rebook.common.exception.BaseException;
-import com.be.rebook.common.exception.ErrorCode;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/members")
@@ -38,41 +29,23 @@ public class MembersController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<BaseResponse<MemberLoginInfo>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
-        //TODO : 추가 개인정보가 필요하다면 DTO를 만들어서 반환하도록 수정
-        return ResponseEntity.ok().body(new BaseResponse<>(memberLoginInfo));
+    public ResponseEntity<BaseResponse<UserinfoDTO>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
+        UserinfoDTO userInfo = memberService.getUserinfo(memberLoginInfo.getUsername());
+        // TODO : 추가 개인정보가 필요하다면 DTO를 만들어서 반환하도록 수정
+        return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
     }
-    
 
-    // @PatchMapping
-    // public ResponseEntity<BaseResponse<Members>> updateUser(HttpServletRequest request) {
+    @PatchMapping
+    public ResponseEntity<BaseResponse<Members>> updateUser(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestBody UpdateDTO updateDTO) {
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(memberService.updateUser(memberLoginInfo.getUsername(), updateDTO)));
+    }
 
-    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
-
-    //     UpdateDTO membersUpdateDTO = new UpdateDTO();
-    //     if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
-    //         try {
-    //             InputStream inputStream = request.getInputStream();
-    //             ObjectMapper mapper = new ObjectMapper();
-    //             Map<String, String> requestMap = mapper.readValue(inputStream, Map.class);
-
-    //             membersUpdateDTO.setNickname(requestMap.get("nickname"));
-    //             membersUpdateDTO.setUniversity(requestMap.get("university"));
-    //             membersUpdateDTO.setMajors(requestMap.get("majors"));
-
-    //         } catch (IOException e) {
-    //             throw new BaseException(ErrorCode.BAD_REQUEST); // TODO: 적절한 에러코드로 변경
-    //         }
-    //     }
-
-    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUser(accessToken, membersUpdateDTO)));
-    // }
-
-    // @DeleteMapping
-    // public ResponseEntity<BaseResponse<Members>> deleteUser(HttpServletRequest request) {
-    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
-    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(accessToken)));
-    // }
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Members>> deleteUser(@Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUser(memberLoginInfo.getUsername())));
+    }
 
     @GetMapping("/universities")
     public ResponseEntity<BaseResponse<List<String>>> searchUniversities(
@@ -82,13 +55,7 @@ public class MembersController {
 
     @GetMapping("/majors")
     public ResponseEntity<BaseResponse<List<String>>> searchMajors(
-            @RequestParam("majorToSearch") String majorToSearch) {
+            @Pattern(regexp = ".*[^가-힣\\sA-Z()].*", message = "검색어 입력이 잘못 되었습니다.") @RequestParam("majorToSearch") String majorToSearch) {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
     }
-
-    // @GetMapping
-    // public ResponseEntity<BaseResponse<UserinfoDTO>> showUserinfos(HttpServletRequest request) {
-    //     String accessToken = request.getHeader(ACCESSTOKEN_HEADER).substring(7);
-    //     return ResponseEntity.ok().body(new BaseResponse<>(memberService.getUserinfo(accessToken)));
-    // }
 }
