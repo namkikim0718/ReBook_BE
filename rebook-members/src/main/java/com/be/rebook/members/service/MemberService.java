@@ -105,10 +105,6 @@ public class MemberService {
         Members member = membersRepository
                 .findByUsername(username)
                 .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
-        // List<RefreshTokens> refreshTokens = refreshTokensRepository.findByUsername(username);
-        // for(RefreshTokens tokenToDelete : refreshTokens){
-        //     refreshTokensRepository.delete(tokenToDelete);
-        // }
         membersRepository.delete(member);
         return member;
     }
