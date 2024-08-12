@@ -29,7 +29,6 @@ public class MembersController {
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserinfoDTO>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
         UserinfoDTO userInfo = memberService.getUserinfo(memberLoginInfo.getUsername());
-        // TODO : 추가 개인정보가 필요하다면 DTO를 만들어서 반환하도록 수정
         return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
     }
 
