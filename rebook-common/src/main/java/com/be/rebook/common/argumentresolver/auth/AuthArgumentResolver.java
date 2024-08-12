@@ -5,25 +5,24 @@ import java.util.List;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.be.rebook.common.config.BaseResponse;
+import com.be.rebook.common.exception.BaseException;
+import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.common.restclients.AuthServiceRestClient;
 import com.be.rebook.common.restclients.RestClientFactory;
 
-@Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final DiscoveryClient discoveryClient;
-    private final RestClient restClient;
 
-    public AuthArgumentResolver(DiscoveryClient discoveryClient, RestClient.Builder restClientBuilder) {
+    public AuthArgumentResolver(DiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
-        restClient = restClientBuilder.build();
     }
 
     @Override
@@ -35,12 +34,25 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
         String authorizationHeader = webRequest.getHeader("Authorization");
 
         List<ServiceInstance> instanceList = discoveryClient.getInstances("rebook-auth");
         AuthServiceRestClient authServiceRestClient = RestClientFactory.createAuthServiceRestClient(instanceList, null);
+        ResponseEntity<BaseResponse<MemberLoginInfo>> res = authServiceRestClient.authenticate(authorizationHeader);
 
-        return authServiceRestClient.authenticate(authorizationHeader);
+        // 응답 상태 코드가 200 OK인지 확인
+        if (res.getStatusCode().is2xxSuccessful()) {
+            BaseResponse<MemberLoginInfo> baseResponse = res.getBody();
+
+            if (baseResponse != null && baseResponse.getResult() != null) {
+                MemberLoginInfo memberLoginInfo = baseResponse.getResult();
+                System.out.println("AuthArgumentResolver.resolveArgument() memberLoginInfo: " + memberLoginInfo);
+                return memberLoginInfo;
+            } else {
+                throw new IllegalArgumentException("응답에서 MemberLoginInfo를 가져올 수 없습니다.");
+            }
+        } else {
+            throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO: 적절한 에러처리 필요
+        }
     }
 }
