@@ -21,6 +21,7 @@ import java.util.List;
 
 // TODO: 시큐리티 로직 auth 서버에 의존하도록 리팩토링
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MembersRepository membersRepository;

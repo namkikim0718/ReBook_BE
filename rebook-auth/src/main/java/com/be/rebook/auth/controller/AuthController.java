@@ -1,5 +1,7 @@
 package com.be.rebook.auth.controller;
 
+
+import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.dto.CustomUserDetails;
@@ -14,7 +16,7 @@ import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
+import jakarta.validation.constraints.Email;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
 
@@ -49,8 +52,19 @@ public class AuthController {
 
     @PostMapping("/members/refreshtoken/reissue")
     public ResponseEntity<BaseResponse<RefreshTokens>> reissue(HttpServletRequest request,
-            HttpServletResponse response) {
+                                                               HttpServletResponse response) {
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueToken(request, response)));
+    }
+
+    @PostMapping("/members/signup/mail")
+    public ResponseEntity<BaseResponse<Members>> emailVerify(@Email @RequestParam String username) {
+        signupLogger.info(username);
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.sendVerification(username)));
+    }
+
+    @PostMapping("/members/signup/verify")
+    public ResponseEntity<BaseResponse<Members>> codeMatch(@Valid @RequestBody VerifyDTO verifyDTO){
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.verifyCode(verifyDTO)));
     }
 
     @PostMapping("/members/authenticate")

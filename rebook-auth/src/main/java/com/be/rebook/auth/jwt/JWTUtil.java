@@ -34,7 +34,7 @@ public class JWTUtil {
     }
 
     public String getRole(String token) {
-        return this.parseJwt(token).get("Role", String.class);
+        return this.parseJwt(token).get("role", String.class);
     }
 
     public Boolean isExpired(String token) {
