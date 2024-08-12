@@ -6,7 +6,7 @@ configurations {
 
 bootJar {
     enabled = true
-    mainClass = 'com.be.rebook.auth.EurekaServerApplication'
+    mainClass = 'com.be.rebook.eurekaserver.EurekaServerApplication'
 }
 
 jar {
