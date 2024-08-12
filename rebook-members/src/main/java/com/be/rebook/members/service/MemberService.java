@@ -17,6 +17,7 @@ import java.util.List;
 
 // TODO: 시큐리티 로직 auth 서버에 의존하도록 리팩토링
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MembersRepository membersRepository;
@@ -118,7 +119,6 @@ public class MemberService {
     //     return member;
     // }
 
-    @Transactional(readOnly = true)
     public List<String> getUniversitiesList(String unvToSearch){
         if(unvToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
@@ -137,7 +137,6 @@ public class MemberService {
         return returnList;
     }
 
-    @Transactional(readOnly = true)
     public List<String> getMajorsList(String majorToSearch){
         if(majorToSearch.matches(".*[^가-힣\\sA-Z()].*")){
             //BAD_INPUT
