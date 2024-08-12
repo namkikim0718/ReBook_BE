@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableDiscoveryClient
-@ComponentScan(basePackages = {"com.be.rebook.common"})
+@ComponentScan(basePackages = {"com.be.rebook.common", "com.be.rebook.product"})
 public class ProductApplication {
 
     public static void main(String[] args) {
