@@ -22,8 +22,6 @@ public class MembersController {
 
     private final MemberService memberService;
 
-    private static final String ACCESSTOKEN_HEADER = "Authorization";
-
     public MembersController(MemberService memberService) {
         this.memberService = memberService;
     }
