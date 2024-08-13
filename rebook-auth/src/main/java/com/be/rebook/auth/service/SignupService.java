@@ -79,7 +79,9 @@ public class SignupService {
         // 이메일 전송
         emailService.sendVerificationEmail(username, verificationCode);
 
-        return new Members();
+        return Members.builder()
+                .username(username)
+                .build();
     }
 
     public Members verifyCode(VerifyDTO verifyDTO) {
