@@ -1,7 +1,3 @@
-socketio:
-  host: ${SOCKET_IO_HOST}
-  port: ${SOCKET_IO_PORT}
-
 spring:
   application:
     name: rebook-chat

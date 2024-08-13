@@ -6,7 +6,7 @@ configurations {
 
 bootJar {
     enabled = true
-    mainClass = 'com.be.rebook.auth.SecurityApplication'
+    mainClass = 'com.be.rebook.chat.ChatApplication';
 }
 
 jar {
