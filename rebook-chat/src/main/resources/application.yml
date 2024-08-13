@@ -1,6 +1,6 @@
 spring:
   application:
-    name: rebook-auth
+    name: rebook-chat
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,40 +18,18 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-
-    data:
+  
+  data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      
+
   servlet:
     multipart:
       enabled: true
       max-request-size: 30MB
       max-file-size: 30MB
       resolve-lazily: true
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-    auth-code-expiration-millis: 180000  # 3 * 60 * 1000 == 3분
-
-jwt:
-  secret: ${JWT_SECRET_KEY}
-  access-token-expiration: 3600000 # ms
-  refresh-token-expiration: 86400000 # ms
 
 # Eureka Client 설정
 eureka:

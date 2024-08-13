@@ -1,0 +1,34 @@
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+bootJar {
+    enabled = true
+    mainClass = 'com.be.rebook.chat.ChatApplication';
+}
+
+jar {
+    enabled = false
+}
+
+dependencies {
+
+    // MYSQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Chat Message
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-activemq'
+    implementation 'org.springframework:spring-messaging'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    // Eureka Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // 공통모듈
+    implementation project(":rebook-common")
+}
