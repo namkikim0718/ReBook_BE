@@ -84,11 +84,9 @@ public class SignupService {
 
     public Members verifyCode(VerifyDTO verifyDTO) {
         String username = verifyDTO.getUsername();
-        String password = verifyDTO.getPassword();
         String code = verifyDTO.getCode();
         String storedVerificationCode = null;
 
-        // Redis에서 username을 키로 가지는 저장된 인증번호 불러오기
         storedVerificationCode = redisManager.getValue(username);
 
         if (!storedVerificationCode.equals(code)) {
@@ -98,15 +96,8 @@ public class SignupService {
         else
             redisManager.deleteValue(username);
 
-
-        // 인증번호가 일치하면 회원 정보 생성 및 저장
-        Members data = Members.builder()
+        return Members.builder()
                 .username(username)
-                .password(bCryptPasswordEncoder.encode(password + username))
-                .role("ROLE_USER")
                 .build();
-
-        membersRepository.save(data);
-        return data;
     }
 }
