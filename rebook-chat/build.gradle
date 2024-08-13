@@ -22,6 +22,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-activemq'
     implementation 'org.springframework:spring-messaging'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     
     // Eureka Client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

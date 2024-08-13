@@ -19,6 +19,11 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      
   servlet:
     multipart:
       enabled: true
@@ -42,10 +47,6 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 180000  # 3 * 60 * 1000 == 3분
-
-  redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
 
 jwt:
   secret: ${JWT_SECRET_KEY}
