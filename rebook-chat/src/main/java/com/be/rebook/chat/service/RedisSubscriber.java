@@ -1,12 +1,15 @@
 package com.be.rebook.chat.service;
 
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.be.rebook.chat.dto.ChatMessage;
 
 @Service
-public class RedisSubscriber {
+public class RedisSubscriber implements MessageListener {
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -14,8 +17,10 @@ public class RedisSubscriber {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void handleMessage(ChatMessage message) {
-        // 메시지를 해당 roomId에 브로드캐스트
-        messagingTemplate.convertAndSend("/topic/chat/" + message.getRoomId(), message);
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        String topic = new String(message.getChannel());
+        ChatMessage chatMessage = (ChatMessage) new GenericJackson2JsonRedisSerializer().deserialize(message.getBody());
+        messagingTemplate.convertAndSend(topic, chatMessage);
     }
 }
