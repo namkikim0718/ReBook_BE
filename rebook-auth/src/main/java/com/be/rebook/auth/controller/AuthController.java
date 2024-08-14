@@ -81,4 +81,9 @@ public class AuthController {
             throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO: 적절한 Exception 처리
         }
     }
+
+    @PatchMapping("/password/reset")
+    public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid ResetPasswordDTO resetPasswordDTO){
+        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
+    }
 }
