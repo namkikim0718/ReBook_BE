@@ -3,10 +3,14 @@ package com.be.rebook.auth.service;
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.dto.SignupDTO;
+import com.be.rebook.auth.jwt.JWTUtil;
+import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,14 +28,18 @@ public class SignupService {
 
     private final EmailService emailService;
 
+    private final JWTUtil jwtUtil;
+
     public SignupService(MembersRepository membersRepository,
-                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                       RedisManagerImpl redisManager,
-                       EmailService emailService){
+                        BCryptPasswordEncoder bCryptPasswordEncoder,
+                        RedisManagerImpl redisManager,
+                        EmailService emailService,
+                        JWTUtil jwtUtil){
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.redisManager = redisManager;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -84,7 +92,7 @@ public class SignupService {
                 .build();
     }
 
-    public Members verifyCode(VerifyDTO verifyDTO) {
+    public Members verifyCode(VerifyDTO verifyDTO, HttpServletResponse response) {
         String username = verifyDTO.getUsername();
         String code = verifyDTO.getCode();
         String storedVerificationCode = null;
@@ -95,8 +103,14 @@ public class SignupService {
             // BAD_REQUEST
             throw new BaseException(ErrorCode.MAIL_AUTH_CODE_INCORRECT);
         }
-        else
+        else {
             redisManager.deleteValue(username);
+            String mailToken = jwtUtil.createJwt(TokenCategory.MAILAUTH, username, null, 600000L);
+            Cookie cookie = new Cookie(TokenCategory.MAILAUTH.getName(), mailToken);
+            cookie.setMaxAge(10*60);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
 
         return Members.builder()
                 .username(username)
