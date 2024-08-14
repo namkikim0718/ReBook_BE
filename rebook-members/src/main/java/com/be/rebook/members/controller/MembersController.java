@@ -10,7 +10,6 @@ import com.be.rebook.members.dto.UserinfoDTO;
 import jakarta.validation.constraints.Pattern;
 
 import org.springframework.http.ResponseEntity;
-
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;

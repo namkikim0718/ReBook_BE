@@ -1,5 +1,8 @@
 package com.be.rebook.auth.service;
 
+import com.be.rebook.auth.dto.BasicUserInfoDTO;
+import com.be.rebook.auth.entity.Members;
+import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.common.exception.BaseException;
@@ -10,7 +13,9 @@ import com.be.rebook.auth.jwt.type.TokenCategory;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,12 +27,54 @@ import java.util.Locale;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RefreshTokensRepository refreshRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MembersRepository membersRepository;
 
     public ReissueService(JWTUtil jwtUtil,
-                          RefreshTokensRepository refreshTokensRepository) {
+                          RefreshTokensRepository refreshTokensRepository,
+                          MembersRepository membersRepository,
+                          BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshTokensRepository;
+        this.membersRepository = membersRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+
+    @Transactional
+    public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
+        String mailToken = null;
+        for(Cookie cookie : request.getCookies()){
+            if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
+                mailToken = cookie.getValue();
+                break;
+            }
+        }
+        if (mailToken == null) {
+            //NO_TOKEN_CONTENT
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
+        // expired check
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(mailToken))) {
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        String username = resetPasswordDTO.getUsername();
+        String newPassword = resetPasswordDTO.getPassword();
+
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        member = member.toBuilder()
+                .password(bCryptPasswordEncoder.encode(newPassword+username))
+                .build();
+
+        membersRepository.save(member);
+        return Members.builder()
+                .username(username)
+                .build();
+    }
+
     public void deleteRefreshsOlderThanOneDay() {
         LocalDateTime cutoffDateTime = LocalDateTime.now().minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
