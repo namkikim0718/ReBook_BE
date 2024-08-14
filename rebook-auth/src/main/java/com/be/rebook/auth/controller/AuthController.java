@@ -63,8 +63,8 @@ public class AuthController {
     }
 
     @PostMapping("/members/signup/verify")
-    public ResponseEntity<BaseResponse<Members>> codeMatch(@Valid @RequestBody VerifyDTO verifyDTO){
-        return ResponseEntity.ok().body(new BaseResponse<>(signupService.verifyCode(verifyDTO)));
+    public ResponseEntity<BaseResponse<Members>> codeMatch(HttpServletResponse response, @Valid @RequestBody VerifyDTO verifyDTO){
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.verifyCode(verifyDTO,response)));
     }
 
     @PostMapping("/members/authenticate")
