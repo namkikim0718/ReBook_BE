@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 public enum TokenCategory {
     ACCESS("access"),
-    REFRESH("refresh");
+    REFRESH("refresh"),
+    MAILAUTH("mailauth");
 
     private final String name;
     private Long expiry;

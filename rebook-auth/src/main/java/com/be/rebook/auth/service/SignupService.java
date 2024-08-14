@@ -2,11 +2,15 @@ package com.be.rebook.auth.service;
 
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
-import com.be.rebook.auth.dto.SignupDTO;
+import com.be.rebook.auth.dto.BasicUserInfoDTO;
+import com.be.rebook.auth.jwt.JWTUtil;
+import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,20 +28,24 @@ public class SignupService {
 
     private final EmailService emailService;
 
+    private final JWTUtil jwtUtil;
+
     public SignupService(MembersRepository membersRepository,
-                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                       RedisManagerImpl redisManager,
-                       EmailService emailService){
+                        BCryptPasswordEncoder bCryptPasswordEncoder,
+                        RedisManagerImpl redisManager,
+                        EmailService emailService,
+                        JWTUtil jwtUtil){
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.redisManager = redisManager;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
-    public Members signupProcess(SignupDTO signupDTO){
-        String username = signupDTO.getUsername();
-        String password = signupDTO.getPassword();
+    public Members signupProcess(BasicUserInfoDTO basicUserInfoDTO){
+        String username = basicUserInfoDTO.getUsername();
+        String password = basicUserInfoDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
         if(Boolean.TRUE.equals(isExist)){
             //EXISTING_USER_INFO
@@ -79,34 +87,33 @@ public class SignupService {
         // 이메일 전송
         emailService.sendVerificationEmail(username, verificationCode);
 
-        return new Members();
+        return Members.builder()
+                .username(username)
+                .build();
     }
 
-    public Members verifyCode(VerifyDTO verifyDTO) {
+    public Members verifyCode(VerifyDTO verifyDTO, HttpServletResponse response) {
         String username = verifyDTO.getUsername();
-        String password = verifyDTO.getPassword();
         String code = verifyDTO.getCode();
         String storedVerificationCode = null;
 
-        // Redis에서 username을 키로 가지는 저장된 인증번호 불러오기
         storedVerificationCode = redisManager.getValue(username);
 
         if (!storedVerificationCode.equals(code)) {
             // BAD_REQUEST
             throw new BaseException(ErrorCode.MAIL_AUTH_CODE_INCORRECT);
         }
-        else
+        else {
             redisManager.deleteValue(username);
+            String mailToken = jwtUtil.createJwt(TokenCategory.MAILAUTH, username, null, 600000L);
+            Cookie cookie = new Cookie(TokenCategory.MAILAUTH.getName(), mailToken);
+            cookie.setMaxAge(10*60);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
 
-
-        // 인증번호가 일치하면 회원 정보 생성 및 저장
-        Members data = Members.builder()
+        return Members.builder()
                 .username(username)
-                .password(bCryptPasswordEncoder.encode(password + username))
-                .role("ROLE_USER")
                 .build();
-
-        membersRepository.save(data);
-        return data;
     }
 }
