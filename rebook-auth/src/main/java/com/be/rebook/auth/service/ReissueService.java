@@ -1,6 +1,6 @@
 package com.be.rebook.auth.service;
 
-import com.be.rebook.auth.dto.ResetPasswordDTO;
+import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
@@ -41,7 +41,7 @@ public class ReissueService {
     }
 
     @Transactional
-    public Members reissueUserPassword(HttpServletRequest request, ResetPasswordDTO resetPasswordDTO) {
+    public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
         for(Cookie cookie : request.getCookies()){
             if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){

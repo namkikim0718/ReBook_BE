@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SignupDTO {
+public class BasicUserInfoDTO {
 
     @NotNull(message = "Username cannot be null")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")

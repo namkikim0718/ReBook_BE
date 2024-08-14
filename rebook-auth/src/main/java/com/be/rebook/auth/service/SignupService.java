@@ -2,7 +2,7 @@ package com.be.rebook.auth.service;
 
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
-import com.be.rebook.auth.dto.SignupDTO;
+import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.jwt.JWTUtil;
 import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.MembersRepository;
@@ -43,9 +43,9 @@ public class SignupService {
     }
 
     @Transactional
-    public Members signupProcess(SignupDTO signupDTO){
-        String username = signupDTO.getUsername();
-        String password = signupDTO.getPassword();
+    public Members signupProcess(BasicUserInfoDTO basicUserInfoDTO){
+        String username = basicUserInfoDTO.getUsername();
+        String password = basicUserInfoDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
         if(Boolean.TRUE.equals(isExist)){
             //EXISTING_USER_INFO

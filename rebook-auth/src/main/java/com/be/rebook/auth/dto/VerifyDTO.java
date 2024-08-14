@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class VerifyDTO extends SignupDTO{
+public class VerifyDTO extends BasicUserInfoDTO {
     @Size(min = 6, max = 6, message = "6자리 숫자만 입력 가능합니다.")
     private String code;
 }

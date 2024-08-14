@@ -1,12 +1,10 @@
 package com.be.rebook.auth.controller;
 
-
-import com.be.rebook.auth.dto.ResetPasswordDTO;
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.dto.CustomUserDetails;
-import com.be.rebook.auth.dto.SignupDTO;
+import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.service.ReissueService;
 import com.be.rebook.auth.service.SignupService;
 import com.be.rebook.common.config.BaseResponse;
@@ -46,9 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/members/signup")
-    public ResponseEntity<BaseResponse<Members>> signupProcess(@Valid @RequestBody SignupDTO signupDTO) {
-        signupLogger.info(signupDTO.getUsername());
-        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(signupDTO)));
+    public ResponseEntity<BaseResponse<Members>> signupProcess(@Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
+        signupLogger.info(basicUserInfoDTO.getUsername());
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(basicUserInfoDTO)));
     }
 
     @PostMapping("/members/refreshtoken/reissue")
@@ -84,7 +82,7 @@ public class AuthController {
     }
 
     @PatchMapping("/password/reset")
-    public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid ResetPasswordDTO resetPasswordDTO){
+    public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid BasicUserInfoDTO resetPasswordDTO){
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
     }
 }
