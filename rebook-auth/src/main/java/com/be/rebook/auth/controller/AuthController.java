@@ -81,7 +81,7 @@ public class AuthController {
         }
     }
 
-    @PatchMapping("/password/reset")
+    @PatchMapping("/members/password/reset")
     public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid BasicUserInfoDTO resetPasswordDTO){
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
     }

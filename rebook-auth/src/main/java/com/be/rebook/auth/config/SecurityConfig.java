@@ -72,7 +72,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth-> auth
                 .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
-                .requestMatchers("/auth/members/refreshtoken").permitAll()
+                .requestMatchers("/auth/members/refreshtoken", "/auth/members/password/reset").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
         );
