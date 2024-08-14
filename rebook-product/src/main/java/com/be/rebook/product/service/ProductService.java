@@ -1,6 +1,7 @@
 package com.be.rebook.product.service;
 
 import com.be.rebook.common.service.S3Service;
+import com.be.rebook.common.type.S3FolderName;
 import com.be.rebook.product.entity.Product;
 import com.be.rebook.product.dto.ProductRequestDTO;
 import com.be.rebook.product.repository.ProductRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,19 +34,19 @@ public class ProductService {
 
 
     @Transactional
-    public Long createProduct(Long sellerId,
+    public Long createProduct(String sellerUsername,
                               ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO,
                               List<MultipartFile> imageFiles) throws IOException {
 
 
         // Product 먼저 저장
-        Product product = Product.of(sellerId, productSaveRequestDTO);
+        Product product = Product.of(sellerUsername, productSaveRequestDTO);
         Long savedProductId = productRepository.save(product).getId();
 
         // 각 이미지 파일을 S3에 업로드 한 후 prductImage로 저장(Product에도 추가)
         for (MultipartFile imageFile : imageFiles) {
 
-            String storeFileName = s3Service.uploadFile(imageFile);
+            String storeFileName = s3Service.uploadFile(imageFile, S3FolderName.PRODUCT);
 
             ProductImage productImage = ProductImage.builder()
                     .uploadFileName(imageFile.getOriginalFilename())
@@ -61,13 +63,18 @@ public class ProductService {
     /**
      * 상품 목록 조회
      */
-    public List<ProductListResponseDTO> findAllProductByFilter(String university,
-                                                               String major,
-                                                               String title,
-                                                               Integer minPrice,
-                                                               Integer maxPrice,
-                                                               String order) {
-        List<Product> products = productRepository.findProductsByFilter(university, major, title, minPrice, maxPrice, order);
+    public List<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
+        log.info("dto 까보기");
+        log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
+                productFilterDTO.getUniversity(),
+                productFilterDTO.getTitle(),
+                productFilterDTO.getMajor(),
+                productFilterDTO.getMinPrice(),
+                productFilterDTO.getMaxPrice());
+
+
+        List<Product> products = productRepository.findProductsByFilter(productFilterDTO);
+
 
         return products.stream()
                 .map(ProductListResponseDTO::new)
@@ -77,8 +84,8 @@ public class ProductService {
     /**
      * 내가 쓴 글 조회
      */
-    public List<ProductListResponseDTO> findAllProductBySellerId(Long sellerId) {
-        List<Product> products = productRepository.findProductsBySellerId(sellerId);
+    public List<ProductListResponseDTO> findAllMyProducts(String username) {
+        List<Product> products = productRepository.findProductsBySellerUsername(username);
 
         return products.stream()
                 .map(ProductListResponseDTO::new)
@@ -112,6 +119,14 @@ public class ProductService {
      */
     @Transactional
     public String deleteById(Long productId) {
+        Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
+
+        product.getProductImages().forEach(productImage -> {
+            String fileName = productImage.getStoreFileName();
+            s3Service.deleteFile(S3FolderName.PRODUCT, fileName);
+        });
+        
         productRepository.deleteById(productId);
         return "상품 삭제 완료";
     }

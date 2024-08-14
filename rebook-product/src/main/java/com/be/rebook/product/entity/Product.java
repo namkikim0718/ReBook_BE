@@ -34,12 +34,12 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    private Long sellerId;
+    private String sellerUsername;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages = new ArrayList<>();
 
-    public static Product of(Long sellerId, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
+    public static Product of(String sellerUsername, ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
         return builder()
                 .title(productSaveRequestDTO.getTitle())
                 .content(productSaveRequestDTO.getContent())
@@ -47,7 +47,7 @@ public class Product extends BaseEntity {
                 .university(productSaveRequestDTO.getUniversity())
                 .major(productSaveRequestDTO.getMajor())
                 .status(ProductStatus.PENDING)
-                .sellerId(sellerId)
+                .sellerUsername(sellerUsername)
                 .build();
     }
 
