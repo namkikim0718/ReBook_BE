@@ -1,6 +1,7 @@
 package com.be.rebook.auth.controller;
 
 
+import com.be.rebook.auth.dto.ResetPasswordDTO;
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.entity.RefreshTokens;
