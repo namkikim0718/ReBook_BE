@@ -14,9 +14,14 @@ public class TokenExpiryConfig {
     @Value("${jwt.refresh-token-expiration}")
     private Long refreshExpiry;
 
+    @Value("${jwt.mailauth-token-expiration")
+    private Long mailauthExpiry;
+
+
     @PostConstruct
     public void init() {
         TokenCategory.ACCESS.setExpiry(accessExpiry);
         TokenCategory.REFRESH.setExpiry(refreshExpiry);
+        TokenCategory.MAILAUTH.setExpiry(mailauthExpiry);
     }
 }
