@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.jwt.type.TokenCategory;
+import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
@@ -23,10 +25,14 @@ public class JWTUtil {
     private final SecretKey secretKey;
     private static final Logger jwtUtilLogger = LoggerFactory.getLogger(JWTUtil.class);
 
-    private JWTUtil(@Value("${jwt.secret}") String secret) {
+    private final RefreshTokensRepository refreshTokensRepository;
+
+    private JWTUtil(@Value("${jwt.secret}") String secret,
+            RefreshTokensRepository refreshTokensRepository) {
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.refreshTokensRepository = refreshTokensRepository;
     }
 
     public String getUsername(String token) {
@@ -72,5 +78,18 @@ public class JWTUtil {
             jwtUtilLogger.error("JWT parsing failed: {}", e.getMessage());
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT); // TODO: 적절한 Exception으로 변겨
         }
+    }
+
+    public void saveRefreshToken(String username, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+
+        RefreshTokens refreshTokens = RefreshTokens.builder()
+                .username(username)
+                .refresh(refresh)
+                .expiration(date.toString())
+                .build();
+
+        refreshTokensRepository.save(refreshTokens);
     }
 }

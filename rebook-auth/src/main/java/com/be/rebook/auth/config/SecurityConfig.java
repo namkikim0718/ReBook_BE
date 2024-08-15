@@ -1,10 +1,13 @@
 package com.be.rebook.auth.config;
 
 import com.be.rebook.auth.repository.RefreshTokensRepository;
+import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.auth.jwt.CustomLogoutFilter;
 import com.be.rebook.auth.jwt.JWTFilter;
 import com.be.rebook.auth.jwt.JWTUtil;
 import com.be.rebook.auth.jwt.LoginFilter;
+import com.be.rebook.auth.oauth.handler.OAuthAuthenticationSuccessHandler;
+import com.be.rebook.auth.oauth.service.CustomOAuth2UserService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,28 +29,38 @@ import java.util.Collections;
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CookieUtil cookieUtil;
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
 
     private final RefreshTokensRepository refreshTokensRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration
-            , JWTUtil jwtUtil
-            , RefreshTokensRepository refreshTokensRepository){
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
+            CookieUtil cookieUtil,
+            RefreshTokensRepository refreshTokensRepository, CustomOAuth2UserService customOAuth2UserService,
+            OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.cookieUtil = cookieUtil;
         this.refreshTokensRepository = refreshTokensRepository;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuthAuthenticationSuccessHandler = oAuthAuthenticationSuccessHandler;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-            throws Exception{
+            throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.cors(cors -> cors
                 .configurationSource(request -> {
@@ -61,30 +74,36 @@ public class SecurityConfig {
                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
                     configuration.setExposedHeaders(Collections.singletonList("access"));
 
-
                     return configuration;
-                })
-        );
+                }));
 
-        http.csrf(auth->auth.disable());
-        http.formLogin(auth->auth.disable());
-        http.httpBasic(auth->auth.disable());
+        http.csrf(auth -> auth.disable());
+        http.formLogin(auth -> auth.disable());
+        http.httpBasic(auth -> auth.disable());
 
-        http.authorizeHttpRequests(auth-> auth
+        http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
+                .requestMatchers("/auth/oauth2/code/*").permitAll()
                 .requestMatchers("/auth/members/refreshtoken", "/auth/members/password/reset").permitAll()
                 .requestMatchers("/error").permitAll()
-                .anyRequest().authenticated()
-        );
+                .requestMatchers("/").permitAll() //테스트용 루트경로 혀용
+                .anyRequest().authenticated());
 
         http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)
-                        , jwtUtil
-                        , refreshTokensRepository)
-                , UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(
+                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokensRepository,
+                        cookieUtil),
+                UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokensRepository), LogoutFilter.class);
 
-        http.sessionManagement(session->session
+        http.oauth2Login((oauth2Login) -> oauth2Login
+                .authorizationEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/signin"))
+                .redirectionEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/code/*"))
+                .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
+                        .userService(customOAuth2UserService))
+                .successHandler(oAuthAuthenticationSuccessHandler));
+
+        http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();

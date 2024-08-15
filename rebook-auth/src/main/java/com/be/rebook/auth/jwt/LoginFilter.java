@@ -1,11 +1,11 @@
 package com.be.rebook.auth.jwt;
 
-import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
+import com.be.rebook.auth.utility.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -22,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,14 +30,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 
     private final JWTUtil jwtUtil;
+    private final CookieUtil cookieUtil;
 
     private final RefreshTokensRepository refreshTokensRepository;
+
     public LoginFilter(AuthenticationManager authenticationManager,
-                       JWTUtil jwtUtil,
-                       RefreshTokensRepository refreshTokensRepository){
+            JWTUtil jwtUtil,
+            RefreshTokensRepository refreshTokensRepository,
+            CookieUtil cookieUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.refreshTokensRepository = refreshTokensRepository;
+        this.cookieUtil = cookieUtil;
         setFilterProcessesUrl("/auth/signin");
     }
 
@@ -62,16 +65,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 }
                 password = password + username;
 
-
-                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
+                        password);
                 return authenticationManager.authenticate(authRequest);
             } catch (IOException e) {
                 throw new AuthenticationServiceException("Error parsing JSON request", e);
             }
         }
 
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(username,password,null);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password,
+                null);
 
         return authenticationManager.authenticate(authToken);
     }
@@ -79,54 +82,32 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(
             HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain, Authentication authentication){
+            FilterChain chain, Authentication authentication) {
 
         String username = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends  GrantedAuthority> iterator = authorities.iterator();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
 
-        String access = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, 600000L);
-        String refresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, 86400000L);
+        String access = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, TokenCategory.ACCESS.getExpiry());
+        String refresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, TokenCategory.REFRESH.getExpiry());
 
-        addRefreshEntity(username, refresh, 86400000L);
+        jwtUtil.saveRefreshToken(username, refresh, TokenCategory.REFRESH.getExpiry());
 
-        response.setHeader("access", access);
-        response.addCookie(createCookie("refresh", refresh));
+        response.setHeader(TokenCategory.ACCESS.getName(), access);
+        response.addCookie(cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,
+                TokenCategory.REFRESH.getExpiry().intValue() / 1000));
         response.setStatus(HttpStatus.OK.value());
     }
 
     @Override
     protected void unsuccessfulAuthentication(
             HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException failed){
-        //LOGIN_FAILED
+            AuthenticationException failed) {
+        // LOGIN_FAILED
         response.setStatus(401);
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        //자바스크립트로 해당 쿠키 접근 못하게
-        cookie.setHttpOnly(true);
-
-        return cookie;
-    }
-
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
-
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshTokens refreshTokens = RefreshTokens.builder()
-                .username(username)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-
-        refreshTokensRepository.save(refreshTokens);
     }
 }

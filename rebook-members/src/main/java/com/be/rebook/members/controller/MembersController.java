@@ -1,10 +1,14 @@
 package com.be.rebook.members.controller;
 
-import com.be.rebook.members.dto.*;
+import com.be.rebook.members.dto.UpdateMajorsDTO;
+import com.be.rebook.members.dto.UpdateNicknameDTO;
+import com.be.rebook.members.dto.UpdateUniversityDTO;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
 import com.be.rebook.members.dto.UserinfoDTO;
+
 import jakarta.validation.constraints.Pattern;
+
 import org.springframework.http.ResponseEntity;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
@@ -12,6 +16,7 @@ import com.be.rebook.common.config.BaseResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/members")
