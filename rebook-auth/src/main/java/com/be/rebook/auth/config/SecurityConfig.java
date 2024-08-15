@@ -83,8 +83,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
-                .requestMatchers("/auth/members/refreshtoken").permitAll()
                 .requestMatchers("/auth/oauth2/code/*").permitAll()
+                .requestMatchers("/auth/members/refreshtoken", "/auth/members/password/reset").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/").permitAll() //테스트용 루트경로 혀용
                 .anyRequest().authenticated());
