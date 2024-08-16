@@ -87,6 +87,7 @@ public class ProductService {
     public List<ProductListResponseDTO> findAllMyProducts(String username) {
         List<Product> products = productRepository.findProductsBySellerUsername(username);
 
+        productRepository.findById(1L);
         return products.stream()
                 .map(ProductListResponseDTO::new)
                 .collect(Collectors.toList());
@@ -122,12 +123,15 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                         .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
 
-        product.getProductImages().forEach(productImage -> {
-            String fileName = productImage.getStoreFileName();
-            s3Service.deleteFile(S3FolderName.PRODUCT, fileName);
-        });
+        List<String> fileNames = product.getProductImages().stream()
+                                        .map(ProductImage::getStoreFileName)
+                                        .collect(Collectors.toList());
         
         productRepository.deleteById(productId);
+
+        fileNames.forEach(fileName -> {
+            s3Service.deleteFile(S3FolderName.PRODUCT, fileName);
+        });
         return "상품 삭제 완료";
     }
 }
