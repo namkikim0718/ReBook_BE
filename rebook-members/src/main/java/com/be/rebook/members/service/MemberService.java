@@ -111,23 +111,28 @@ public class MemberService {
     @Transactional
     public Members updateUserPicture(String username, MultipartFile picture){
         Members member = membersRepository.findByUsername(username)
-                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
 
         String storedFileName = member.getStoredFileName();
-        String fileNameToSave = null;
+        String fileNameToSave;
 
-        if(storedFileName != null)
-            s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
-
-        try{
+        try {
             fileNameToSave = s3Service.uploadFile(picture, S3FolderName.PROFILE);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new BaseException(ErrorCode.PROFILE_PIC_UPLOAD_ERROR);
         }
 
-        Members updatedMember = member
-                .toBuilder()
+        if (storedFileName != null) {
+            try{
+                s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            }
+            catch (Exception e){
+                s3Service.deleteFile(S3FolderName.PROFILE, fileNameToSave);
+                throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
+            }
+        }
+
+        Members updatedMember = member.toBuilder()
                 .storedFileName(fileNameToSave)
                 .build();
 
@@ -143,7 +148,12 @@ public class MemberService {
 
         String storedFileName = member.getStoredFileName();
         if(storedFileName != null){
-            s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            try {
+                s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            }
+            catch (Exception e){
+                throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
+            }
         }
 
         Members updatedMember = member
