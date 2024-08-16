@@ -75,6 +75,22 @@ public class ReissueService {
                 .build();
     }
 
+    @Transactional
+    public Members updateUserPassword(String username, String passwordToUpdate) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        Members updatedMember = member
+                .toBuilder()
+                .password(bCryptPasswordEncoder.encode(passwordToUpdate+username))
+                .build();
+
+        membersRepository.save(updatedMember);
+        return Members.builder()
+                .username(username)
+                .build();
+    }
+
     public void deleteRefreshsOlderThanOneDay() {
         LocalDateTime cutoffDateTime = LocalDateTime.now().minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);

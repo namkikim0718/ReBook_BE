@@ -31,18 +31,15 @@ public class MemberService {
     private final MembersRepository membersRepository;
     private final UniversitiesRepository universitiesRepository;
     private final MajorsRepository majorsRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final S3Service s3Service;
 
     public MemberService(MembersRepository membersRepository,
                          UniversitiesRepository universitiesRepository,
                          MajorsRepository majorsRepository,
-                         BCryptPasswordEncoder bCryptPasswordEncoder,
                          S3Service s3Service){
         this.membersRepository = membersRepository;
         this.universitiesRepository = universitiesRepository;
         this.majorsRepository = majorsRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.s3Service = s3Service;
     }
 
@@ -109,22 +106,6 @@ public class MemberService {
 
         membersRepository.save(updatedMember);
         return updatedMember;
-    }
-
-    @Transactional
-    public Members updateUserPassword(String username, String passwordToUpdate) {
-        Members member = membersRepository.findByUsername(username)
-                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
-
-        Members updatedMember = member
-                .toBuilder()
-                .password(bCryptPasswordEncoder.encode(passwordToUpdate+username))
-                .build();
-
-        membersRepository.save(updatedMember);
-        return Members.builder()
-                .username(username)
-                .build();
     }
 
     @Transactional

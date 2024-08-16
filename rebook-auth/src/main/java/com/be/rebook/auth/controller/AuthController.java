@@ -1,5 +1,6 @@
 package com.be.rebook.auth.controller;
 
+import com.be.rebook.auth.dto.UpdatePasswordDTO;
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.entity.RefreshTokens;
@@ -7,6 +8,7 @@ import com.be.rebook.auth.dto.CustomUserDetails;
 import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.service.ReissueService;
 import com.be.rebook.auth.service.SignupService;
+import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
@@ -84,5 +86,14 @@ public class AuthController {
     @PatchMapping("/members/password/reset")
     public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid BasicUserInfoDTO resetPasswordDTO){
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
+    }
+
+    // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
+    // todo : 패스워드 수정 로직 테스트하기
+    @PatchMapping("/members/password")
+    public ResponseEntity<BaseResponse<Members>> updateUserPassword(@Auth MemberLoginInfo memberLoginInfo, @Valid UpdatePasswordDTO passwordDTO){
+        String username = memberLoginInfo.getUsername();
+        String passwordToUpdate = passwordDTO.getPassword();
+        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.updateUserPassword(username, passwordToUpdate)));
     }
 }

@@ -1,4 +1,4 @@
-package com.be.rebook.members.dto;
+package com.be.rebook.auth.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -12,3 +12,4 @@ public class UpdatePasswordDTO {
     @Pattern(regexp = "^[a-zA-Z0-9@#$%^&+=]*$", message = "Password can only contain alphanumeric characters and '@','#','$','%','^','&','+','='")
     private String password;
 }
+
