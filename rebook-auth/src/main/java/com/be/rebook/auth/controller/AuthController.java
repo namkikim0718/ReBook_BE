@@ -44,9 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/members/signup")
-    public ResponseEntity<BaseResponse<Members>> signupProcess(@Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
+    public ResponseEntity<BaseResponse<Members>> signupProcess(HttpServletRequest request, @Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
         signupLogger.info(basicUserInfoDTO.getUsername());
-        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(basicUserInfoDTO)));
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(request, basicUserInfoDTO)));
     }
 
     @PostMapping("/members/refreshtoken/reissue")

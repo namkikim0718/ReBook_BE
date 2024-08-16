@@ -10,6 +10,7 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
@@ -43,7 +44,24 @@ public class SignupService {
     }
 
     @Transactional
-    public Members signupProcess(BasicUserInfoDTO basicUserInfoDTO){
+    public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO){
+        String mailToken = null;
+        for(Cookie cookie : request.getCookies()){
+            if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
+                mailToken = cookie.getValue();
+                break;
+            }
+        }
+        if (mailToken == null) {
+            //NO_TOKEN_CONTENT
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
+        // expired check
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(mailToken))) {
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
+
         String username = basicUserInfoDTO.getUsername();
         String password = basicUserInfoDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
@@ -92,6 +110,7 @@ public class SignupService {
                 .build();
     }
 
+
     public Members verifyCode(VerifyDTO verifyDTO, HttpServletResponse response) {
         String username = verifyDTO.getUsername();
         String code = verifyDTO.getCode();
@@ -105,7 +124,11 @@ public class SignupService {
         }
         else {
             redisManager.deleteValue(username);
-            String mailToken = jwtUtil.createJwt(TokenCategory.MAILAUTH, username, null, 600000L);
+            String mailToken = jwtUtil
+                    .createJwt(TokenCategory.MAILAUTH,
+                            username,
+                            null,
+                            TokenCategory.MAILAUTH.getExpiry());
             Cookie cookie = new Cookie(TokenCategory.MAILAUTH.getName(), mailToken);
             cookie.setMaxAge(10*60);
             cookie.setHttpOnly(true);
