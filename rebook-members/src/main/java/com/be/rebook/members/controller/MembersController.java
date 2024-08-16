@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
@@ -54,13 +55,26 @@ public class MembersController {
     }
 
     // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
+    // todo : 패스워드 수정 로직 테스트하기
     @PatchMapping("/password")
     public ResponseEntity<BaseResponse<Members>> updateUserPassword(@Auth MemberLoginInfo memberLoginInfo, @Valid UpdatePasswordDTO passwordDTO){
         String username = memberLoginInfo.getUsername();
         String passwordToUpdate = passwordDTO.getPassword();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPassword(username, passwordToUpdate)));
     }
-    //todo : 프로필 사진 변경 로직 추가하기
+    //todo : 프로필 사진 변경 로직 테스트하기
+    @PatchMapping("/profilePicture")
+    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo, MultipartFile picture){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPicture(username, picture)));
+    }
+
+    //todo : 프로필 사진 삭제 로직 테스트하기
+    @DeleteMapping("/profilePicture")
+    public ResponseEntity<BaseResponse<Members>> deleteUserPicture(@Auth MemberLoginInfo memberLoginInfo){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUserPicture(username)));
+    }
 
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(@Auth MemberLoginInfo memberLoginInfo) {
