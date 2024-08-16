@@ -14,7 +14,7 @@ public class TokenExpiryConfig {
     @Value("${jwt.refresh-token-expiration}")
     private Long refreshExpiry;
 
-    @Value("${jwt.mailauth-token-expiration")
+    @Value("${jwt.mailauth-token-expiration}")
     private Long mailauthExpiry;
 
 
