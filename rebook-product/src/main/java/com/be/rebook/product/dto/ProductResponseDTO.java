@@ -49,7 +49,7 @@ public class ProductResponseDTO {
 
         private List<String> storeFileNameList;
 
-        private Long sellerId;
+        private String sellerUsername;
 
         private String title;
 
@@ -70,7 +70,7 @@ public class ProductResponseDTO {
             this.storeFileNameList = product.getProductImages().stream()
                     .map(ProductImage::getStoreFileName)
                     .collect(Collectors.toList());
-            this.sellerId = product.getSellerId();
+            this.sellerUsername = product.getSellerUsername();
             this.title = product.getTitle();
             this.content = product.getContent();
             this.price = product.getPrice();

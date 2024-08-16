@@ -1,5 +1,6 @@
 package com.be.rebook.product.repository;
 
+import com.be.rebook.product.dto.ProductRequestDTO;
 import com.be.rebook.product.entity.Product;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.be.rebook.product.dto.ProductRequestDTO.*;
 import static com.be.rebook.product.entity.QProduct.product;
 
 @RequiredArgsConstructor
@@ -17,28 +19,28 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 
     @Override
-    public List<Product> findProductsByFilter(String university, String major, String title, Integer minPrice, Integer maxPrice, String order) {
+    public List<Product> findProductsByFilter(ProductFilterDTO productFilterDTO) {
         return jpaQueryFactory.selectFrom(product)
                 .where(
-                        universityContains(university),
-                        majorContains(major),
-                        titleContains(title),
-                        priceBetween(minPrice, maxPrice)
+                        universityContains(productFilterDTO.getUniversity()),
+                        majorContains(productFilterDTO.getMajor()),
+                        titleContains(productFilterDTO.getTitle()),
+                        priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice())
                 )
-                .orderBy(getOrderSpecifier(order))
+                .orderBy(getOrderSpecifier(productFilterDTO.getOrder()))
                 .fetch();
     }
 
     private BooleanExpression universityContains(String university) {
-        return university != null ? product.university.contains(university) : null;
+        return university != null && !university.isEmpty() ? product.university.contains(university) : null;
     }
 
     private BooleanExpression majorContains(String major) {
-        return major != null ? product.major.contains(major) : null;
+        return major != null && !major.isEmpty() ? product.major.contains(major) : null;
     }
 
     private BooleanExpression titleContains(String title) {
-        return title != null ? product.title.contains(title) : null;
+        return title != null && !title.isEmpty() ? product.title.contains(title) : null;
     }
 
     private BooleanExpression priceBetween(Integer minPrice, Integer maxPrice) {

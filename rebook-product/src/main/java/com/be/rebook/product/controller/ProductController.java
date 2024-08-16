@@ -1,7 +1,10 @@
 package com.be.rebook.product.controller;
 
+import com.be.rebook.common.argumentresolver.auth.Auth;
+import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,37 +28,31 @@ public class ProductController {
     /**
      * 상품 등록
      */
-    @PostMapping("/members/{memberId}") // TODO:유저정보는 Auth 모듈 활용해서 가져오기
-    public ResponseEntity<BaseResponse<Long>> createProduct(@PathVariable("memberId") Long memberId,
+    @PostMapping
+    public ResponseEntity<BaseResponse<Long>> createProduct(@Auth MemberLoginInfo memberLoginInfo,
                                                             @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(
                 HttpStatus.CREATED,
                 "201 CREATED",
                 "상품이 등록되었습니다.",
-                productService.createProduct(memberId, productSaveRequestDTO, imageFiles)));
+                productService.createProduct(memberLoginInfo.getUsername(), productSaveRequestDTO, imageFiles)));
     }
 
     /**
      * 상품 목록 조회
      */
     @GetMapping
-    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findAllProduct(
-            @RequestParam(required = false) String university,
-            @RequestParam(required = false) String major,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Integer minPrice,
-            @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(required = false) String order) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByFilter(university, major, title, minPrice, maxPrice, order)));
+    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findAllProduct(@Valid @ModelAttribute ProductFilterDTO productFilterDTO) {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByFilter(productFilterDTO)));
     }
 
     /**
      * 내가 쓴 글 조회
      */
-    @GetMapping("/members/{memberId}/products")
-    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductBySellerId(memberId)));
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllMyProducts(memberLoginInfo.getUsername())));
     }
 
     /**
