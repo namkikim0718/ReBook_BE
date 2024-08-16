@@ -20,6 +20,8 @@ public class Members {
     private Long university; // 숫자 코드 저장하고 실제 데이터는 university에 있음
     private String majors; //, 콤마로 구분해서 여러개 넣을수 있음 ex.("1,2,5,7") 숫자는 해당 전공에 대한 아이디
 
+    private String storedFileName; // S3에 저장되어있는 프로필 사진 주소
+
     public Members(){}
     @Builder(toBuilder = true)
     public Members(Long memberId,
@@ -28,7 +30,8 @@ public class Members {
                    String role,
                    String nickname,
                    Long university,
-                   String majors) {
+                   String majors,
+                   String storedFileName) {
         this.memberId = memberId;
         this.username = username;
         this.password = password;
@@ -36,5 +39,6 @@ public class Members {
         this.nickname = nickname;
         this.university = university;
         this.majors = majors;
+        this.storedFileName = storedFileName;
     }
 }
