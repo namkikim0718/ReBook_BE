@@ -53,14 +53,13 @@ public class MembersController {
         String majorsToUpdate = majorsDTO.getMajors();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
     }
-    //todo : 프로필 사진 변경 로직 테스트하기
+
     @PatchMapping("/profilePicture")
-    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo, MultipartFile picture){
+    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo, @RequestPart("picture") MultipartFile picture){
         String username = memberLoginInfo.getUsername();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPicture(username, picture)));
     }
 
-    //todo : 프로필 사진 삭제 로직 테스트하기
     @DeleteMapping("/profilePicture")
     public ResponseEntity<BaseResponse<Members>> deleteUserPicture(@Auth MemberLoginInfo memberLoginInfo){
         String username = memberLoginInfo.getUsername();
