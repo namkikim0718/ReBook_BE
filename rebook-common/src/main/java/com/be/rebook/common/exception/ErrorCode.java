@@ -24,6 +24,8 @@ public enum ErrorCode {
     NO_MAJOR_INFO(HttpStatus.NOT_FOUND, "해당 전공 정보가 존재하지 않습니다."),
     NO_MAIL_AUTH_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 요청된 인증 코드가 존재하지 않습니다."),
     MAIL_AUTH_CODE_INCORRECT(HttpStatus.BAD_REQUEST, "입력한 이메일 인증 번호가 틀립니다."),
+    PROFILE_PIC_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "S3 서버에서 이미지 업로딩 중 오류가 발생했습니다."),
+    PROFILE_PIC_DELETE_ERROR(HttpStatus.BAD_REQUEST, "S3 서버에서 이미지 삭제 중 오류가 발생했습니다."),
 
     /**
      * 토큰 에러
