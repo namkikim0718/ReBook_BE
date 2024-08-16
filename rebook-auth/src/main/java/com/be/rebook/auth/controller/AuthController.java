@@ -89,11 +89,9 @@ public class AuthController {
     }
 
     // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
-    // todo : 패스워드 수정 로직 테스트하기
     @PatchMapping("/members/password")
-    public ResponseEntity<BaseResponse<Members>> updateUserPassword(@Auth MemberLoginInfo memberLoginInfo, @Valid UpdatePasswordDTO passwordDTO){
-        String username = memberLoginInfo.getUsername();
+    public ResponseEntity<BaseResponse<Members>> updateUserPassword(HttpServletRequest request, @Valid UpdatePasswordDTO passwordDTO){
         String passwordToUpdate = passwordDTO.getPassword();
-        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.updateUserPassword(username, passwordToUpdate)));
+        return ResponseEntity.ok().body(new BaseResponse<>(reissueService.updateUserPassword(request, passwordToUpdate)));
     }
 }

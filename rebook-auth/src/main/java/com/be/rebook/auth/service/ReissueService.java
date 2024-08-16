@@ -76,7 +76,22 @@ public class ReissueService {
     }
 
     @Transactional
-    public Members updateUserPassword(String username, String passwordToUpdate) {
+    public Members updateUserPassword(HttpServletRequest request, String passwordToUpdate) {
+        String accessToken = request.getHeader("Authorization");
+
+        if(accessToken == null){
+            //NO_TOKEN_CONTENT
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
+        accessToken = accessToken.substring(7);
+
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))){
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        String username = jwtUtil.getUsername(accessToken);
+
         Members member = membersRepository.findByUsername(username)
                 .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
