@@ -10,6 +10,7 @@ import com.be.rebook.members.repository.UniversitiesRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,16 @@ public class MemberService {
     private final MembersRepository membersRepository;
     private final UniversitiesRepository universitiesRepository;
     private final MajorsRepository majorsRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public MemberService(MembersRepository membersRepository,
                          UniversitiesRepository universitiesRepository,
-                         MajorsRepository majorsRepository){
+                         MajorsRepository majorsRepository,
+                         BCryptPasswordEncoder bCryptPasswordEncoder){
         this.membersRepository = membersRepository;
         this.universitiesRepository = universitiesRepository;
         this.majorsRepository = majorsRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional
@@ -98,6 +102,22 @@ public class MemberService {
 
         membersRepository.save(updatedMember);
         return updatedMember;
+    }
+
+    @Transactional
+    public Members updateUserPassword(String username, String passwordToUpdate) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        Members updatedMember = member
+                .toBuilder()
+                .password(bCryptPasswordEncoder.encode(passwordToUpdate+username))
+                .build();
+
+        membersRepository.save(updatedMember);
+        return Members.builder()
+                .username(username)
+                .build();
     }
 
     public Members deleteUser(String username) {
@@ -180,5 +200,6 @@ public class MemberService {
                  .majors(returnMajors)
                  .build();
      }
+
 }
 

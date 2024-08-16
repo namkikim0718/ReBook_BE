@@ -1,12 +1,10 @@
 package com.be.rebook.members.controller;
 
-import com.be.rebook.members.dto.UpdateMajorsDTO;
-import com.be.rebook.members.dto.UpdateNicknameDTO;
-import com.be.rebook.members.dto.UpdateUniversityDTO;
+import com.be.rebook.members.dto.*;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
-import com.be.rebook.members.dto.UserinfoDTO;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 import org.springframework.http.ResponseEntity;
@@ -55,7 +53,13 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
     }
 
-    //todo : 비밀번호 변경 로직 추가하기
+    // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
+    @PatchMapping("/password")
+    public ResponseEntity<BaseResponse<Members>> updateUserPassword(@Auth MemberLoginInfo memberLoginInfo, @Valid UpdatePasswordDTO passwordDTO){
+        String username = memberLoginInfo.getUsername();
+        String passwordToUpdate = passwordDTO.getPassword();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPassword(username, passwordToUpdate)));
+    }
     //todo : 프로필 사진 변경 로직 추가하기
 
     @DeleteMapping
