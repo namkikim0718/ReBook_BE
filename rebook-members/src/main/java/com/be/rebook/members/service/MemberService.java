@@ -122,6 +122,12 @@ public class MemberService {
             throw new BaseException(ErrorCode.PROFILE_PIC_UPLOAD_ERROR);
         }
 
+        Members updatedMember = member.toBuilder()
+                .storedFileName(fileNameToSave)
+                .build();
+
+        membersRepository.save(updatedMember);
+
         if (storedFileName != null) {
             try{
                 s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
@@ -131,12 +137,6 @@ public class MemberService {
                 throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
             }
         }
-
-        Members updatedMember = member.toBuilder()
-                .storedFileName(fileNameToSave)
-                .build();
-
-        membersRepository.save(updatedMember);
 
         return updatedMember;
     }
