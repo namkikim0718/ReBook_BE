@@ -28,7 +28,7 @@ public class ProductController {
     /**
      * 상품 등록
      */
-    @PostMapping("/me") // TODO:유저정보는 Auth 모듈 활용해서 가져오기
+    @PostMapping
     public ResponseEntity<BaseResponse<Long>> createProduct(@Auth MemberLoginInfo memberLoginInfo,
                                                             @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
