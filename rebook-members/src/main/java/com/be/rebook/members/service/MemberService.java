@@ -116,7 +116,7 @@ public class MemberService {
         String storedFileName = member.getStoredFileName();
         String fileNameToSave = null;
 
-        if(Boolean.FALSE.equals(storedFileName.isEmpty()))
+        if(storedFileName != null)
             s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
 
         try{
@@ -142,7 +142,7 @@ public class MemberService {
                 .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
         String storedFileName = member.getStoredFileName();
-        if(Boolean.FALSE.equals(storedFileName.isEmpty())){
+        if(storedFileName != null){
             s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
         }
 
