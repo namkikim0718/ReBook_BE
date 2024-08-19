@@ -84,13 +84,13 @@ public class AuthController {
     }
 
     @PatchMapping("/members/password/reset")
-    public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid BasicUserInfoDTO resetPasswordDTO){
+    public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request, @Valid @RequestBody BasicUserInfoDTO resetPasswordDTO){
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
     }
 
     // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
     @PatchMapping("/members/password")
-    public ResponseEntity<BaseResponse<Members>> updateUserPassword(HttpServletRequest request, @Valid UpdatePasswordDTO passwordDTO){
+    public ResponseEntity<BaseResponse<Members>> updateUserPassword(HttpServletRequest request, @Valid @RequestBody UpdatePasswordDTO passwordDTO){
         String passwordToUpdate = passwordDTO.getPassword();
         return ResponseEntity.ok().body(new BaseResponse<>(reissueService.updateUserPassword(request, passwordToUpdate)));
     }
