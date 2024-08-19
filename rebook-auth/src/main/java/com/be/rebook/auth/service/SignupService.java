@@ -90,10 +90,7 @@ public class SignupService {
 
         Boolean isExist = membersRepository.existsByUsername(username);
 
-        if (Boolean.TRUE.equals(isExist)) {
-            // EXISTING_USER_INFO
-            throw new BaseException(ErrorCode.EXISTING_USER_INFO);
-        }
+        // 회원 존재하는지 체크하지 않고 Rate Limiter 적용?
 
         // 6자리 랜덤 인증번호 생성
         String verificationCode = generateVerificationCode();
