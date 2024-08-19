@@ -75,6 +75,37 @@ public class ReissueService {
                 .build();
     }
 
+    @Transactional
+    public Members updateUserPassword(HttpServletRequest request, String passwordToUpdate) {
+        String accessToken = request.getHeader("Authorization");
+
+        if(accessToken == null){
+            //NO_TOKEN_CONTENT
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
+        accessToken = accessToken.substring(7);
+
+        if(Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))){
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        String username = jwtUtil.getUsername(accessToken);
+
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        Members updatedMember = member
+                .toBuilder()
+                .password(bCryptPasswordEncoder.encode(passwordToUpdate+username))
+                .build();
+
+        membersRepository.save(updatedMember);
+        return Members.builder()
+                .username(username)
+                .build();
+    }
+
     public void deleteRefreshsOlderThanOneDay() {
         LocalDateTime cutoffDateTime = LocalDateTime.now().minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);

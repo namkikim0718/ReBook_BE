@@ -1,12 +1,10 @@
 package com.be.rebook.members.controller;
 
-import com.be.rebook.members.dto.UpdateMajorsDTO;
-import com.be.rebook.members.dto.UpdateNicknameDTO;
-import com.be.rebook.members.dto.UpdateUniversityDTO;
+import com.be.rebook.members.dto.*;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
-import com.be.rebook.members.dto.UserinfoDTO;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 import org.springframework.http.ResponseEntity;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
@@ -55,8 +54,17 @@ public class MembersController {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
     }
 
-    //todo : 비밀번호 변경 로직 추가하기
-    //todo : 프로필 사진 변경 로직 추가하기
+    @PatchMapping("/profilePicture")
+    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo, @RequestPart("picture") MultipartFile picture){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPicture(username, picture)));
+    }
+
+    @DeleteMapping("/profilePicture")
+    public ResponseEntity<BaseResponse<Members>> deleteUserPicture(@Auth MemberLoginInfo memberLoginInfo){
+        String username = memberLoginInfo.getUsername();
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUserPicture(username)));
+    }
 
     @DeleteMapping
     public ResponseEntity<BaseResponse<Members>> deleteUser(@Auth MemberLoginInfo memberLoginInfo) {

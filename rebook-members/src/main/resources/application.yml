@@ -40,7 +40,7 @@ eureka:
 cloud:
   aws:
     s3:
-      bucket: rebookbucket
+      bucket: rb-dev-s3-images
     stack.auto: false
     region.static: ap-northeast-2
     credentials:

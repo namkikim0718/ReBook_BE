@@ -1,5 +1,7 @@
 package com.be.rebook.members.service;
 
+import com.be.rebook.common.service.S3Service;
+import com.be.rebook.common.type.S3FolderName;
 import com.be.rebook.members.dto.UserinfoDTO;
 import com.be.rebook.members.entity.Majors;
 import com.be.rebook.members.entity.Members;
@@ -10,9 +12,12 @@ import com.be.rebook.members.repository.UniversitiesRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,13 +31,16 @@ public class MemberService {
     private final MembersRepository membersRepository;
     private final UniversitiesRepository universitiesRepository;
     private final MajorsRepository majorsRepository;
+    private final S3Service s3Service;
 
     public MemberService(MembersRepository membersRepository,
                          UniversitiesRepository universitiesRepository,
-                         MajorsRepository majorsRepository){
+                         MajorsRepository majorsRepository,
+                         S3Service s3Service){
         this.membersRepository = membersRepository;
         this.universitiesRepository = universitiesRepository;
         this.majorsRepository = majorsRepository;
+        this.s3Service = s3Service;
     }
 
     @Transactional
@@ -100,6 +108,65 @@ public class MemberService {
         return updatedMember;
     }
 
+    @Transactional
+    public Members updateUserPicture(String username, MultipartFile picture){
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
+
+        String storedFileName = member.getStoredFileName();
+        String fileNameToSave;
+
+        try {
+            fileNameToSave = s3Service.uploadFile(picture, S3FolderName.PROFILE);
+        } catch (IOException e) {
+            throw new BaseException(ErrorCode.PROFILE_PIC_UPLOAD_ERROR);
+        }
+
+        Members updatedMember = member.toBuilder()
+                .storedFileName(fileNameToSave)
+                .build();
+
+        membersRepository.save(updatedMember);
+
+        if (storedFileName != null) {
+            try{
+                s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            }
+            catch (Exception e){
+                s3Service.deleteFile(S3FolderName.PROFILE, fileNameToSave);
+                throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
+            }
+        }
+
+        return updatedMember;
+    }
+
+    @Transactional
+    public Members deleteUserPicture(String username) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        String storedFileName = member.getStoredFileName();
+        if(storedFileName != null){
+            try {
+                s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            }
+            catch (Exception e){
+                throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
+            }
+        }
+
+        Members updatedMember = member
+                .toBuilder()
+                .storedFileName(null)
+                .build();
+
+        membersRepository.save(updatedMember);
+
+        return updatedMember;
+    }
+
+    @Transactional
     public Members deleteUser(String username) {
         Members member = membersRepository
                 .findByUsername(username)
