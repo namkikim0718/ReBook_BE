@@ -88,7 +88,7 @@ eureka:
 info:
   web:
     oauth:
-      targetUrl: ${OAUTH_TARGET_URL:http://localhost:5173}
+      targetUrl: ${OAUTH_TARGET_URL:http://localhost:5173/signin}
 
 # 추후에 S3 로직을 Common 모듈로 분리하고 지울것
 cloud:
