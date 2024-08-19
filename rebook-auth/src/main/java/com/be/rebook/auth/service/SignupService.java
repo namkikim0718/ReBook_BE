@@ -129,6 +129,7 @@ public class SignupService {
             Cookie cookie = new Cookie(TokenCategory.MAILAUTH.getName(), mailToken);
             cookie.setMaxAge(10*60);
             cookie.setHttpOnly(true);
+            cookie.setPath("/");
             response.addCookie(cookie);
         }
 
