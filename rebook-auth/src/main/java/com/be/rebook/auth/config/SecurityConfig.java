@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -71,8 +72,7 @@ public class SecurityConfig {
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setMaxAge(3600L);
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-                    configuration.setExposedHeaders(Collections.singletonList("access"));
+                    configuration.setExposedHeaders(Arrays.asList("Authorization", "access"));
 
                     return configuration;
                 }));
