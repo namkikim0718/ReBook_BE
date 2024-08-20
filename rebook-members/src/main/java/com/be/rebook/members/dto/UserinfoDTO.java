@@ -10,4 +10,5 @@ public class UserinfoDTO {
     private String nickname;
     private String university;
     private String majors;
+    private String storedFileName;
 }

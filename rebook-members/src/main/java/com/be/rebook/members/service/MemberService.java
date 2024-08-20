@@ -209,6 +209,11 @@ public class MemberService {
                  .findByUsername(username)
                  .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
+         String profilePicture = "";
+         if(foundMember.getStoredFileName() != null) {
+            profilePicture = foundMember.getStoredFileName();
+         }
+
          String returnNickname = "닉네임을 설정하세요.";
          if(foundMember.getNickname() != null){
              returnNickname = foundMember.getNickname();
@@ -245,6 +250,7 @@ public class MemberService {
                  .nickname(returnNickname)
                  .university(returnUnv)
                  .majors(returnMajors)
+                 .storedFileName(profilePicture)
                  .build();
      }
 }
