@@ -47,7 +47,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals(TokenCategory.REFRESH)) {
+            if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
 
                 refresh = cookie.getValue();
             }
