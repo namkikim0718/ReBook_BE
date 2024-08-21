@@ -168,9 +168,19 @@ public class MemberService {
 
     @Transactional
     public Members deleteUser(String username) {
-        Members member = membersRepository
-                .findByUsername(username)
+        Members member = membersRepository.findByUsername(username)
                 .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        String storedFileName = member.getStoredFileName();
+        if(storedFileName != null){
+            try {
+                s3Service.deleteFile(S3FolderName.PROFILE, storedFileName);
+            }
+            catch (Exception e){
+                throw new BaseException(ErrorCode.PROFILE_PIC_DELETE_ERROR);
+            }
+        }
+
         membersRepository.delete(member);
         return member;
     }
