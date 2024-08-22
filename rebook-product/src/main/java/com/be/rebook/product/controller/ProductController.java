@@ -3,9 +3,11 @@ package com.be.rebook.product.controller;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
+import com.be.rebook.common.dto.PaginationResponseDTO;
 import com.be.rebook.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import static com.be.rebook.product.dto.ProductResponseDTO.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductController {
 
     private final ProductService productService;
@@ -32,19 +35,20 @@ public class ProductController {
     public ResponseEntity<BaseResponse<Long>> createProduct(@Auth MemberLoginInfo memberLoginInfo,
                                                             @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+        System.out.println("Product 생성 컨트롤러 진입");
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(
                 HttpStatus.CREATED,
                 "201 CREATED",
                 "상품이 등록되었습니다.",
-                productService.createProduct(memberLoginInfo.getUsername(), productSaveRequestDTO, imageFiles)));
+                productService.createProduct(memberLoginInfo, productSaveRequestDTO, imageFiles)));
     }
 
     /**
      * 상품 목록 조회
      */
     @GetMapping
-    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findAllProduct(@Valid @ModelAttribute ProductFilterDTO productFilterDTO) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllProductByFilter(productFilterDTO)));
+    public ResponseEntity<PaginationResponseDTO<ProductListResponseDTO>> findAllProduct(@Valid @ModelAttribute ProductFilterDTO productFilterDTO) {
+        return ResponseEntity.ok().body(productService.findAllProductByFilter(productFilterDTO));
     }
 
     /**
