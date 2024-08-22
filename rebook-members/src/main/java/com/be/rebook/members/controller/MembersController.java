@@ -4,9 +4,6 @@ import com.be.rebook.members.dto.*;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-
 import org.springframework.http.ResponseEntity;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
@@ -29,8 +26,34 @@ public class MembersController {
 
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserinfoDTO>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
-        UserinfoDTO userInfo = memberService.getUserinfo(memberLoginInfo.getUsername());
-        return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
+        UserinfoDTO info = memberService.getUserinfo(memberLoginInfo.getUsername());
+
+        String picture = info.getStoredFileName();
+        String nickname = info.getNickname();
+        String unv = info.getUniversity();
+        String majors = info.getMajors();
+
+        if(picture == null)
+            picture = "";
+        if(nickname == null)
+            nickname = "닉네임을 설정하세요.";
+        if(unv == null)
+            unv = "대학교를 설정하세요.";
+        if(majors == null)
+            majors = "관심 전공을 설정하세요.";
+
+        return ResponseEntity.ok().body(new BaseResponse<>(UserinfoDTO.builder()
+                .username(info.getUsername())
+                .nickname(nickname)
+                .storedFileName(picture)
+                .university(unv)
+                .majors(majors)
+                .build()));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<BaseResponse<OtherUserinfoDTO>> getOtherUserinfo(@Auth MemberLoginInfo memberLoginInfo, @PathVariable String username){
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getOtherUserinfo(username)));
     }
 
     @PatchMapping("/nickname")
