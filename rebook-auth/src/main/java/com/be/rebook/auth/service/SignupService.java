@@ -46,6 +46,11 @@ public class SignupService {
     @Transactional
     public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO){
         String mailToken = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         for(Cookie cookie : request.getCookies()){
             if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
                 mailToken = cookie.getValue();
