@@ -57,6 +57,9 @@ subprojects {
         annotationProcessor "jakarta.annotation:jakarta.annotation-api"
         annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+        // 프로메테우스 의존성 추가
+        implementation 'io.micrometer:micrometer-registry-prometheus'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
     }
 
     // gradle clean 시에 QClass 디렉토리 삭제
