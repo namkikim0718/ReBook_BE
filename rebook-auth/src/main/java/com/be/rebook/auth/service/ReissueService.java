@@ -5,6 +5,7 @@ import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.auth.entity.RefreshTokens;
+import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.auth.jwt.JWTUtil;
@@ -30,14 +31,18 @@ public class ReissueService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MembersRepository membersRepository;
 
+    private final CookieUtil cookieUtil;
+
     public ReissueService(JWTUtil jwtUtil,
                           RefreshTokensRepository refreshTokensRepository,
                           MembersRepository membersRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder) {
+                          BCryptPasswordEncoder bCryptPasswordEncoder,
+                          CookieUtil cookieUtil) {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshTokensRepository;
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.cookieUtil = cookieUtil;
     }
 
     @Transactional
@@ -171,17 +176,11 @@ public class ReissueService {
 
         // response
         response.setHeader(TokenCategory.ACCESS.getName(), newAccess);
-        response.addCookie(createCookie(TokenCategory.REFRESH.getName(), newRefresh));
+        response.addCookie(cookieUtil
+                .createCookie(TokenCategory.REFRESH.getName(),
+                        newRefresh,
+                        TokenCategory.REFRESH.getExpiry().intValue() / 1000));
         return RefreshTokens.builder().username(username).refresh(refresh).build();
-    }
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        return cookie;
     }
     private void addRefreshEntity(String username, String refresh, Long expriedMs){
         Date date = new Date(System.currentTimeMillis()+ expriedMs);
