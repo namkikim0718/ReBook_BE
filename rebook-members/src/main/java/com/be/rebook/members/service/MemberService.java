@@ -219,17 +219,17 @@ public class MemberService {
                  .findByUsername(username)
                  .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
 
-         String profilePicture = "";
+         String profilePicture = null;
          if(foundMember.getStoredFileName() != null) {
             profilePicture = foundMember.getStoredFileName();
          }
 
-         String returnNickname = "닉네임을 설정하세요.";
+         String returnNickname = null;
          if(foundMember.getNickname() != null){
              returnNickname = foundMember.getNickname();
          }
 
-         String returnUnv = "대학교를 설정하세요.";
+         String returnUnv = null;
          if(foundMember.getUniversity() != null && foundMember.getUniversity() != -1L){
              Universities foundUnv = universitiesRepository
                      .findByUnvId(foundMember.getUniversity())
@@ -237,7 +237,7 @@ public class MemberService {
              returnUnv = foundUnv.getUniversity();
          }
 
-         String returnMajors = "관심 전공을 설정하세요.";
+         String returnMajors = null;
          StringBuilder majorList = new StringBuilder();
          if(foundMember.getMajors()!= null){
              List<String> majorIdList = new ArrayList<>(Arrays.asList(foundMember.getMajors().split(",")));

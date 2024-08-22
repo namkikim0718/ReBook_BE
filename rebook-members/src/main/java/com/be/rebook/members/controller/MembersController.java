@@ -26,8 +26,29 @@ public class MembersController {
 
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserinfoDTO>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
-        UserinfoDTO userInfo = memberService.getUserinfo(memberLoginInfo.getUsername());
-        return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
+        UserinfoDTO info = memberService.getUserinfo(memberLoginInfo.getUsername());
+
+        String picture = info.getStoredFileName();
+        String nickname = info.getNickname();
+        String unv = info.getUniversity();
+        String majors = info.getMajors();
+
+        if(picture == null)
+            picture = "";
+        if(nickname == null)
+            nickname = "닉네임을 설정하세요.";
+        if(unv == null)
+            unv = "대학교를 설정하세요.";
+        if(majors == null)
+            majors = "관심 전공을 설정하세요.";
+
+        return ResponseEntity.ok().body(new BaseResponse<>(UserinfoDTO.builder()
+                .username(info.getUsername())
+                .nickname(nickname)
+                .storedFileName(picture)
+                .university(unv)
+                .majors(majors)
+                .build()));
     }
 
     @GetMapping("/{username}")
