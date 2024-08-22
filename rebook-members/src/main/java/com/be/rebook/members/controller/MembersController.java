@@ -4,9 +4,6 @@ import com.be.rebook.members.dto.*;
 import com.be.rebook.members.entity.Members;
 import com.be.rebook.members.service.MemberService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-
 import org.springframework.http.ResponseEntity;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
@@ -31,6 +28,11 @@ public class MembersController {
     public ResponseEntity<BaseResponse<UserinfoDTO>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
         UserinfoDTO userInfo = memberService.getUserinfo(memberLoginInfo.getUsername());
         return ResponseEntity.ok().body(new BaseResponse<>(userInfo));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<BaseResponse<OtherUserinfoDTO>> getOtherUserinfo(@Auth MemberLoginInfo memberLoginInfo, @PathVariable String username){
+        return ResponseEntity.ok().body(new BaseResponse<>(memberService.getOtherUserinfo(username)));
     }
 
     @PatchMapping("/nickname")

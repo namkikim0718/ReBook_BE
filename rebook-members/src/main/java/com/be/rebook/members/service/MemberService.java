@@ -2,6 +2,7 @@ package com.be.rebook.members.service;
 
 import com.be.rebook.common.service.S3Service;
 import com.be.rebook.common.type.S3FolderName;
+import com.be.rebook.members.dto.OtherUserinfoDTO;
 import com.be.rebook.members.dto.UserinfoDTO;
 import com.be.rebook.members.entity.Majors;
 import com.be.rebook.members.entity.Members;
@@ -12,7 +13,6 @@ import com.be.rebook.members.repository.UniversitiesRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -263,5 +263,25 @@ public class MemberService {
                  .storedFileName(profilePicture)
                  .build();
      }
+
+    public OtherUserinfoDTO getOtherUserinfo(String username) {
+        Members member = membersRepository.findByUsername(username)
+                .orElseThrow(()->new BaseException(ErrorCode.NO_USER_INFO));
+
+        String returnUnv = null;
+        if(member.getUniversity() != null && member.getUniversity() != -1L){
+            Universities foundUnv = universitiesRepository
+                    .findByUnvId(member.getUniversity())
+                    .orElseThrow(()->new BaseException(ErrorCode.NO_UNIVERSITY_INFO));
+            returnUnv = foundUnv.getUniversity();
+        }
+
+        return OtherUserinfoDTO.builder()
+                .nickname(member.getNickname())
+                .storedFileName(member.getStoredFileName())
+                .university(returnUnv)
+                .majors(member.getMajors())
+                .build();
+    }
 }
 
