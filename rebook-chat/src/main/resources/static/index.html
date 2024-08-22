@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>1대1 채팅</title>
+    <script src="https://cdn.jsdelivr.net/sockjs/1.1.2/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
+        <button onclick="sendMessage()">보내기</button>
+    </div>
+    <div id="messages"></div>
+
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            const chatRoomId = 1;
+            var socket = new SockJS('/chat/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/rooms/' + chatRoomId, function (message) {
+                    console.log("Received message: " + message.body);
+                });
+            });
+        }
+
+        function sendMessage() {
+            var messageInput = document.getElementById('messageInput').value;
+            stompClient.send("/app/send", {}, messageInput);
+        }
+
+        function showMessage(message) {
+            var messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += "<div>" + message + "</div>";
+        }
+
+        connect();
+    </script>
+</body>
+
+</html>

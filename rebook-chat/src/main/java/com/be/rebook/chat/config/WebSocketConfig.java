@@ -6,18 +6,22 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
-@EnableWebSocketMessageBroker
+@EnableWebSocketMessageBroker 
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/rooms"); 
-        config.setApplicationDestinationPrefixes("/chat"); 
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/chat/sub/room");
+        registry.setApplicationDestinationPrefixes("/chat/pub/message");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS(); 
+        registry.addEndpoint("/chat/ws") // ex ) ws://localhost:9000/stomp/chat
+                .setAllowedOriginPatterns("*").withSockJS(); 
     }
 }
