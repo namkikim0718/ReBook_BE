@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -71,8 +72,7 @@ public class SecurityConfig {
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setMaxAge(3600L);
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-                    configuration.setExposedHeaders(Collections.singletonList("access"));
+                    configuration.setExposedHeaders(Arrays.asList("Authorization", "access"));
 
                     return configuration;
                 }));
@@ -84,6 +84,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
                 .requestMatchers("/auth/oauth2/code/*").permitAll()
+
+                //fixme : requestMatchers에 잡히지 않으면 ("/auth/members/refreshtoken" 로 되있었을때) OAuth .redirectionEndPoint로 리다이렉션 때려버림.. 대체 왜죠????
                 .requestMatchers("/auth/members/refreshtoken/reissue", "/auth/members/password/reset").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/").permitAll() //테스트용 루트경로 혀용

@@ -5,6 +5,7 @@ import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.auth.entity.RefreshTokens;
+import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.auth.jwt.JWTUtil;
@@ -30,19 +31,28 @@ public class ReissueService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MembersRepository membersRepository;
 
+    private final CookieUtil cookieUtil;
+
     public ReissueService(JWTUtil jwtUtil,
                           RefreshTokensRepository refreshTokensRepository,
                           MembersRepository membersRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder) {
+                          BCryptPasswordEncoder bCryptPasswordEncoder,
+                          CookieUtil cookieUtil) {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshTokensRepository;
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.cookieUtil = cookieUtil;
     }
 
     @Transactional
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         for(Cookie cookie : request.getCookies()){
             if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
                 mailToken = cookie.getValue();
@@ -117,6 +127,11 @@ public class ReissueService {
     public RefreshTokens reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
@@ -152,25 +167,20 @@ public class ReissueService {
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        String newAccess = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, TokenCategory.ACCESS.getExpiry());
+        String newRefresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, TokenCategory.REFRESH.getExpiry());
 
         //리프레쉬 토큰 저장 db에 기존의 리프레시 토큰 삭제 후 새 리프레시 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(username,newRefresh,86400000L);
+        addRefreshEntity(username,newRefresh,TokenCategory.REFRESH.getExpiry());
 
         // response
         response.setHeader(TokenCategory.ACCESS.getName(), newAccess);
-        response.addCookie(createCookie(TokenCategory.REFRESH.getName(), newRefresh));
+        response.addCookie(cookieUtil
+                .createCookie(TokenCategory.REFRESH.getName(),
+                        newRefresh,
+                        TokenCategory.REFRESH.getExpiry().intValue() / 1000));
         return RefreshTokens.builder().username(username).refresh(refresh).build();
-    }
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
     private void addRefreshEntity(String username, String refresh, Long expriedMs){
         Date date = new Date(System.currentTimeMillis()+ expriedMs);

@@ -79,7 +79,7 @@ public class MembersController {
 
     @GetMapping("/majors")
     public ResponseEntity<BaseResponse<List<String>>> searchMajors(
-            @Pattern(regexp = ".*[^가-힣\\sA-Z()].*", message = "검색어 입력이 잘못 되었습니다.") @RequestParam("majorToSearch") String majorToSearch) {
+            @RequestParam("majorToSearch") String majorToSearch) {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getMajorsList(majorToSearch)));
     }
 }
