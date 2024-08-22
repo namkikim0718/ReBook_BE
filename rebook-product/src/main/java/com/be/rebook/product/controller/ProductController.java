@@ -23,7 +23,7 @@ import static com.be.rebook.product.dto.ProductResponseDTO.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173") // TODO: 나중에 지워야함!!
 public class ProductController {
 
     private final ProductService productService;
