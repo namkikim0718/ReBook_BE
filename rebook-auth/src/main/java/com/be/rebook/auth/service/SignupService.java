@@ -86,7 +86,9 @@ public class SignupService {
                 .build();
 
         membersRepository.save(data);
-        return data;
+        return Members.builder()
+                .username(username)
+                .build();
     }
 
     private String generateVerificationCode() {
