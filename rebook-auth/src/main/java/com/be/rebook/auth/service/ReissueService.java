@@ -43,6 +43,11 @@ public class ReissueService {
     @Transactional
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         for(Cookie cookie : request.getCookies()){
             if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
                 mailToken = cookie.getValue();
@@ -117,6 +122,11 @@ public class ReissueService {
     public RefreshTokens reissueToken(HttpServletRequest request, HttpServletResponse response) {
         // get refresh token
         String refresh = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
