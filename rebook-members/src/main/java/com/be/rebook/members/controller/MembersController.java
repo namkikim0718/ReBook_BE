@@ -34,34 +34,40 @@ public class MembersController {
     }
 
     @PatchMapping("/nickname")
-    public ResponseEntity<BaseResponse<Members>> updateUserNickname(@Auth MemberLoginInfo memberLoginInfo, @RequestBody UpdateNicknameDTO nicknameDTO){
+    public ResponseEntity<BaseResponse<Members>> updateUserNickname(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestBody UpdateNicknameDTO nicknameDTO) {
         String username = memberLoginInfo.getUsername();
         String nicknameToUpdate = nicknameDTO.getNickname();
-        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserNickname(username, nicknameToUpdate)));
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(memberService.updateUserNickname(username, nicknameToUpdate)));
     }
 
     @PatchMapping("/university")
-    public ResponseEntity<BaseResponse<Members>> updateUserUniversity(@Auth MemberLoginInfo memberLoginInfo, @RequestBody UpdateUniversityDTO universityDTO){
+    public ResponseEntity<BaseResponse<Members>> updateUserUniversity(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestBody UpdateUniversityDTO universityDTO) {
         String username = memberLoginInfo.getUsername();
         String universityToUpdate = universityDTO.getUniversity();
-        return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserUniversity(username, universityToUpdate)));
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(memberService.updateUserUniversity(username, universityToUpdate)));
     }
 
     @PatchMapping("/majors")
-    public ResponseEntity<BaseResponse<Members>> updateUserMajors(@Auth MemberLoginInfo memberLoginInfo, @RequestBody UpdateMajorsDTO majorsDTO){
+    public ResponseEntity<BaseResponse<Members>> updateUserMajors(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestBody UpdateMajorsDTO majorsDTO) {
         String username = memberLoginInfo.getUsername();
         String majorsToUpdate = majorsDTO.getMajors();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserMajors(username, majorsToUpdate)));
     }
 
     @PatchMapping("/profilePicture")
-    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo, @RequestPart("picture") MultipartFile picture){
+    public ResponseEntity<BaseResponse<Members>> updateUserPicture(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestPart("picture") MultipartFile picture) {
         String username = memberLoginInfo.getUsername();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.updateUserPicture(username, picture)));
     }
 
     @DeleteMapping("/profilePicture")
-    public ResponseEntity<BaseResponse<Members>> deleteUserPicture(@Auth MemberLoginInfo memberLoginInfo){
+    public ResponseEntity<BaseResponse<Members>> deleteUserPicture(@Auth MemberLoginInfo memberLoginInfo) {
         String username = memberLoginInfo.getUsername();
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.deleteUserPicture(username)));
     }
