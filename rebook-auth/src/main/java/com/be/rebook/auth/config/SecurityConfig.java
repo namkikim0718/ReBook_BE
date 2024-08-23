@@ -66,7 +66,7 @@ public class SecurityConfig {
         http.cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(Collections.singletonList("https://www.rebook45.link"));
+                    configuration.setAllowedOrigins(Collections.singletonList("*"));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
