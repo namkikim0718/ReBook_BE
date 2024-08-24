@@ -73,12 +73,30 @@ public class ProductService {
      * 상품 목록 조회
      */
     public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
+<<<<<<< HEAD
         Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
 
         Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
                                                                  .map(ProductListResponseDTO::new);
+=======
+        log.info("dto 까보기");
+        log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
+                productFilterDTO.getUniversity(),
+                productFilterDTO.getTitle(),
+                productFilterDTO.getMajor(),
+                productFilterDTO.getMinPrice(),
+                productFilterDTO.getMaxPrice());
+>>>>>>> origin/67-상품-페이징-처리-및-페이지네이션-DTO-생성
+
+        Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
+
+<<<<<<< HEAD
+=======
+        Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
+                                                                 .map(ProductListResponseDTO::new);
 
 
+>>>>>>> origin/67-상품-페이징-처리-및-페이지네이션-DTO-생성
         return new PaginationResponseDTO<>(productPage);
     }
 
