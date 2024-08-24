@@ -3,7 +3,6 @@ package com.be.rebook.chat.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.be.rebook.chat.dto.ChatMessageDTO;
 import com.be.rebook.chat.dto.ChatRoomDto;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service

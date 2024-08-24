@@ -22,10 +22,8 @@ import com.be.rebook.common.exception.ErrorCode;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor

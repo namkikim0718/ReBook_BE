@@ -1,12 +1,7 @@
 package com.be.rebook.chat.service;
 
-import java.nio.channels.Channel;
 import java.util.List;
 
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

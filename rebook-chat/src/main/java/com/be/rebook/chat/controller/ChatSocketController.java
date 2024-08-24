@@ -1,18 +1,10 @@
 package com.be.rebook.chat.controller;
 
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 import com.be.rebook.chat.dto.ChatMessageDTO;
-import com.be.rebook.chat.dto.ChatRoomDto;
-import com.be.rebook.chat.repository.ChatRoomRepository;
-import com.be.rebook.chat.service.ChatService;
 import com.be.rebook.chat.service.ChatSocketService;
-import com.be.rebook.chat.service.RedisPublisher;
-import com.be.rebook.chat.service.RedisSubscriber;
 import com.be.rebook.common.exception.BaseException;
 
 import lombok.RequiredArgsConstructor;
