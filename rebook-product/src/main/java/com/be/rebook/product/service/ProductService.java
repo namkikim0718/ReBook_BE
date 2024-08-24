@@ -73,14 +73,6 @@ public class ProductService {
      * 상품 목록 조회
      */
     public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
-        log.info("dto 까보기");
-        log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
-                productFilterDTO.getUniversity(),
-                productFilterDTO.getTitle(),
-                productFilterDTO.getMajor(),
-                productFilterDTO.getMinPrice(),
-                productFilterDTO.getMaxPrice());
-
         Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
 
         Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
@@ -93,8 +85,13 @@ public class ProductService {
     /**
      * 내가 쓴 글 조회
      */
-    public List<ProductListResponseDTO> findAllMyProducts(String username) {
-        List<Product> products = productRepository.findProductsBySellerUsername(username);
+    public List<ProductListResponseDTO> findAllMyProducts(MemberLoginInfo memberLoginInfo) {
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
+        List<Product> products = productRepository.findProductsBySellerUsername(memberLoginInfo.getUsername());
 
         productRepository.findById(1L);
         return products.stream()

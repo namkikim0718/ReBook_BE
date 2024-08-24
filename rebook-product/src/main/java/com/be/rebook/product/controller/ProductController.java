@@ -56,7 +56,7 @@ public class ProductController {
      */
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@Auth MemberLoginInfo memberLoginInfo) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllMyProducts(memberLoginInfo.getUsername())));
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllMyProducts(memberLoginInfo)));
     }
 
     /**
