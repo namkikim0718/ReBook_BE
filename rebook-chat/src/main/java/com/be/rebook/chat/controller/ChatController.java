@@ -18,7 +18,6 @@ import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
-import com.be.rebook.common.restclients.ProductServiceRestClient;
 import com.be.rebook.common.restclients.RestClientFactory;
 
 import jakarta.validation.constraints.NotNull;
