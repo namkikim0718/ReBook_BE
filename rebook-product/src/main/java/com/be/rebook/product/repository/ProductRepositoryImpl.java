@@ -6,6 +6,9 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,8 +22,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 
     @Override
-    public List<Product> findProductsByFilter(ProductFilterDTO productFilterDTO) {
-        return jpaQueryFactory.selectFrom(product)
+    public Page<Product> findProductsByFilter(ProductFilterDTO productFilterDTO, Pageable pageable) {
+        List<Product> products = jpaQueryFactory.selectFrom(product)
                 .where(
                         universityContains(productFilterDTO.getUniversity()),
                         majorContains(productFilterDTO.getMajor()),
@@ -28,7 +31,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice())
                 )
                 .orderBy(getOrderSpecifier(productFilterDTO.getOrder()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = jpaQueryFactory.selectFrom(product)
+                .where(
+                        universityContains(productFilterDTO.getUniversity()),
+                        majorContains(productFilterDTO.getMajor()),
+                        titleContains(productFilterDTO.getTitle()),
+                        priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice())
+                )
+                .fetch().size();
+
+        return new PageImpl<>(products, pageable, total);
     }
 
     private BooleanExpression universityContains(String university) {

@@ -1,5 +1,7 @@
 package com.be.rebook.product.service;
 
+import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
+import com.be.rebook.common.dto.PaginationResponseDTO;
 import com.be.rebook.common.service.S3Service;
 import com.be.rebook.common.type.S3FolderName;
 import com.be.rebook.product.entity.Product;
@@ -11,6 +13,9 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,11 +39,15 @@ public class ProductService {
 
 
     @Transactional
-    public Long createProduct(String sellerUsername,
+    public Long createProduct(MemberLoginInfo memberLoginInfo,
                               ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO,
                               List<MultipartFile> imageFiles) throws IOException {
 
-
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+        String sellerUsername = memberLoginInfo.getUsername();
         // Product 먼저 저장
         Product product = Product.of(sellerUsername, productSaveRequestDTO);
         Long savedProductId = productRepository.save(product).getId();
@@ -63,7 +72,7 @@ public class ProductService {
     /**
      * 상품 목록 조회
      */
-    public List<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
+    public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
         log.info("dto 까보기");
         log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
                 productFilterDTO.getUniversity(),
@@ -72,13 +81,13 @@ public class ProductService {
                 productFilterDTO.getMinPrice(),
                 productFilterDTO.getMaxPrice());
 
+        Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
 
-        List<Product> products = productRepository.findProductsByFilter(productFilterDTO);
+        Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
+                                                                 .map(ProductListResponseDTO::new);
 
 
-        return products.stream()
-                .map(ProductListResponseDTO::new)
-                .collect(Collectors.toList());
+        return new PaginationResponseDTO<>(productPage);
     }
 
     /**
