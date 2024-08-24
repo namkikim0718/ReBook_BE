@@ -6,7 +6,6 @@ import com.be.rebook.auth.oauth.info.impl.KaKaoOauthMemberInfo;
 
 public class OAuthMemberInfoFactory {
 	public static OAuthMemberInfo getOAuth2MemberInfo(ProviderType providerType, Map<String, Object> attributes) {
-		System.out.println(attributes);
 		switch (providerType) {
 			case KAKAO:
 				return new KaKaoOauthMemberInfo(attributes);

@@ -7,11 +7,10 @@ import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import com.be.rebook.auth.entity.RefreshTokens;
 import com.be.rebook.auth.jwt.type.TokenCategory;
-import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
@@ -19,20 +18,19 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JWTUtil {
     private final SecretKey secretKey;
     private static final Logger jwtUtilLogger = LoggerFactory.getLogger(JWTUtil.class);
+    private final RedisTemplate<String, String> redisTemplate;
 
-    private final RefreshTokensRepository refreshTokensRepository;
-
-    private JWTUtil(@Value("${jwt.secret}") String secret,
-            RefreshTokensRepository refreshTokensRepository) {
+    private JWTUtil(@Value("${jwt.secret}") String secret, RedisTemplate<String, String> redisTemplate) {
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
-        this.refreshTokensRepository = refreshTokensRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     public String getUsername(String token) {
@@ -80,16 +78,12 @@ public class JWTUtil {
         }
     }
 
-    public void saveRefreshToken(String username, String refresh, Long expiredMs) {
+    public void saveRefreshToken(String username, String refreshToken) {
+        int expiryInSec = TokenCategory.REFRESH.getExpiry().intValue() / 1000;
+        redisTemplate.opsForValue().set(username, refreshToken, expiryInSec, TimeUnit.SECONDS);
+    }
 
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshTokens refreshTokens = RefreshTokens.builder()
-                .username(username)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-
-        refreshTokensRepository.save(refreshTokens);
+    public String getRefreshTokenByUsername(String username) {
+        return redisTemplate.opsForValue().get(username);
     }
 }
