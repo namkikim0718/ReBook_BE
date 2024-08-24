@@ -1,24 +1,65 @@
 package com.be.rebook.chat.entity;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.List;
 
+import com.be.rebook.chat.dto.ChatMessageDTO;
+import com.be.rebook.chat.dto.CreateChatRoomDto;
+import com.be.rebook.common.config.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-public class ChatRoom implements Serializable {
+@Entity
+@NoArgsConstructor
+public class ChatRoom extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6494678977089006639L;
 
-    private String roomId;
-    private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_room_id")
+    private Long id;
 
-    public static ChatRoom create(String name) {
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID().toString();
-        chatRoom.name = name;
-        return chatRoom;
+    @Column(name = "buyer_id")
+    private Long buyerId;
+
+    @Column(name = "seller_id")
+    private Long sellerId;
+
+    @Column(name = "product_id")
+    private Long productId;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> messages;
+
+    public ChatRoom(Long buyerId, Long sellerId, Long productId) {
+        this.buyerId = buyerId;
+        this.sellerId = sellerId;
+        this.productId = productId;
+    }
+
+    public ChatRoom(CreateChatRoomDto createChatRoomDto) {
+        this.buyerId = createChatRoomDto.getBuyerId();
+        this.sellerId = createChatRoomDto.getSellerId();
+        this.productId = createChatRoomDto.getProductId();
+    }
+
+    public void addMessage(ChatMessageDTO messageDto) {
+        ChatMessage chatMessage = new ChatMessage(messageDto, this);
+        this.messages.add(chatMessage);
+    }
+
+    public String toString() {
+        return "ChatRoom{" + "id=" + id + ", buyerId=" + buyerId + ", sellerId=" + sellerId + ", productId=" + productId
+                + ", messages=" + messages + '}';
     }
 }

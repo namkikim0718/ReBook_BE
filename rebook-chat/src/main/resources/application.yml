@@ -53,4 +53,4 @@ cloud:
 
 cors:
   allow:
-    origins: http://localhost:3000
+    origins: ${CORS_ALLOW_ORIGINS:localhost}

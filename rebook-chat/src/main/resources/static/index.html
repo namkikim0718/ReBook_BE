@@ -21,11 +21,12 @@
 
         function connect() {
             const chatRoomId = 1;
-            var socket = new SockJS('/ws-stomp');
+            var socket = new SockJS('/chat/ws/stomp');
+            var reconnect = 0;
             stompClient = Stomp.over(socket);
             // pub/sub event
             stompClient.connect({}, function (frame) {
-                stompClient.subscribe("/sub/chat/room/" + 1, function (message) {
+                stompClient.subscribe("/chat/sub/room/" + 3, function (message) {
                     console.log(message.body);
                     console.log(message.body.senderId)
                     var recv = JSON.parse(message.body);
@@ -33,12 +34,12 @@
                 });
 
                 var senderId = document.getElementById('senderId').value;
-                stompClient.send("/pub/chat/message", {}, JSON.stringify({ type: 'ENTER', roomId: 1, sender: senderId }));
+                stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'ENTER', roomId: 3, senderId: senderId }));
             }, function (error) {
                 if (reconnect++ <= 5) {
                     setTimeout(function () {
                         console.log("connection reconnect");
-                        sock = new SockJS("/ws-stomp");
+                        sock = new SockJS("/chat/ws/stomp");
                         ws = Stomp.over(sock);
                         connect();
                     }, 10 * 1000);
@@ -46,22 +47,11 @@
             });
         }
 
-        // stompClient.connect({}, function (frame) {
-        //     stompClient.subscribe('/sub/room/' + chatRoomId, function (message) {
-        //         console.log("Received message: " + message.body);
-        //     });
-        // });
-
         function sendMessage() {
             var messageInput = document.getElementById('messageInput').value;
             var senderId = document.getElementById('senderId').value;
-            stompClient.send("/pub/chat/message", {}, JSON.stringify({ type: 'TALK', roomId: 1, senderId: senderId, message: messageInput }));
+            stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'TALK', roomId: 3, senderId: senderId, message: messageInput }));
         }
-
-        // function sendMessage() {
-        //     var messageInput = document.getElementById('messageInput').value;
-        //     stompClient.send("/chat/message", {}, messageInput);
-        // }
 
         function showMessage(message) {
             var messagesDiv = document.getElementById('messages');
