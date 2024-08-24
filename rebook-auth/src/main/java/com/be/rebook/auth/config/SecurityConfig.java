@@ -38,8 +38,7 @@ public class SecurityConfig {
 
     private final RefreshTokensRepository refreshTokensRepository;
 
-    // 환경변수 파일에서 각 허용된 도메인은 콤마와 공백으로 구분됩니다.
-    @Value("#{'${CORS_ALLOW_ORIGINS}'.split(',\\s*')}")
+    @Value("${cors.allow.origins}")
     private String[] ALLOWED_ORIGINS;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
