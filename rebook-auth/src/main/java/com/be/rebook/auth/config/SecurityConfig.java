@@ -9,6 +9,7 @@ import com.be.rebook.auth.jwt.LoginFilter;
 import com.be.rebook.auth.oauth.handler.OAuthAuthenticationSuccessHandler;
 import com.be.rebook.auth.oauth.service.CustomOAuth2UserService;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +37,10 @@ public class SecurityConfig {
     private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
 
     private final RefreshTokensRepository refreshTokensRepository;
+
+    // 환경변수 파일에서 각 허용된 도메인은 콤마와 공백으로 구분됩니다.
+    @Value("#{'${CORS_ALLOW_ORIGINS}'.split(',\\s*')}")
+    private String[] ALLOWED_ORIGINS;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
             CookieUtil cookieUtil,
@@ -66,7 +71,7 @@ public class SecurityConfig {
         http.cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://www.rebook45.link", "https://rebook45.link"));
+                    configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
