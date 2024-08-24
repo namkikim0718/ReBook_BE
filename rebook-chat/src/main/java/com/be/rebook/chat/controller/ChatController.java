@@ -18,6 +18,7 @@ import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
+
 import com.be.rebook.common.restclients.RestClientFactory;
 
 import jakarta.validation.constraints.NotNull;
@@ -46,9 +47,10 @@ public class ChatController {
         if (memberLoginInfo == null) { // TODO : AUTH 비동기 문제 해결되면 빼도됨
             throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO : 적절한 예외처리 변경
         }
+        List<ChatRoomDto> chatRoomDtos = chatService.findChatRoomsByUsername(memberLoginInfo.getUsername());
+
         return ResponseEntity.ok()
-                .body(new BaseResponse<List<ChatRoomDto>>(
-                        chatService.findChatRoomsByUsername(memberLoginInfo.getUsername())));
+                .body(new BaseResponse<List<ChatRoomDto>>(chatRoomDtos));
     }
 
     // @DeleteMapping("/rooms/{roomId}") // TODO : 채팅방 삭제 구현 (listener도 삭제해야함)

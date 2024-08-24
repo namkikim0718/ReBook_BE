@@ -35,7 +35,16 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findChatRoomsByUsername(String username) {
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByMemberUsername(username);
-        return chatRooms.stream().map(ChatRoomDto::new).toList();
+
+        List<ChatRoomDto> chatRoomDtos = chatRooms.stream().map((chatRoom) -> {
+            ChatRoomDto chatRoomDto = new ChatRoomDto(chatRoom);
+            Integer unreadCount = chatMessageRepository
+                    .countUnreadMessagesByChatRoomIdAndNotSenderUsername(chatRoom.getId(), username);
+            chatRoomDto.setUnreadCount(unreadCount);
+            return new ChatRoomDto(chatRoom);
+        }).toList();
+
+        return chatRoomDtos;
     }
 
     @Transactional

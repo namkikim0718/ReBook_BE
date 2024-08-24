@@ -1,6 +1,7 @@
 package com.be.rebook.chat.dto;
 
 import com.be.rebook.chat.entity.ChatRoom;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,9 @@ public class ChatRoomDto {
     private String sellerUsername;
 
     private Long productId;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer unreadCount;
 
     public ChatRoomDto(ChatRoom chatRoom) {
         this.roomId = chatRoom.getId();
