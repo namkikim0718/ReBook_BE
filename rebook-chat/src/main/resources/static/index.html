@@ -13,28 +13,28 @@
         <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
         <button onclick="sendMessage()">보내기</button>
     </div>
-    <input type="text" id="senderId" placeholder="보내는 사람Id">
+    <input type="text" id="senderUsername" placeholder="보내는 사람Id">
     <div id="messages"></div>
 
     <script>
         var stompClient = null;
+        const chatRoomId = 2;
 
         function connect() {
-            const chatRoomId = 1;
             var socket = new SockJS('/chat/ws/stomp');
             var reconnect = 0;
             stompClient = Stomp.over(socket);
             // pub/sub event
             stompClient.connect({}, function (frame) {
-                stompClient.subscribe("/chat/sub/room/" + 3, function (message) {
+                stompClient.subscribe("/chat/sub/room/" + chatRoomId, function (message) {
                     console.log(message.body);
-                    console.log(message.body.senderId)
+                    console.log(message.body.senderUsername)
                     var recv = JSON.parse(message.body);
-                    showMessage(recv.senderId + " : " + recv.message);
+                    showMessage(recv.senderUsername + " : " + recv.message);
                 });
 
-                var senderId = document.getElementById('senderId').value;
-                stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'ENTER', roomId: 3, senderId: senderId }));
+                var senderUsername = document.getElementById('senderUsername').value;
+                stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'ENTER', roomId: chatRoomId, senderUsername: senderUsername }));
             }, function (error) {
                 if (reconnect++ <= 5) {
                     setTimeout(function () {
@@ -49,8 +49,8 @@
 
         function sendMessage() {
             var messageInput = document.getElementById('messageInput').value;
-            var senderId = document.getElementById('senderId').value;
-            stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'TALK', roomId: 3, senderId: senderId, message: messageInput }));
+            var senderUsername = document.getElementById('senderUsername').value;
+            stompClient.send("/chat/pub/message", {}, JSON.stringify({ type: 'TALK', roomId: chatRoomId, senderUsername: senderUsername, message: messageInput }));
         }
 
         function showMessage(message) {

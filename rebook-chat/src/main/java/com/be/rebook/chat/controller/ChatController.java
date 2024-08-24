@@ -34,6 +34,11 @@ public class ChatController {
 
     private final ChatSocketService chatSocketService;
 
+    @GetMapping("/test")
+    public ResponseEntity<BaseResponse<String>> test(@Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok().body(new BaseResponse<String>(memberLoginInfo.toString()));
+    }
+
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<BaseResponse<List<ChatMessageDTO>>> getChatRoomHistory( // TODO : AUTH 인증
             @NotNull(message = "roomId must not be null") @PathVariable Long roomId) {
@@ -42,7 +47,7 @@ public class ChatController {
 
     @GetMapping("/me/rooms")
     public ResponseEntity<BaseResponse<List<ChatRoomDto>>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
-        if (memberLoginInfo == null) { // TODO : AUTH 문제 해결되면 빼도됨
+        if (memberLoginInfo == null) { // TODO : AUTH 비동기 문제 해결되면 빼도됨
             throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO : 적절한 예외처리 변경
         }
         return ResponseEntity.ok()
@@ -58,7 +63,11 @@ public class ChatController {
     // }
 
     @PostMapping("/rooms") // TODO : AUTH 인증
-    public ResponseEntity<BaseResponse<Long>> createChatRoom(@RequestBody CreateChatRoomDto createChatRoomDto) {
+    public ResponseEntity<BaseResponse<Long>> createChatRoom(@Auth MemberLoginInfo memberLoginInfo,
+            @RequestBody CreateChatRoomDto createChatRoomDto) {
+        if (memberLoginInfo == null) { // TODO : AUTH 비동기 문제 해결되면 빼도됨
+            throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO : 적절한 예외처리 변경
+        }
 
         return ResponseEntity.ok().body(new BaseResponse<Long>(chatService.createChatRoom(createChatRoomDto)));
     }
