@@ -277,6 +277,8 @@ public class MemberService {
         }
 
         return OtherUserinfoDTO.builder()
+                .memberId(member.getMemberId())
+                .username(member.getUsername())
                 .nickname(member.getNickname())
                 .storedFileName(member.getStoredFileName())
                 .university(returnUnv)
