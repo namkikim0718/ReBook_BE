@@ -18,6 +18,8 @@ import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
+import com.be.rebook.common.restclients.ProductServiceRestClient;
+import com.be.rebook.common.restclients.RestClientFactory;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +34,7 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    private final ChatSocketService chatSocketService;
-
-    @GetMapping("/test")
-    public ResponseEntity<BaseResponse<String>> test(@Auth MemberLoginInfo memberLoginInfo) {
-        return ResponseEntity.ok().body(new BaseResponse<String>(memberLoginInfo.toString()));
-    }
+    private final RestClientFactory restClientFactory;
 
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<BaseResponse<List<ChatMessageDTO>>> getChatRoomHistory( // TODO : AUTH 인증
@@ -55,14 +52,15 @@ public class ChatController {
                         chatService.findChatRoomsByUsername(memberLoginInfo.getUsername())));
     }
 
-    // @DeleteMapping("/rooms/{roomId}") // TODO : 채팅방 삭제 구현
+    // @DeleteMapping("/rooms/{roomId}") // TODO : 채팅방 삭제 구현 (listener도 삭제해야함)
     // public ResponseEntity<BaseResponse<Long>> deleteChatRoom( // TODO : AUTH 인증
     // @Auth MemberLoginInfo memberLoginInfo,
     // @NotNull(message = "roomId must not be null") @PathVariable Long roomId) {
     // return ResponseEntity.ok().body(new BaseResponse<Long>(deletedRoomId));
     // }
 
-    @PostMapping("/rooms") // TODO : AUTH 인증
+    // TODO : 서버간 통신 인터페이스 작성 완료시 상품의 판매자와 요청이 일치하는지 검사해야함
+    @PostMapping("/rooms")
     public ResponseEntity<BaseResponse<Long>> createChatRoom(@Auth MemberLoginInfo memberLoginInfo,
             @RequestBody CreateChatRoomDto createChatRoomDto) {
         if (memberLoginInfo == null) { // TODO : AUTH 비동기 문제 해결되면 빼도됨
