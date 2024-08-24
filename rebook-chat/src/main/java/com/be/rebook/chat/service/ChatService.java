@@ -15,6 +15,7 @@ import com.be.rebook.chat.dto.ChatRoomDto;
 import com.be.rebook.chat.dto.CreateChatRoomDto;
 import com.be.rebook.chat.entity.ChatMessage;
 import com.be.rebook.chat.entity.ChatRoom;
+import com.be.rebook.chat.repository.ChatMessageRepository;
 import com.be.rebook.chat.repository.ChatRoomRepository;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
@@ -27,6 +28,8 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
 
+    private final ChatMessageRepository chatMessageRepository;
+
     @Transactional(readOnly = true)
     public ChatRoomDto findChatRoomById(Long id) {
         ChatRoom chatRoom = chatRoomRepository.findById(id)
@@ -35,10 +38,30 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
+    public List<ChatRoomDto> findChatRoomsByUsername(String username) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByMemberUsername(username);
+        return chatRooms.stream().map(ChatRoomDto::new).toList();
+    }
+
+    @Transactional
+    public void patchMessageRead(Long chatMessageId) {
+        ChatMessage chatMessage = chatMessageRepository.findById(chatMessageId)
+                .orElseThrow(() -> new BaseException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
+        chatMessage.setIsRead(true);
+        chatMessageRepository.save(chatMessage);
+    }
+
+    @Transactional
     public List<ChatMessageDTO> getChatRoomHistory(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findChatRoomById(roomId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CHAT_ROOM_NOT_FOUND));
         List<ChatMessage> messages = chatRoom.getMessages();
+
+        // 각 메시지의 isRead 필드를 true로 업데이트
+        // TODO: 메시지 수가 많아지게 되면 성능 이슈가 발생할 수 있음
+        messages.forEach(message -> message.setIsRead(true));
+        chatRoomRepository.save(chatRoom);
+
         List<ChatMessageDTO> messageDtos = messages.stream().map(ChatMessageDTO::new).toList();
         return messageDtos;
     }
@@ -55,8 +78,9 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new BaseException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        Long senderId = message.getSenderId();
-        if (senderId != chatRoom.getBuyerId() && senderId != chatRoom.getSellerId()) {
+        String senderUsername = message.getSenderUsername();
+        if (!senderUsername.equals(chatRoom.getBuyerUsername())
+                && !senderUsername.equals(chatRoom.getSellerUsername())) {
             throw new BaseException(ErrorCode.CHAT_SENDER_NOT_EIXIST);
         }
 

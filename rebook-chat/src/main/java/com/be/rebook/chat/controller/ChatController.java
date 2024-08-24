@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.be.rebook.chat.dto.ChatMessageDTO;
+import com.be.rebook.chat.dto.ChatRoomDto;
 import com.be.rebook.chat.dto.CreateChatRoomDto;
 import com.be.rebook.chat.service.ChatService;
 import com.be.rebook.chat.service.ChatSocketService;
 import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
+import com.be.rebook.common.exception.BaseException;
+import com.be.rebook.common.exception.ErrorCode;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +40,16 @@ public class ChatController {
     public ResponseEntity<BaseResponse<List<ChatMessageDTO>>> getChatRoomHistory( // TODO : AUTH 인증
             @NotNull(message = "roomId must not be null") @PathVariable Long roomId) {
         return ResponseEntity.ok().body(new BaseResponse<List<ChatMessageDTO>>(chatService.getChatRoomHistory(roomId)));
+    }
+
+    @GetMapping("/me/rooms")
+    public ResponseEntity<BaseResponse<List<ChatRoomDto>>> getMethodName(@Auth MemberLoginInfo memberLoginInfo) {
+        if (memberLoginInfo == null) { // TODO : AUTH 문제 해결되면 빼도됨
+            throw new BaseException(ErrorCode.UNAUTHORIZED); // TODO : 적절한 예외처리 변경
+        }
+        return ResponseEntity.ok()
+                .body(new BaseResponse<List<ChatRoomDto>>(
+                        chatService.findChatRoomsByUsername(memberLoginInfo.getUsername())));
     }
 
     // @DeleteMapping("/rooms/{roomId}") // TODO : 채팅방 삭제 구현

@@ -56,4 +56,9 @@ public class ChatSocketService {
         ChannelTopic topic = new ChannelTopic(message.getRoomId().toString());
         redisPublisher.publish(topic, message);
     }
+
+    @Transactional
+    public void readMessage(Long chatMessageId) {
+        chatService.patchMessageRead(chatMessageId);
+    }
 }

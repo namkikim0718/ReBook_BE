@@ -10,11 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateChatRoomDto {
 
-    @NotNull(message = "Buyer id is required")
-    private Long buyerId;
+    private String buyerUsername;
 
-    @NotNull(message = "Seller id is required")
-    private Long sellerId;
+    private String sellerUsername;
 
     @NotNull(message = "Product id is required")
     private Long productId;

@@ -36,6 +36,9 @@ public class ChatSocketController {
                 case ENTER:
                     chatSocketService.enterChatRoom(message.getRoomId());
                     break;
+                case READ:
+                    // TODO : 읽음 처리
+                    chatSocketService.readMessage(message.getChatMessageId());
                 case ERROR:
                     // TODO : 현재는 에러 메시지 요청에 대한 응답이 없음
                     break;

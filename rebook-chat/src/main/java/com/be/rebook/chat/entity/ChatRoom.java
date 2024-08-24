@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,27 +30,28 @@ public class ChatRoom extends BaseEntity implements Serializable {
     @Column(name = "chat_room_id")
     private Long id;
 
-    @Column(name = "buyer_id")
-    private Long buyerId;
+    @Column(name = "buyer_username")
+    private String buyerUsername;
 
-    @Column(name = "seller_id")
-    private Long sellerId;
+    @Column(name = "seller_username")
+    private String sellerUsername;
 
     @Column(name = "product_id")
     private Long productId;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
     private List<ChatMessage> messages;
 
-    public ChatRoom(Long buyerId, Long sellerId, Long productId) {
-        this.buyerId = buyerId;
-        this.sellerId = sellerId;
+    public ChatRoom(String buyerUsername, String sellerUsername, Long productId) {
+        this.buyerUsername = buyerUsername;
+        this.sellerUsername = sellerUsername;
         this.productId = productId;
     }
 
     public ChatRoom(CreateChatRoomDto createChatRoomDto) {
-        this.buyerId = createChatRoomDto.getBuyerId();
-        this.sellerId = createChatRoomDto.getSellerId();
+        this.buyerUsername = createChatRoomDto.getBuyerUsername();
+        this.sellerUsername = createChatRoomDto.getSellerUsername();
         this.productId = createChatRoomDto.getProductId();
     }
 
@@ -59,7 +61,9 @@ public class ChatRoom extends BaseEntity implements Serializable {
     }
 
     public String toString() {
-        return "ChatRoom{" + "id=" + id + ", buyerId=" + buyerId + ", sellerId=" + sellerId + ", productId=" + productId
+        return "ChatRoom{" + "id=" + id + ", buyerUsername=" + buyerUsername + ", sellerUsername=" + sellerUsername
+                + ", productId="
+                + productId
                 + ", messages=" + messages + '}';
     }
 }

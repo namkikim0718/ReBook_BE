@@ -13,24 +13,24 @@ public class ChatRoomDto {
 
     private Long roomId;
 
-    private Long buyerId;
+    private String buyerUsername;
 
-    private Long sellerId;
+    private String sellerUsername;
 
     private Long productId;
 
     public ChatRoomDto(ChatRoom chatRoom) {
         this.roomId = chatRoom.getId();
-        this.buyerId = chatRoom.getBuyerId();
-        this.sellerId = chatRoom.getSellerId();
+        this.buyerUsername = chatRoom.getBuyerUsername();
+        this.sellerUsername = chatRoom.getSellerUsername();
         this.productId = chatRoom.getProductId();
     }
 
     public String toString() {
         return "ChatRoomDto{" +
                 "roomId=" + roomId +
-                ", buyerId=" + buyerId +
-                ", sellerId=" + sellerId +
+                ", buyerUsername=" + buyerUsername +
+                ", sellerUsername=" + sellerUsername +
                 ", productId=" + productId +
                 '}';
     }

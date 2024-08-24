@@ -9,19 +9,22 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ChatMessageDTO {
-    private Long senderId;
+public class ChatMessageDTO { // TODO : ChatMessage 추상화
+    private String senderUsername;
     private MessageType type;
     private String message;
     private Long roomId;
+
+    // READ 전용
+    private Long chatMessageId;
     private boolean isRead;
 
     public enum MessageType {
-        JOIN, TALK, ENTER, ERROR
+        JOIN, TALK, ENTER, READ, ERROR
     }
 
     public ChatMessageDTO(ChatMessage message) {
-        this.senderId = message.getSenderId();
+        this.senderUsername = message.getSenderUsername();
         this.type = ChatMessageDTO.MessageType.TALK;
         this.message = message.getMessage();
         this.roomId = message.getChatRoom().getId();
@@ -31,7 +34,7 @@ public class ChatMessageDTO {
     @Override
     public String toString() {
         return "ChatMessageDTO{" +
-                "senderId=" + senderId +
+                "senderUsername=" + senderUsername +
                 ", type=" + type +
                 ", message='" + message + '\'' +
                 ", roomId=" + roomId +

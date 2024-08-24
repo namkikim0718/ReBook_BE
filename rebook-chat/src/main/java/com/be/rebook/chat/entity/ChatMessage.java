@@ -26,8 +26,8 @@ public class ChatMessage extends BaseEntity {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "sender_id")
-    private Long senderId;
+    @Column(name = "sender_username")
+    private String senderUsername;
 
     @Column(name = "is_read")
     private Boolean isRead;
@@ -36,9 +36,13 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
+    public void setIsRead(Boolean isRead) {
+        this.isRead = isRead;
+    }
+
     public ChatMessage(ChatMessageDTO message, ChatRoom chatRoom) {
         this.message = message.getMessage();
-        this.senderId = message.getSenderId();
+        this.senderUsername = message.getSenderUsername();
         this.isRead = false;
         this.chatRoom = chatRoom;
     }
