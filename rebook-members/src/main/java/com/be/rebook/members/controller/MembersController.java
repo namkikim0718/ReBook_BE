@@ -51,7 +51,7 @@ public class MembersController {
                 .build()));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/info/{username}")
     public ResponseEntity<BaseResponse<OtherUserinfoDTO>> getOtherUserinfo(@Auth MemberLoginInfo memberLoginInfo, @PathVariable String username){
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getOtherUserinfo(username)));
     }
