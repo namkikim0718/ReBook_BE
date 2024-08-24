@@ -1,5 +1,6 @@
 package com.be.rebook.product.dto;
 
+import com.be.rebook.common.dto.PaginationRequestDTO;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
@@ -32,7 +33,7 @@ public class ProductRequestDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProductFilterDTO {
+    public static class ProductFilterDTO extends PaginationRequestDTO {
 
         @Builder.Default
         private String university = "";

@@ -1,7 +1,6 @@
 package com.be.rebook.auth.jwt;
 
 import com.be.rebook.auth.jwt.type.TokenCategory;
-import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.auth.utility.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,15 +31,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
 
-    private final RefreshTokensRepository refreshTokensRepository;
-
     public LoginFilter(AuthenticationManager authenticationManager,
             JWTUtil jwtUtil,
-            RefreshTokensRepository refreshTokensRepository,
             CookieUtil cookieUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.refreshTokensRepository = refreshTokensRepository;
         this.cookieUtil = cookieUtil;
         setFilterProcessesUrl("/auth/signin");
     }
@@ -95,7 +90,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt(TokenCategory.ACCESS, username, role, TokenCategory.ACCESS.getExpiry());
         String refresh = jwtUtil.createJwt(TokenCategory.REFRESH, username, role, TokenCategory.REFRESH.getExpiry());
 
-        jwtUtil.saveRefreshToken(username, refresh, TokenCategory.REFRESH.getExpiry());
+        jwtUtil.saveRefreshToken(username, refresh);
 
         response.setHeader(TokenCategory.ACCESS.getName(), access);
         response.addCookie(cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,

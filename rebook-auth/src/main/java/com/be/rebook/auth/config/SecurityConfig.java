@@ -1,6 +1,5 @@
 package com.be.rebook.auth.config;
 
-import com.be.rebook.auth.repository.RefreshTokensRepository;
 import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.auth.jwt.CustomLogoutFilter;
 import com.be.rebook.auth.jwt.JWTFilter;
@@ -28,85 +27,86 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final JWTUtil jwtUtil;
-    private final CookieUtil cookieUtil;
+        private final AuthenticationConfiguration authenticationConfiguration;
+        private final JWTUtil jwtUtil;
+        private final CookieUtil cookieUtil;
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
+        private final CustomOAuth2UserService customOAuth2UserService;
+        private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
 
-    private final RefreshTokensRepository refreshTokensRepository;
+        public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
+                        CookieUtil cookieUtil,
+                        CustomOAuth2UserService customOAuth2UserService,
+                        OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler) {
+                this.authenticationConfiguration = authenticationConfiguration;
+                this.jwtUtil = jwtUtil;
+                this.cookieUtil = cookieUtil;
+                this.customOAuth2UserService = customOAuth2UserService;
+                this.oAuthAuthenticationSuccessHandler = oAuthAuthenticationSuccessHandler;
+        }
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
-            CookieUtil cookieUtil,
-            RefreshTokensRepository refreshTokensRepository, CustomOAuth2UserService customOAuth2UserService,
-            OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-        this.cookieUtil = cookieUtil;
-        this.refreshTokensRepository = refreshTokensRepository;
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.oAuthAuthenticationSuccessHandler = oAuthAuthenticationSuccessHandler;
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+                        throws Exception {
+                return configuration.getAuthenticationManager();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-            throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+        @Bean
+        public BCryptPasswordEncoder bCryptPasswordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http.cors(cors -> cors
+                                .configurationSource(request -> {
+                                        CorsConfiguration configuration = new CorsConfiguration();
 
-        http.cors(cors -> cors
-                .configurationSource(request -> {
-                    CorsConfiguration configuration = new CorsConfiguration();
+                                        configuration.setAllowedOrigins(
+                                                        Collections.singletonList("http://localhost:5173"));
+                                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                                        configuration.setAllowCredentials(true);
+                                        configuration.setAllowedHeaders(Collections.singletonList("*"));
+                                        configuration.setMaxAge(3600L);
+                                        configuration.setExposedHeaders(Arrays.asList("Authorization", "access"));
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-                    configuration.setMaxAge(3600L);
-                    configuration.setExposedHeaders(Arrays.asList("Authorization", "access"));
+                                        return configuration;
+                                }));
 
-                    return configuration;
-                }));
+                http.csrf(auth -> auth.disable());
+                http.formLogin(auth -> auth.disable());
+                http.httpBasic(auth -> auth.disable());
 
-        http.csrf(auth -> auth.disable());
-        http.formLogin(auth -> auth.disable());
-        http.httpBasic(auth -> auth.disable());
+                http.authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*")
+                                .permitAll()
+                                .requestMatchers("/auth/oauth2/code/*").permitAll()
+                                // fixme : requestMatchers에 잡히지 않으면 ("/auth/members/refreshtoken" 로 되있었을때) OAuth
+                                // .redirectionEndPoint로 리다이렉션 때려버림.. 대체 왜죠????
+                                .requestMatchers("/auth/members/refreshtoken/reissue", "/auth/members/password/reset")
+                                .permitAll()
+                                .requestMatchers("/error").permitAll()
+                                .requestMatchers("/").permitAll() // 테스트용 루트경로 혀용
+                                .anyRequest().authenticated());
 
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/signin", "/", "/auth/members/signup", "/auth/members/signup/*").permitAll()
-                .requestMatchers("/auth/oauth2/code/*").permitAll()
-                //fixme : requestMatchers에 잡히지 않으면 ("/auth/members/refreshtoken" 로 되있었을때) OAuth .redirectionEndPoint로 리다이렉션 때려버림.. 대체 왜죠????
-                .requestMatchers("/auth/members/refreshtoken/reissue", "/auth/members/password/reset").permitAll()
-                .requestMatchers("/error").permitAll()
-                .requestMatchers("/").permitAll() //테스트용 루트경로 혀용
-                .anyRequest().authenticated());
+                http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
+                http.addFilterAt(
+                                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
+                                                cookieUtil),
+                                UsernamePasswordAuthenticationFilter.class);
+                http.addFilterBefore(new CustomLogoutFilter(cookieUtil), LogoutFilter.class);
 
-        http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
-        http.addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokensRepository,
-                        cookieUtil),
-                UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokensRepository), LogoutFilter.class);
+                http.oauth2Login((oauth2Login) -> oauth2Login
+                                .authorizationEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/signin"))
+                                .redirectionEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/code/*"))
+                                .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
+                                                .userService(customOAuth2UserService))
+                                .successHandler(oAuthAuthenticationSuccessHandler));
 
-        http.oauth2Login((oauth2Login) -> oauth2Login
-                .authorizationEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/signin"))
-                .redirectionEndpoint(endpoint -> endpoint.baseUri("/auth/oauth2/code/*"))
-                .userInfoEndpoint((userInfoEndpoint) -> userInfoEndpoint
-                        .userService(customOAuth2UserService))
-                .successHandler(oAuthAuthenticationSuccessHandler));
+                http.sessionManagement(session -> session
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        return http.build();
-    }
+                return http.build();
+        }
 }

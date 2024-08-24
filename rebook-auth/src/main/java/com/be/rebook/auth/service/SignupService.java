@@ -6,6 +6,7 @@ import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.jwt.JWTUtil;
 import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.MembersRepository;
+import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
@@ -30,22 +31,30 @@ public class SignupService {
     private final EmailService emailService;
 
     private final JWTUtil jwtUtil;
+    private final CookieUtil cookieUtil;
 
     public SignupService(MembersRepository membersRepository,
-                        BCryptPasswordEncoder bCryptPasswordEncoder,
-                        RedisManagerImpl redisManager,
-                        EmailService emailService,
-                        JWTUtil jwtUtil){
+                         BCryptPasswordEncoder bCryptPasswordEncoder,
+                         RedisManagerImpl redisManager,
+                         EmailService emailService,
+                         JWTUtil jwtUtil,
+                         CookieUtil cookieUtil){
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.redisManager = redisManager;
         this.emailService = emailService;
         this.jwtUtil = jwtUtil;
+        this.cookieUtil = cookieUtil;
     }
 
     @Transactional
     public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO){
         String mailToken = null;
+
+        if(request.getCookies().length == 0){
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+
         for(Cookie cookie : request.getCookies()){
             if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
                 mailToken = cookie.getValue();
@@ -77,7 +86,9 @@ public class SignupService {
                 .build();
 
         membersRepository.save(data);
-        return data;
+        return Members.builder()
+                .username(username)
+                .build();
     }
 
     private String generateVerificationCode() {
@@ -87,14 +98,8 @@ public class SignupService {
     }
 
     public Members sendVerification(String username) {
-
-        Boolean isExist = membersRepository.existsByUsername(username);
-
-        // 회원 존재하는지 체크하지 않고 Rate Limiter 적용?
-
         // 6자리 랜덤 인증번호 생성
         String verificationCode = generateVerificationCode();
-
 
         // Redis에 인증번호 저장 (키: username, 값: verificationCode, 유효시간: 3분)
         redisManager.setValuesWithDuration(username,verificationCode);
@@ -106,7 +111,6 @@ public class SignupService {
                 .username(username)
                 .build();
     }
-
 
     public Members verifyCode(VerifyDTO verifyDTO, HttpServletResponse response) {
         String username = verifyDTO.getUsername();
@@ -126,11 +130,10 @@ public class SignupService {
                             username,
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
-            Cookie cookie = new Cookie(TokenCategory.MAILAUTH.getName(), mailToken);
-            cookie.setMaxAge(10*60);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            response.addCookie(cookieUtil.createCookie(
+                        TokenCategory.MAILAUTH.getName(),
+                        mailToken,
+                        TokenCategory.MAILAUTH.getExpiry().intValue() / 1000));
         }
 
         return Members.builder()
