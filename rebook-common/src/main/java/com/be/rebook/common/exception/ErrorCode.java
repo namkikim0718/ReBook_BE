@@ -43,6 +43,9 @@ public enum ErrorCode {
     /**
      * 채팅 에러
      */
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 메시지가 존재하지 않습니다."),
+    CHAT_SENDER_NOT_EIXIST(HttpStatus.BAD_REQUEST, "메시지를 보낸 사람이 채팅방에 존재하지 않습니다."),
 
     /**
      * 일반 오류 코드

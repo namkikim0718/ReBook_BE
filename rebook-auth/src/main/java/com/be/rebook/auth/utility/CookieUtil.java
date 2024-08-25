@@ -20,28 +20,14 @@ public class CookieUtil {
         }
 
         return null;
-
-        // String refresh = null;
-
-        // if (request.getCookies().length == 0) {
-        // throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        // }
-
-        // Cookie[] cookies = request.getCookies();
-        // for (Cookie cookie : cookies) {
-        // if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
-        // refresh = cookie.getValue();
-        // }
-        // }
     }
-
+  
     public Cookie createCookie(String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(maxAge);
         cookie.setPath("/");
         // 자바스크립트로 해당 쿠키 접근 못하게
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 }
