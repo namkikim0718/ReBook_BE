@@ -89,7 +89,6 @@ public class ChatService {
         }
 
         chatRoom.addMessage(message);
-        chatRoomRepository.save(chatRoom);
-        return 0L;
+        return chatRoomRepository.save(chatRoom).getId();
     }
 }
