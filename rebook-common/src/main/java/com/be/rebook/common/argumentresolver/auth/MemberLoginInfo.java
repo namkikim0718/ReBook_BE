@@ -10,14 +10,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberLoginInfo {
+
     private String username;
 
     private String role;
 
     public String toString() {
         return "MemberLoginInfo{" +
-                "username='" + username + '\'' +
-                ", role='" + role + '\'' +
+                "username=" + username +
+                ", role=" + role +
                 '}';
     }
 }
