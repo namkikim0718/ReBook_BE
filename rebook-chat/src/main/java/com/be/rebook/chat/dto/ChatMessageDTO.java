@@ -19,6 +19,9 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
     private Long chatMessageId;
     private boolean isRead;
 
+    // 메시지 생성시각
+    private String createdAt;
+
     public enum MessageType {
         JOIN, TALK, ENTER, READ, ERROR
     }
@@ -29,6 +32,8 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
         this.message = message.getMessage();
         this.roomId = message.getChatRoom().getId();
         this.isRead = message.getIsRead();
+        this.chatMessageId = message.getId();
+        this.createdAt = message.getCreatedAt().toString();
     }
 
     @Override

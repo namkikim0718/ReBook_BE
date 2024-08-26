@@ -13,6 +13,10 @@ public class CookieUtil {
     public Cookie findCookieFromRequest(String key, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
+        if (cookies == null) {
+            return null;
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
                 return cookie;
@@ -21,7 +25,7 @@ public class CookieUtil {
 
         return null;
     }
-  
+
     public Cookie createCookie(String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(maxAge);

@@ -46,3 +46,7 @@ cloud:
     credentials:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
+
+cors:
+  allow:
+    origins: ${CORS_ALLOW_ORIGINS:localhost}

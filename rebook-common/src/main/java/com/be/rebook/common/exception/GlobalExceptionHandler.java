@@ -58,6 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(final Exception e) {
         log.error("handleException: {}, {}", e.getMessage(), e.getClass().getSimpleName());
+        e.printStackTrace();
         return ResponseEntity
                 .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus().value())
                 .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR));
@@ -65,7 +66,8 @@ public class GlobalExceptionHandler {
 
     // TODO UnAuthorized
     @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
-    protected ResponseEntity<ErrorResponse> handleUnauthorizedExceptioin(final HttpClientErrorException.Unauthorized e) {
+    protected ResponseEntity<ErrorResponse> handleUnauthorizedExceptioin(
+            final HttpClientErrorException.Unauthorized e) {
         log.error("Unauthorized access attempt: {}, {}", e.getMessage(), e.getClass().getName());
         return ResponseEntity
                 .status(ErrorCode.UNAUTHORIZED.getStatus().value())

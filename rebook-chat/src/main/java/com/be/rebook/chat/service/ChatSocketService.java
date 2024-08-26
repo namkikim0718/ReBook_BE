@@ -48,9 +48,8 @@ public class ChatSocketService {
 
     @Transactional
     public void sendMessage(ChatMessageDTO message) {
-        Long chatMessageId = chatService.addMessageToChatRoom(message);
+        message = chatService.addMessageToChatRoom(message);
 
-        message.setChatMessageId(chatMessageId);
         // 채팅방에 발행된 메시지를 전송한다.
         ChannelTopic topic = new ChannelTopic(message.getRoomId().toString());
         redisPublisher.publish(topic, message);

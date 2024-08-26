@@ -44,6 +44,14 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+  
+  be-rebook-chat:
+    restart: always
+    build:
+      context: ./rebook-chat
+      dockerfile: Dockerfile
+    env_file:
+      - .env
 
   redis:
     image: redis:latest

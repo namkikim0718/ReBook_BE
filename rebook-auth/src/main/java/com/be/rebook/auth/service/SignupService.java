@@ -34,11 +34,11 @@ public class SignupService {
     private final CookieUtil cookieUtil;
 
     public SignupService(MembersRepository membersRepository,
-                         BCryptPasswordEncoder bCryptPasswordEncoder,
-                         RedisManagerImpl redisManager,
-                         EmailService emailService,
-                         JWTUtil jwtUtil,
-                         CookieUtil cookieUtil){
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            RedisManagerImpl redisManager,
+            EmailService emailService,
+            JWTUtil jwtUtil,
+            CookieUtil cookieUtil) {
         this.membersRepository = membersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.redisManager = redisManager;
@@ -48,40 +48,36 @@ public class SignupService {
     }
 
     @Transactional
-    public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO){
+    public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO) {
         String mailToken = null;
 
-        if(request.getCookies().length == 0){
+        Cookie mailCookie = cookieUtil.findCookieFromRequest(TokenCategory.MAILAUTH.getName(), request);
+        if (mailCookie == null) {
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
+        mailToken = mailCookie.getValue();
 
-        for(Cookie cookie : request.getCookies()){
-            if(cookie.getName().equals(TokenCategory.MAILAUTH.getName())){
-                mailToken = cookie.getValue();
-                break;
-            }
-        }
         if (mailToken == null) {
-            //NO_TOKEN_CONTENT
+            // NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         // expired check
-        if(Boolean.TRUE.equals(jwtUtil.isExpired(mailToken))) {
+        if (Boolean.TRUE.equals(jwtUtil.isExpired(mailToken))) {
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
         String username = basicUserInfoDTO.getUsername();
         String password = basicUserInfoDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
-        if(Boolean.TRUE.equals(isExist)){
-            //EXISTING_USER_INFO
+        if (Boolean.TRUE.equals(isExist)) {
+            // EXISTING_USER_INFO
             throw new BaseException(ErrorCode.EXISTING_USER_INFO);
         }
 
         Members data = Members.builder()
                 .username(username)
-                .password(bCryptPasswordEncoder.encode(password+username))
+                .password(bCryptPasswordEncoder.encode(password + username))
                 .role("ROLE_USER")
                 .build();
 
@@ -102,7 +98,7 @@ public class SignupService {
         String verificationCode = generateVerificationCode();
 
         // Redis에 인증번호 저장 (키: username, 값: verificationCode, 유효시간: 3분)
-        redisManager.setValuesWithDuration(username,verificationCode);
+        redisManager.setValuesWithDuration(username, verificationCode);
 
         // 이메일 전송
         emailService.sendVerificationEmail(username, verificationCode);
@@ -122,8 +118,7 @@ public class SignupService {
         if (!storedVerificationCode.equals(code)) {
             // BAD_REQUEST
             throw new BaseException(ErrorCode.MAIL_AUTH_CODE_INCORRECT);
-        }
-        else {
+        } else {
             redisManager.deleteValue(username);
             String mailToken = jwtUtil
                     .createJwt(TokenCategory.MAILAUTH,
@@ -131,9 +126,9 @@ public class SignupService {
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
             response.addCookie(cookieUtil.createCookie(
-                        TokenCategory.MAILAUTH.getName(),
-                        mailToken,
-                        TokenCategory.MAILAUTH.getExpiry().intValue() / 1000));
+                    TokenCategory.MAILAUTH.getName(),
+                    mailToken,
+                    TokenCategory.MAILAUTH.getExpiry().intValue() / 1000));
         }
 
         return Members.builder()
