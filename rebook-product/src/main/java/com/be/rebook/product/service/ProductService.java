@@ -73,6 +73,7 @@ public class ProductService {
      * 상품 목록 조회
      */
     public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
+
         log.info("dto 까보기");
         log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
                 productFilterDTO.getUniversity(),
@@ -93,8 +94,13 @@ public class ProductService {
     /**
      * 내가 쓴 글 조회
      */
-    public List<ProductListResponseDTO> findAllMyProducts(String username) {
-        List<Product> products = productRepository.findProductsBySellerUsername(username);
+    public List<ProductListResponseDTO> findAllMyProducts(MemberLoginInfo memberLoginInfo) {
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
+        List<Product> products = productRepository.findProductsBySellerUsername(memberLoginInfo.getUsername());
 
         productRepository.findById(1L);
         return products.stream()
@@ -113,10 +119,67 @@ public class ProductService {
     }
 
     /**
+     * 상품 정보 수정
+     */
+    @Transactional
+    public Long updateProduct(Long productId,
+                              MemberLoginInfo memberLoginInfo,
+                              ProductRequestDTO.ProductSaveRequestDTO productUpdateRequestDTO,
+                              List<MultipartFile> imageFiles) throws IOException {
+
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
+        // 기존 상품 찾기
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
+
+        // 사용자가 이 상품의 소유자인지 확인
+        if (!existingProduct.getSellerUsername().equals(memberLoginInfo.getUsername())) {
+            log.error("Unauthorized access attempt - user is not the owner of the product");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
+        // 상품 정보 업데이트
+        existingProduct.updateProduct(productUpdateRequestDTO);
+
+        // 기존 이미지 삭제 또는 유지 처리
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            // 기존 이미지를 모두 삭제
+            List<ProductImage> existingImages = productImageRepository.findByProduct(existingProduct);
+            for (ProductImage productImage : existingImages) {
+                s3Service.deleteFile(S3FolderName.PRODUCT, productImage.getStoreFileName()); // S3에서 이미지 삭제
+                productImageRepository.delete(productImage); // DB에서 이미지 삭제
+            }
+
+            // 새로운 이미지 업로드 및 저장
+            for (MultipartFile imageFile : imageFiles) {
+                String storeFileName = s3Service.uploadFile(imageFile, S3FolderName.PRODUCT);
+                ProductImage productImage = ProductImage.builder()
+                        .uploadFileName(imageFile.getOriginalFilename())
+                        .storeFileName(storeFileName)
+                        .product(existingProduct)
+                        .build();
+                productImageRepository.save(productImage);
+            }
+        }
+
+        // 변경된 상품 저장
+        return existingProduct.getId();
+    }
+
+    /**
      * 상품 상태 변경
      */
     @Transactional
-    public Long changeStatus(Long productId, String status) {
+    public Long changeStatus(MemberLoginInfo memberLoginInfo, Long productId, String status) {
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
 
@@ -128,7 +191,13 @@ public class ProductService {
      * 상품 삭제
      */
     @Transactional
-    public String deleteById(Long productId) {
+    public String deleteById(MemberLoginInfo memberLoginInfo, Long productId) {
+
+        if (memberLoginInfo == null) {
+            log.error("Unauthorized access attempt - memberLoginInfo is null");
+            throw new BaseException(ErrorCode.UNAUTHORIZED);
+        }
+
         Product product = productRepository.findById(productId)
                         .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
 
