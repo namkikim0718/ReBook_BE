@@ -13,6 +13,7 @@ cloud:
 #    host: ${REDIS_HOST}
 #    port: ${REDIS_PORT}
 
+# CORS Origin
 cors:
   allow:
     origins: ${CORS_ALLOW_ORIGINS:localhost}

@@ -4,6 +4,8 @@ import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.dto.PaginationResponseDTO;
+import com.be.rebook.common.exception.BaseException;
+import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,17 @@ public class ProductController {
     }
 
     /**
+     * 상품 수정
+     */
+    @PutMapping("{productId}")
+    public ResponseEntity<BaseResponse<Long>> updateProduct(@PathVariable("productId") Long productId,
+                                                            @Auth MemberLoginInfo memberLoginInfo,
+                                                            @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
+                                                            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.updateProduct(productId, memberLoginInfo, productSaveRequestDTO, imageFiles)));
+    }
+
+    /**
      * 상품 목록 조회
      */
     @GetMapping
@@ -73,7 +86,7 @@ public class ProductController {
     /**
      * 상품 상태 변경
      */
-    @PatchMapping("/{productId}")
+    @PatchMapping("/status/{productId}")
     public ResponseEntity<BaseResponse<Long>> changeProductStatus(@PathVariable("productId") Long productId,
             @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
         return ResponseEntity.ok()
@@ -84,8 +97,9 @@ public class ProductController {
      * 상품 삭제
      */
     @DeleteMapping("/{productId}")
-    public ResponseEntity<BaseResponse<String>> deleteProductById(@PathVariable("productId") Long productId) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.deleteById(productId)));
+    public ResponseEntity<BaseResponse<String>> deleteProductById(@PathVariable("productId") Long productId,
+                                                                  @Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.deleteById(memberLoginInfo, productId)));
     }
 
 }

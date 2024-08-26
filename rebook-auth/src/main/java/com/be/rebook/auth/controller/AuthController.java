@@ -10,7 +10,6 @@ import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.service.ReissueService;
 import com.be.rebook.auth.service.SignupService;
 import com.be.rebook.auth.utility.CookieUtil;
-import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
@@ -31,6 +30,7 @@ import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "${cors.allow.origins}")
 public class AuthController {
 
     private static final Logger signupLogger = LoggerFactory.getLogger(AuthController.class);
