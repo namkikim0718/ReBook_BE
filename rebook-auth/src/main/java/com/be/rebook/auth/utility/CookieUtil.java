@@ -18,7 +18,7 @@ public class CookieUtil {
         }
 
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TokenCategory.REFRESH.getName())) {
+            if (cookie.getName().equals(key)) {
                 return cookie;
             }
         }
