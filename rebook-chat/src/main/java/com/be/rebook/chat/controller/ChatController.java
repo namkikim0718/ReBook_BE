@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +44,16 @@ public class ChatController {
             @NotNull(message = "roomId must not be null") @PathVariable Long roomId) {
         return ResponseEntity.ok().body(new BaseResponse<List<ChatMessageDTO>>(
                 chatService.getChatRoomHistory(roomId, memberLoginInfo.getUsername())));
+    }
+
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<BaseResponse<ChatRoomDto>> getChatRoomById(
+            @NotNull(message = "roomId must not be null") @PathVariable Long roomId) {
+        return ResponseEntity.ok().body(new BaseResponse<ChatRoomDto>(chatService.findChatRoomById(roomId)));
+    }
+
+    public String getMethodName(@RequestParam String param) {
+        return new String();
     }
 
     @GetMapping("/me/rooms")
