@@ -4,12 +4,9 @@ import com.be.rebook.common.argumentresolver.auth.Auth;
 import com.be.rebook.common.argumentresolver.auth.MemberLoginInfo;
 import com.be.rebook.common.config.BaseResponse;
 import com.be.rebook.common.dto.PaginationResponseDTO;
-import com.be.rebook.common.exception.BaseException;
-import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +46,11 @@ public class ProductController {
      */
     @PutMapping("{productId}")
     public ResponseEntity<BaseResponse<Long>> updateProduct(@PathVariable("productId") Long productId,
-                                                            @Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestPart("productRequest") ProductUpdateRequestDTO productUpdateRequestDTO,
-                                                            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.updateProduct(productId, memberLoginInfo, productUpdateRequestDTO, imageFiles)));
+            @Auth MemberLoginInfo memberLoginInfo,
+            @RequestPart("productRequest") ProductUpdateRequestDTO productUpdateRequestDTO,
+            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+        return ResponseEntity.ok().body(new BaseResponse<>(
+                productService.updateProduct(productId, memberLoginInfo, productUpdateRequestDTO, imageFiles)));
     }
 
     /**
@@ -98,8 +96,8 @@ public class ProductController {
      */
     @DeleteMapping("/{productId}")
     public ResponseEntity<BaseResponse<String>> deleteProductById(@PathVariable("productId") Long productId,
-                                                                  @Auth MemberLoginInfo memberLoginInfo) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.deleteById(memberLoginInfo, productId)));
+            @Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.deleteById(productId)));
     }
 
 }

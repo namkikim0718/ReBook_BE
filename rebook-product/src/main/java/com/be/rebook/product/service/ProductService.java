@@ -37,11 +37,10 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final S3Service s3Service;
 
-
     @Transactional
     public Long createProduct(MemberLoginInfo memberLoginInfo,
-                              ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO,
-                              List<MultipartFile> imageFiles) throws IOException {
+            ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO,
+            List<MultipartFile> imageFiles) throws IOException {
 
         if (memberLoginInfo == null) {
             log.error("Unauthorized access attempt - memberLoginInfo is null");
@@ -72,7 +71,8 @@ public class ProductService {
     /**
      * 상품 목록 조회
      */
-    public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO) {
+    public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(
+            ProductRequestDTO.ProductFilterDTO productFilterDTO) {
 
         log.info("dto 까보기");
         log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
@@ -85,8 +85,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
 
         Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
-                                                                 .map(ProductListResponseDTO::new);
-
+                .map(ProductListResponseDTO::new);
 
         return new PaginationResponseDTO<>(productPage);
     }
@@ -94,13 +93,9 @@ public class ProductService {
     /**
      * 내가 쓴 글 조회
      */
-    public List<ProductListResponseDTO> findAllMyProducts(MemberLoginInfo memberLoginInfo) {
-        if (memberLoginInfo == null) {
-            log.error("Unauthorized access attempt - memberLoginInfo is null");
-            throw new BaseException(ErrorCode.UNAUTHORIZED);
-        }
+    public List<ProductListResponseDTO> findAllMyProducts(String username) {
 
-        List<Product> products = productRepository.findProductsBySellerUsername(memberLoginInfo.getUsername());
+        List<Product> products = productRepository.findProductsBySellerUsername(username);
 
         productRepository.findById(1L);
         return products.stream()
@@ -123,9 +118,9 @@ public class ProductService {
      */
     @Transactional
     public Long updateProduct(Long productId,
-                              MemberLoginInfo memberLoginInfo,
-                              ProductRequestDTO.ProductUpdateRequestDTO productUpdateRequestDTO,
-                              List<MultipartFile> imageFiles) throws IOException {
+            MemberLoginInfo memberLoginInfo,
+            ProductRequestDTO.ProductUpdateRequestDTO productUpdateRequestDTO,
+            List<MultipartFile> imageFiles) throws IOException {
 
         if (memberLoginInfo == null) {
             log.error("Unauthorized access attempt - memberLoginInfo is null");
@@ -181,12 +176,7 @@ public class ProductService {
      * 상품 상태 변경
      */
     @Transactional
-    public Long changeStatus(MemberLoginInfo memberLoginInfo, Long productId, String status) {
-        if (memberLoginInfo == null) {
-            log.error("Unauthorized access attempt - memberLoginInfo is null");
-            throw new BaseException(ErrorCode.UNAUTHORIZED);
-        }
-
+    public Long changeStatus(Long productId, String status) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
 
@@ -198,20 +188,14 @@ public class ProductService {
      * 상품 삭제
      */
     @Transactional
-    public String deleteById(MemberLoginInfo memberLoginInfo, Long productId) {
-
-        if (memberLoginInfo == null) {
-            log.error("Unauthorized access attempt - memberLoginInfo is null");
-            throw new BaseException(ErrorCode.UNAUTHORIZED);
-        }
-
+    public String deleteById(Long productId) {
         Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_PRODUCT));
 
         List<String> fileNames = product.getProductImages().stream()
-                                        .map(ProductImage::getStoreFileName)
-                                        .collect(Collectors.toList());
-        
+                .map(ProductImage::getStoreFileName)
+                .collect(Collectors.toList());
+
         productRepository.deleteById(productId);
 
         fileNames.forEach(fileName -> {
