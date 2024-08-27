@@ -54,7 +54,7 @@ public class Product extends BaseEntity {
     /**
      * 상품 수정 로직
      */
-    public void updateProduct(ProductRequestDTO.ProductSaveRequestDTO productSaveRequestDTO) {
+    public void updateProduct(ProductRequestDTO.ProductUpdateRequestDTO productSaveRequestDTO) {
         this.title = productSaveRequestDTO.getTitle();
         this.content = productSaveRequestDTO.getContent();
         this.price = productSaveRequestDTO.getPrice();

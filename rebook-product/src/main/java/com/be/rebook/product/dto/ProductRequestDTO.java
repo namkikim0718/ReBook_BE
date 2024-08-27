@@ -4,6 +4,8 @@ import com.be.rebook.common.dto.PaginationRequestDTO;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
+import java.util.List;
+
 public class ProductRequestDTO {
 
     @Getter
@@ -18,6 +20,22 @@ public class ProductRequestDTO {
         private String university;
 
         private String major;
+    }
+
+    @Getter
+    @Builder
+    public static class ProductUpdateRequestDTO {
+        private String title;
+
+        private String content;
+
+        private int price;
+
+        private String university;
+
+        private String major;
+
+        private List<String> existingImages;
     }
 
     @Getter

@@ -50,9 +50,9 @@ public class ProductController {
     @PutMapping("{productId}")
     public ResponseEntity<BaseResponse<Long>> updateProduct(@PathVariable("productId") Long productId,
                                                             @Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
+                                                            @RequestPart("productRequest") ProductUpdateRequestDTO productUpdateRequestDTO,
                                                             @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.updateProduct(productId, memberLoginInfo, productSaveRequestDTO, imageFiles)));
+        return ResponseEntity.ok().body(new BaseResponse<>(productService.updateProduct(productId, memberLoginInfo, productUpdateRequestDTO, imageFiles)));
     }
 
     /**

@@ -124,7 +124,7 @@ public class ProductService {
     @Transactional
     public Long updateProduct(Long productId,
                               MemberLoginInfo memberLoginInfo,
-                              ProductRequestDTO.ProductSaveRequestDTO productUpdateRequestDTO,
+                              ProductRequestDTO.ProductUpdateRequestDTO productUpdateRequestDTO,
                               List<MultipartFile> imageFiles) throws IOException {
 
         if (memberLoginInfo == null) {
@@ -146,15 +146,22 @@ public class ProductService {
         existingProduct.updateProduct(productUpdateRequestDTO);
 
         // 기존 이미지 삭제 또는 유지 처리
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            // 기존 이미지를 모두 삭제
+        List<String> imagesToKeep = productUpdateRequestDTO.getExistingImages(); // 유지할 이미지 파일명 리스트를 DTO에서 가져옴
+
+        if (imagesToKeep != null) {
+            // 기존 이미지 중 유지할 이미지 필터링
             List<ProductImage> existingImages = productImageRepository.findByProduct(existingProduct);
             for (ProductImage productImage : existingImages) {
-                s3Service.deleteFile(S3FolderName.PRODUCT, productImage.getStoreFileName()); // S3에서 이미지 삭제
-                productImageRepository.delete(productImage); // DB에서 이미지 삭제
+                if (!imagesToKeep.contains(productImage.getStoreFileName())) {
+                    // 유지할 목록에 없는 이미지는 삭제
+                    s3Service.deleteFile(S3FolderName.PRODUCT, productImage.getStoreFileName()); // S3에서 이미지 삭제
+                    productImageRepository.delete(productImage); // DB에서 이미지 삭제
+                }
             }
+        }
 
-            // 새로운 이미지 업로드 및 저장
+        // 새로운 이미지 업로드 및 저장
+        if (imageFiles != null && !imageFiles.isEmpty()) {
             for (MultipartFile imageFile : imageFiles) {
                 String storeFileName = s3Service.uploadFile(imageFile, S3FolderName.PRODUCT);
                 ProductImage productImage = ProductImage.builder()
