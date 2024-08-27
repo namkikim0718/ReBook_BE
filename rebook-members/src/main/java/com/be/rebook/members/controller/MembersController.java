@@ -11,11 +11,12 @@ import com.be.rebook.common.config.BaseResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
+@CrossOrigin(origins = "http://localhost:5173") // TODO: 나중에 지워야함!!
 public class MembersController {
 
     private final MemberService memberService;
@@ -33,13 +34,13 @@ public class MembersController {
         String unv = info.getUniversity();
         String majors = info.getMajors();
 
-        if(picture == null)
+        if (picture == null)
             picture = "";
-        if(nickname == null)
+        if (nickname == null)
             nickname = "닉네임을 설정하세요.";
-        if(unv == null)
+        if (unv == null)
             unv = "대학교를 설정하세요.";
-        if(majors == null)
+        if (majors == null)
             majors = "관심 전공을 설정하세요.";
 
         return ResponseEntity.ok().body(new BaseResponse<>(UserinfoDTO.builder()
@@ -52,7 +53,8 @@ public class MembersController {
     }
 
     @GetMapping("/info/{username}")
-    public ResponseEntity<BaseResponse<OtherUserinfoDTO>> getOtherUserinfo(@Auth MemberLoginInfo memberLoginInfo, @PathVariable String username){
+    public ResponseEntity<BaseResponse<OtherUserinfoDTO>> getOtherUserinfo(@Auth MemberLoginInfo memberLoginInfo,
+            @PathVariable String username) {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.getOtherUserinfo(username)));
     }
 

@@ -16,4 +16,10 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("SELECT cr FROM ChatRoom cr WHERE cr.buyerUsername = :memberUsername OR cr.sellerUsername = :memberUsername")
     List<ChatRoom> findChatRoomsByMemberUsername(@Param("memberUsername") String username);
+
+    @Query("SELECT cr FROM ChatRoom cr WHERE cr.sellerUsername = :sellerUsername AND cr.buyerUsername = :buyerUsername AND cr.productId = :productId")
+    Optional<ChatRoom> findChatRoomBySellerUsernameAndBuyerUsernameAndProductId(
+            @Param("sellerUsername") String sellerUsername,
+            @Param("buyerUsername") String buyerUsername,
+            @Param("productId") Long productId);
 }

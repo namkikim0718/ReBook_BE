@@ -21,7 +21,6 @@ import java.util.List;
 import static com.be.rebook.product.dto.ProductRequestDTO.*;
 import static com.be.rebook.product.dto.ProductResponseDTO.*;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -35,8 +34,8 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<BaseResponse<Long>> createProduct(@Auth MemberLoginInfo memberLoginInfo,
-                                                            @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
-                                                            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+            @RequestPart("productRequest") ProductSaveRequestDTO productSaveRequestDTO,
+            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
         System.out.println("Product 생성 컨트롤러 진입");
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(
                 HttpStatus.CREATED,
@@ -60,7 +59,8 @@ public class ProductController {
      * 상품 목록 조회
      */
     @GetMapping
-    public ResponseEntity<PaginationResponseDTO<ProductListResponseDTO>> findAllProduct(@Valid @ModelAttribute ProductFilterDTO productFilterDTO) {
+    public ResponseEntity<PaginationResponseDTO<ProductListResponseDTO>> findAllProduct(
+            @Valid @ModelAttribute ProductFilterDTO productFilterDTO) {
         return ResponseEntity.ok().body(productService.findAllProductByFilter(productFilterDTO));
     }
 
@@ -68,15 +68,18 @@ public class ProductController {
      * 내가 쓴 글 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(@Auth MemberLoginInfo memberLoginInfo) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.findAllMyProducts(memberLoginInfo)));
+    public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(
+            @Auth MemberLoginInfo memberLoginInfo) {
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(productService.findAllMyProducts(memberLoginInfo.getUsername())));
     }
 
     /**
      * 상품 단건 조회
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<BaseResponse<ProductDetailResponseDTO>> findProductById(@PathVariable("productId") Long productId) {
+    public ResponseEntity<BaseResponse<ProductDetailResponseDTO>> findProductById(
+            @PathVariable("productId") Long productId) {
         return ResponseEntity.ok().body(new BaseResponse<>(productService.findProductById(productId)));
     }
 
@@ -85,9 +88,9 @@ public class ProductController {
      */
     @PatchMapping("/status/{productId}")
     public ResponseEntity<BaseResponse<Long>> changeProductStatus(@PathVariable("productId") Long productId,
-                                                                  @Auth MemberLoginInfo memberLoginInfo,
-                                                                  @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
-        return ResponseEntity.ok().body(new BaseResponse<>(productService.changeStatus(memberLoginInfo, productId, productStatusRequestDTO.getStatus())));
+            @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(productService.changeStatus(productId, productStatusRequestDTO.getStatus())));
     }
 
     /**

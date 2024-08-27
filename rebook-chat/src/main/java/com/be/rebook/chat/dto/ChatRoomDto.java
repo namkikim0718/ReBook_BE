@@ -1,5 +1,6 @@
 package com.be.rebook.chat.dto;
 
+import com.be.rebook.chat.entity.ChatMessage;
 import com.be.rebook.chat.entity.ChatRoom;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -23,11 +24,18 @@ public class ChatRoomDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer unreadCount;
 
+    private String lastMessage;
+
     public ChatRoomDto(ChatRoom chatRoom) {
         this.roomId = chatRoom.getId();
         this.buyerUsername = chatRoom.getBuyerUsername();
         this.sellerUsername = chatRoom.getSellerUsername();
         this.productId = chatRoom.getProductId();
+
+        ChatMessage lastMessage = chatRoom.getLastMessage();
+        if (lastMessage != null) {
+            this.lastMessage = lastMessage.getMessage();
+        }
     }
 
     public String toString() {

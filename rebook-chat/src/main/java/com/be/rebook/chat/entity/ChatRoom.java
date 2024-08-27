@@ -40,7 +40,7 @@ public class ChatRoom extends BaseEntity implements Serializable {
     private Long productId;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt DESC")
+    @OrderBy("createdAt ASC")
     private List<ChatMessage> messages;
 
     public ChatRoom(String buyerUsername, String sellerUsername, Long productId) {
@@ -58,6 +58,13 @@ public class ChatRoom extends BaseEntity implements Serializable {
     public void addMessage(ChatMessageDTO messageDto) {
         ChatMessage chatMessage = new ChatMessage(messageDto, this);
         this.messages.add(chatMessage);
+    }
+
+    public ChatMessage getLastMessage() {
+        if (this.messages == null || this.messages.isEmpty()) {
+            return null;
+        }
+        return this.messages.get(this.messages.size() - 1);
     }
 
     public String toString() {

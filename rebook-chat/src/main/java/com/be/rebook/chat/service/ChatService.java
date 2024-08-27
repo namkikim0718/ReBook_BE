@@ -41,7 +41,7 @@ public class ChatService {
             Integer unreadCount = chatMessageRepository
                     .countUnreadMessagesByChatRoomIdAndNotSenderUsername(chatRoom.getId(), username);
             chatRoomDto.setUnreadCount(unreadCount);
-            return new ChatRoomDto(chatRoom);
+            return chatRoomDto;
         }).toList();
 
         return chatRoomDtos;
@@ -56,14 +56,17 @@ public class ChatService {
     }
 
     @Transactional
-    public List<ChatMessageDTO> getChatRoomHistory(Long roomId) {
+    public List<ChatMessageDTO> getChatRoomHistory(Long roomId, String username) {
         ChatRoom chatRoom = chatRoomRepository.findChatRoomById(roomId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CHAT_ROOM_NOT_FOUND));
         List<ChatMessage> messages = chatRoom.getMessages();
 
         // 각 메시지의 isRead 필드를 true로 업데이트
         // TODO: 메시지 수가 많아지게 되면 성능 이슈가 발생할 수 있음
-        messages.forEach(message -> message.setIsRead(true));
+        messages.forEach(message -> {
+            if (!message.getSenderUsername().equals(username))
+                message.setIsRead(true);
+        });
         chatRoomRepository.save(chatRoom);
 
         List<ChatMessageDTO> messageDtos = messages.stream().map(ChatMessageDTO::new).toList();
@@ -71,14 +74,22 @@ public class ChatService {
     }
 
     @Transactional
-    public Long createChatRoom(CreateChatRoomDto createChatRoomDto) {
-        ChatRoom newChatRoom = new ChatRoom(createChatRoomDto);
-        newChatRoom = chatRoomRepository.save(newChatRoom);
-        return newChatRoom.getId();
+    public ChatRoomDto createChatRoom(CreateChatRoomDto createChatRoomDto) {
+        String sellerUsername = createChatRoomDto.getSellerUsername();
+        String buyerUsername = createChatRoomDto.getBuyerUsername();
+        Long productId = createChatRoomDto.getProductId();
+
+        ChatRoom chatRoom = chatRoomRepository.findChatRoomBySellerUsernameAndBuyerUsernameAndProductId(sellerUsername,
+                buyerUsername, productId).orElse(null);
+
+        if (chatRoom == null) {
+            chatRoom = chatRoomRepository.save(new ChatRoom(createChatRoomDto));
+        }
+        return new ChatRoomDto(chatRoom);
     }
 
     @Transactional
-    public Long addMessageToChatRoom(ChatMessageDTO message) {
+    public ChatMessageDTO addMessageToChatRoom(ChatMessageDTO message) {
         ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new BaseException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
@@ -88,7 +99,9 @@ public class ChatService {
             throw new BaseException(ErrorCode.CHAT_SENDER_NOT_EIXIST);
         }
 
-        chatRoom.addMessage(message);
-        return chatRoomRepository.save(chatRoom).getId();
+        ChatMessage chatMessage = new ChatMessage(message, chatRoom);
+        chatMessage = chatMessageRepository.save(chatMessage);
+
+        return new ChatMessageDTO(chatMessage);
     }
 }
