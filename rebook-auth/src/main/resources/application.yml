@@ -94,14 +94,9 @@ info:
 cloud:
   aws:
     s3:
-      bucket: rebookbucket
+      bucket: rb-dev-s3-images
     stack.auto: false
     region.static: ap-northeast-2
     credentials:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
-
-# CORS Origin
-cors:
-  allow:
-    origins: ${CORS_ALLOW_ORIGINS:localhost}

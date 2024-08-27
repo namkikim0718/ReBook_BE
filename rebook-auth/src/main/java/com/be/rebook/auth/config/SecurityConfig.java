@@ -36,10 +36,6 @@ public class SecurityConfig {
     private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
 
 
-    @Value("${cors.allow.origins}")
-    private String[] ALLOWED_ORIGINS;
-
-
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
                     CookieUtil cookieUtil,
                     CustomOAuth2UserService customOAuth2UserService,
@@ -64,19 +60,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.cors(cors -> cors
-                .configurationSource(request -> {
-                    CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-                    configuration.setMaxAge(3600L);
-                    configuration.setExposedHeaders(Arrays.asList("Authorization", "access"));
-
-                    return configuration;
-                }));
 
         http.csrf(auth -> auth.disable());
         http.formLogin(auth -> auth.disable());
