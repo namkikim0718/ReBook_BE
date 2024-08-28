@@ -45,9 +45,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         // refresh token의 쿠이 expiry를 0 으로 설정해서 만료시킴
-        Cookie cookie = cookieUtil.createCookie(TokenCategory.REFRESH.getName(), null, 0);
-
-        response.addCookie(cookie);
+        cookieUtil.createCookie(TokenCategory.REFRESH.getName(), "", 0, response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }
