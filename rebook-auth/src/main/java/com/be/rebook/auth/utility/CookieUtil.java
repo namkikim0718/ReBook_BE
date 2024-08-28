@@ -42,25 +42,14 @@ public class CookieUtil {
                     .build();
         }
         else {
-            if(key.equals(TokenCategory.MAILAUTH.getName())){
-                cookie = ResponseCookie.from(key, value)
-                        .domain(cookieDomain)
-                        .httpOnly(true)
-                        .maxAge(maxAge)
-                        .secure(true)
-                        .sameSite("None")
-                        .build();
-            }
-            else{
-                cookie = ResponseCookie.from(key, value)
-                        .domain(cookieDomain)
-                        .path("/")
-                        .httpOnly(true)
-                        .maxAge(maxAge)
-                        .secure(true)
-                        .sameSite("None")
-                        .build();
-            }
+            cookie = ResponseCookie.from(key, value)
+                    .domain(cookieDomain)
+                    .path("/")
+                    .httpOnly(true)
+                    .maxAge(maxAge)
+                    .secure(true)
+                    .sameSite("None")
+                    .build();
         }
 
         // 응답에 Set-Cookie 헤더로 추가
