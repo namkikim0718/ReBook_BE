@@ -125,10 +125,7 @@ public class SignupService {
                             username,
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
-            cookieUtil.createCookie(
-                    TokenCategory.MAILAUTH.getName(),
-                    mailToken,
-                    TokenCategory.MAILAUTH.getExpiry().intValue() / 1000, response);
+            response.setHeader(TokenCategory.MAILAUTH.getName(), mailToken);
         }
 
         return Members.builder()
