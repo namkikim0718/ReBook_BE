@@ -32,14 +32,25 @@ public class CookieUtil {
     }
 
     public void createCookie(String key, String value, int maxAge, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(key, value)
-                .domain(cookieDomain)
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .maxAge(maxAge)
-                .build();
+        ResponseCookie cookie;
+        if(cookieDomain.equals("localhost")){
+            cookie = ResponseCookie.from(key, value)
+                    .domain(cookieDomain)
+                    .path("/")
+                    .httpOnly(true)
+                    .maxAge(maxAge)
+                    .build();
+        }
+        else{
+            cookie = ResponseCookie.from(key, value)
+                    .domain(cookieDomain)
+                    .path("/")
+                    .httpOnly(true)
+                    .maxAge(maxAge)
+                    .secure(true)
+                    .sameSite("None")
+                    .build();
+        }
 
         // 응답에 Set-Cookie 헤더로 추가
         response.addHeader("Set-Cookie", cookie.toString());
