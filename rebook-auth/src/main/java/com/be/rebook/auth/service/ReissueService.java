@@ -43,16 +43,18 @@ public class ReissueService {
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
 
-        if (request.getCookies().length == 0) {
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
+//        if (request.getCookies().length == 0) {
+//            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+//        }
+//
+//        for (Cookie cookie : request.getCookies()) {
+//            if (cookie.getName().equals(TokenCategory.MAILAUTH.getName())) {
+//                mailToken = cookie.getValue();
+//                break;
+//            }
+//        }
+        mailToken = request.getHeader(TokenCategory.MAILAUTH.getName());
 
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(TokenCategory.MAILAUTH.getName())) {
-                mailToken = cookie.getValue();
-                break;
-            }
-        }
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);

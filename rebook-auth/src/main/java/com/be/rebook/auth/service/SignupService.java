@@ -50,13 +50,13 @@ public class SignupService {
     @Transactional
     public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO) {
         String mailToken = null;
-        mailToken = request.getHeader("mailauth");
 
 //        Cookie mailCookie = cookieUtil.findCookieFromRequest(TokenCategory.MAILAUTH.getName(), request);
 //        if (mailCookie == null) {
 //            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
 //        }
 //        mailToken = mailCookie.getValue();
+        mailToken = request.getHeader(TokenCategory.MAILAUTH.getName());
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
