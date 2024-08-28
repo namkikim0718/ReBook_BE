@@ -15,4 +15,6 @@ public class PaginationRequestDTO {
     private int size = 10;
 
     private String sortOrder = "asc"; // 기본 정렬 순서: 오름차순
+
+    private Long lastId; // 마지막 ID (No-Offset Pagination을 위한 필드)
 }
