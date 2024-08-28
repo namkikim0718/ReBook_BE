@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/members")
-@CrossOrigin(origins = "http://localhost:5173") // TODO: 나중에 지워야함!!
 public class MembersController {
 
     private final MemberService memberService;

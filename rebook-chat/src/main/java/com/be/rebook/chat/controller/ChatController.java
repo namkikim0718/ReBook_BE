@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat")
-@CrossOrigin(origins = "http://localhost:5173") // TODO: 나중에 지워야함!!
 public class ChatController {
 
     private final ChatService chatService;

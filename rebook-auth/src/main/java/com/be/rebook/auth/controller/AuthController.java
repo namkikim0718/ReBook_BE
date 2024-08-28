@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "${cors.allow.origins}")
 public class AuthController {
 
     private static final Logger signupLogger = LoggerFactory.getLogger(AuthController.class);
