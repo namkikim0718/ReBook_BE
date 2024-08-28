@@ -45,7 +45,6 @@ public class CookieUtil {
             if(key.equals(TokenCategory.MAILAUTH.getName())){
                 cookie = ResponseCookie.from(key, value)
                         .domain(cookieDomain)
-                        .path("/signupform")
                         .httpOnly(true)
                         .maxAge(maxAge)
                         .secure(true)
