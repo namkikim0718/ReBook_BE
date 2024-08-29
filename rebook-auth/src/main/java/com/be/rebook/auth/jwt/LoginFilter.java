@@ -92,7 +92,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         jwtUtil.saveRefreshToken(username, refresh);
 
-        response.setHeader(TokenCategory.ACCESS.getName(), access);
+        response.setHeader("Authorization", access);
         cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,
                 TokenCategory.REFRESH.getExpiry().intValue() / 1000, response);
         response.setStatus(HttpStatus.OK.value());
