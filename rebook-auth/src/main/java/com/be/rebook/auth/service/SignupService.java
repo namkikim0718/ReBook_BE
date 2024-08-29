@@ -51,7 +51,11 @@ public class SignupService {
     public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO) {
         String mailToken = null;
 
-        mailToken = request.getHeader("Authorization");
+        Cookie mailCookie = cookieUtil.findCookieFromRequest(TokenCategory.MAILAUTH.getName(), request);
+        if (mailCookie == null) {
+            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+        }
+        mailToken = mailCookie.getValue();
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
@@ -121,7 +125,10 @@ public class SignupService {
                             username,
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
-            response.setHeader("Authorization", mailToken);
+            cookieUtil.createCookie(
+                    TokenCategory.MAILAUTH.getName(),
+                    mailToken,
+                    TokenCategory.MAILAUTH.getExpiry().intValue() / 1000, response);
         }
 
         return Members.builder()

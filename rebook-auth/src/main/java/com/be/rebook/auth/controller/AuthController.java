@@ -64,8 +64,7 @@ public class AuthController {
 
         TokenDto newToken = reissueService.reissueToken(refreshTokenCookie.getValue());
 
-//        response.setHeader(TokenCategory.ACCESS.getName(), newToken.getAccessToken());
-        response.setHeader("Authorization", newToken.getAccessToken());
+        response.setHeader(TokenCategory.ACCESS.getName(), newToken.getAccessToken());
         cookieUtil
                 .createCookie(TokenCategory.REFRESH.getName(),
                         newToken.getRefreshToken(),
