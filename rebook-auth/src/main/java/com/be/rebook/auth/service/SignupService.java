@@ -51,11 +51,12 @@ public class SignupService {
     public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO) {
         String mailToken = null;
 
-        Cookie mailCookie = cookieUtil.findCookieFromRequest(TokenCategory.MAILAUTH.getName(), request);
-        if (mailCookie == null) {
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
-        mailToken = mailCookie.getValue();
+//        Cookie mailCookie = cookieUtil.findCookieFromRequest(TokenCategory.MAILAUTH.getName(), request);
+//        if (mailCookie == null) {
+//            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
+//        }
+//        mailToken = mailCookie.getValue();
+        mailToken = request.getHeader(TokenCategory.MAILAUTH.getName());
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
@@ -125,10 +126,7 @@ public class SignupService {
                             username,
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
-            cookieUtil.createCookie(
-                    TokenCategory.MAILAUTH.getName(),
-                    mailToken,
-                    TokenCategory.MAILAUTH.getExpiry().intValue() / 1000, response);
+            response.setHeader(TokenCategory.MAILAUTH.getName(), mailToken);
         }
 
         return Members.builder()
