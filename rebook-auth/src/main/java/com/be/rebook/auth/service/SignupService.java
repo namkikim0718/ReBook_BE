@@ -15,10 +15,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import org.slf4j.Logger;
 
 @Service
 public class SignupService {
@@ -32,6 +34,8 @@ public class SignupService {
 
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
+
+    private final Logger signupLogger = LoggerFactory.getLogger(SignupService.class);
 
     public SignupService(MembersRepository membersRepository,
             BCryptPasswordEncoder bCryptPasswordEncoder,
@@ -52,6 +56,8 @@ public class SignupService {
         String mailToken = null;
 
         mailToken = request.getHeader("Authorization");
+        signupLogger.info("mailToken received : ");
+        signupLogger.info(mailToken);
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
