@@ -121,7 +121,7 @@ public class SignupService {
                             username,
                             null,
                             TokenCategory.MAILAUTH.getExpiry());
-            response.setHeader(TokenCategory.MAILAUTH.getName(), mailToken);
+            response.setHeader("Authorization", mailToken);
         }
 
         return Members.builder()
