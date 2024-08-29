@@ -42,17 +42,6 @@ public class ReissueService {
     @Transactional
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
-
-//        if (request.getCookies().length == 0) {
-//            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-//        }
-//
-//        for (Cookie cookie : request.getCookies()) {
-//            if (cookie.getName().equals(TokenCategory.MAILAUTH.getName())) {
-//                mailToken = cookie.getValue();
-//                break;
-//            }
-//        }
         mailToken = request.getHeader(TokenCategory.MAILAUTH.getName());
 
         if (mailToken == null) {
