@@ -64,7 +64,7 @@ public class OAuthAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
 
         jwtUtil.saveRefreshToken(username, refresh);
 
-        response.setHeader(TokenCategory.ACCESS.getName(), access);
+        response.setHeader("Authorization", access);
         cookieUtil.createCookie(TokenCategory.REFRESH.getName(), refresh,
                 TokenCategory.REFRESH.getExpiry().intValue() / 1000, response);
         response.setStatus(HttpStatus.OK.value());
