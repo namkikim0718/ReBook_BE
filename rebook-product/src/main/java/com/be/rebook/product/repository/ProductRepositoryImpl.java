@@ -15,11 +15,11 @@ import java.util.List;
 import static com.be.rebook.product.dto.ProductRequestDTO.*;
 import static com.be.rebook.product.entity.QProduct.product;
 
+
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
-
 
     @Override
     public Page<Product> findProductsByFilter(ProductFilterDTO productFilterDTO, Pageable pageable) {
@@ -28,10 +28,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         universityContains(productFilterDTO.getUniversity()),
                         majorContains(productFilterDTO.getMajor()),
                         titleContains(productFilterDTO.getTitle()),
-                        priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice())
+                        priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice()),
+                        lastIdGreaterThan(productFilterDTO.getLastId(), productFilterDTO.getSortOrder())
                 )
-                .orderBy(getOrderSpecifier(productFilterDTO.getOrder()))
-                .offset(pageable.getOffset())
+                .orderBy(getOrderSpecifier(productFilterDTO.getSortOrder()))
                 .limit(pageable.getPageSize())
                 .fetch();
 
@@ -71,11 +71,23 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
     }
 
+    private BooleanExpression lastIdGreaterThan(Long lastId, String sortOrder) {
+        if (lastId == null) {
+            return null;
+        }
+
+        if ("asc".equalsIgnoreCase(sortOrder)) {
+            return product.id.gt(lastId); // 오름차순일 경우, lastId보다 큰 값을 가져옴
+        } else {
+            return product.id.lt(lastId); // 내림차순일 경우, lastId보다 작은 값을 가져옴
+        }
+    }
+
     private OrderSpecifier<?> getOrderSpecifier(String order) {
         if ("asc".equalsIgnoreCase(order)) {
-            return product.price.asc();
+            return product.createdAt.asc();
         } else if ("desc".equalsIgnoreCase(order)) {
-            return product.price.desc();
+            return product.createdAt.desc();
         } else {
             return product.createdAt.desc(); // 기본값: 최신순 정렬
         }

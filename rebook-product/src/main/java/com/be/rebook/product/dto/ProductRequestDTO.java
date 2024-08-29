@@ -72,5 +72,8 @@ public class ProductRequestDTO {
 
         @Builder.Default
         private String order = "";
+
+        // No-Offset Pagination을 위한 필드 추가
+        private Long lastId; // 마지막으로 조회된 상품의 ID
     }
 }
