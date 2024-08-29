@@ -42,7 +42,7 @@ public class ReissueService {
     @Transactional
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
-        mailToken = request.getHeader(TokenCategory.MAILAUTH.getName());
+        mailToken = request.getHeader("Authorization");
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
