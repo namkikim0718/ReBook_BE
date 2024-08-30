@@ -59,6 +59,7 @@ public class SignupService {
         signupLogger.info("mailToken received : ");
         signupLogger.info(mailToken);
         mailToken = mailToken.substring(7);
+        mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT

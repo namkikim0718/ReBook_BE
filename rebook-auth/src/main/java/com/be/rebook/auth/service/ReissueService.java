@@ -44,6 +44,7 @@ public class ReissueService {
         String mailToken = null;
         mailToken = request.getHeader("Authorization");
         mailToken = mailToken.substring(7);
+        mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
