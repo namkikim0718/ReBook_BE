@@ -43,6 +43,7 @@ public class ReissueService {
     public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
         String mailToken = null;
         mailToken = request.getHeader("Authorization");
+        mailToken = mailToken.substring(7);
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT

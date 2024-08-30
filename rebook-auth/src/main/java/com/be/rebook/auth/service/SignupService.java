@@ -58,6 +58,7 @@ public class SignupService {
         mailToken = request.getHeader("Authorization");
         signupLogger.info("mailToken received : ");
         signupLogger.info(mailToken);
+        mailToken = mailToken.substring(7);
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
