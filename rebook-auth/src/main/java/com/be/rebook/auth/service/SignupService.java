@@ -56,12 +56,13 @@ public class SignupService {
         String mailToken = null;
 
         mailToken = request.getHeader("Authorization");
-        signupLogger.info("mailToken received : ");
-        signupLogger.info(mailToken);
+        signupLogger.error("mailToken received : ");
+        signupLogger.error(mailToken);
         mailToken = mailToken.substring(7);
         //mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
+            signupLogger.error("Authorization header is missing");
             // NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
