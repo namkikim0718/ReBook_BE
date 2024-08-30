@@ -35,7 +35,7 @@ public class SignupService {
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
 
-    private final Logger signupLogger = LoggerFactory.getLogger(SignupService.class);
+    private static final Logger signupLogger = LoggerFactory.getLogger(SignupService.class);
 
     public SignupService(MembersRepository membersRepository,
             BCryptPasswordEncoder bCryptPasswordEncoder,
@@ -56,19 +56,20 @@ public class SignupService {
         String mailToken = null;
 
         mailToken = request.getHeader("Authorization");
-//        signupLogger.error("mailToken received : ");
-//        signupLogger.error(mailToken);
+        signupLogger.info("mailToken received : ");
+        signupLogger.info(mailToken);
         mailToken = mailToken.substring(7);
         //mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
-//            signupLogger.error("Authorization header is missing");
+            signupLogger.error("Authorization header is missing");
             // NO_TOKEN_CONTENT
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
         }
 
         // expired check
         if (Boolean.TRUE.equals(jwtUtil.isExpired(mailToken))) {
+            signupLogger.error("Authorization header token is expired");
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
