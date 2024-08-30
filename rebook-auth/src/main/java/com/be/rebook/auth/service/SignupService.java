@@ -1,16 +1,14 @@
 package com.be.rebook.auth.service;
 
+import com.be.rebook.auth.dto.SignupDTO;
 import com.be.rebook.auth.dto.VerifyDTO;
 import com.be.rebook.auth.entity.Members;
-import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.jwt.JWTUtil;
 import com.be.rebook.auth.jwt.type.TokenCategory;
 import com.be.rebook.auth.repository.MembersRepository;
 import com.be.rebook.auth.utility.CookieUtil;
 import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
-
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -52,14 +50,11 @@ public class SignupService {
     }
 
     @Transactional
-    public Members signupProcess(HttpServletRequest request, BasicUserInfoDTO basicUserInfoDTO) {
-        String mailToken = null;
-
-        mailToken = request.getHeader("Authorization");
+    public Members signupProcess(HttpServletRequest request, SignupDTO signupDTO) {
+        String mailToken = signupDTO.getMailauth();
         signupLogger.info("mailToken received : ");
         signupLogger.info(mailToken);
         mailToken = mailToken.substring(7);
-        //mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
             signupLogger.error("Authorization header is missing");
@@ -73,8 +68,8 @@ public class SignupService {
             throw new BaseException(ErrorCode.EXPIRED_TOKEN);
         }
 
-        String username = basicUserInfoDTO.getUsername();
-        String password = basicUserInfoDTO.getPassword();
+        String username = signupDTO.getUsername();
+        String password = signupDTO.getPassword();
         Boolean isExist = membersRepository.existsByUsername(username);
         if (Boolean.TRUE.equals(isExist)) {
             // EXISTING_USER_INFO

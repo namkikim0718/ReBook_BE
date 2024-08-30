@@ -1,12 +1,8 @@
 package com.be.rebook.auth.controller;
 
-import com.be.rebook.auth.dto.UpdatePasswordDTO;
-import com.be.rebook.auth.dto.VerifyDTO;
+import com.be.rebook.auth.dto.*;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.jwt.type.TokenCategory;
-import com.be.rebook.auth.dto.CustomUserDetails;
-import com.be.rebook.auth.dto.TokenDto;
-import com.be.rebook.auth.dto.BasicUserInfoDTO;
 import com.be.rebook.auth.service.ReissueService;
 import com.be.rebook.auth.service.SignupService;
 import com.be.rebook.auth.utility.CookieUtil;
@@ -48,9 +44,9 @@ public class AuthController {
 
     @PostMapping("/members/signup")
     public ResponseEntity<BaseResponse<Members>> signupProcess(HttpServletRequest request,
-            @Valid @RequestBody BasicUserInfoDTO basicUserInfoDTO) {
-        signupLogger.info(basicUserInfoDTO.getUsername());
-        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(request, basicUserInfoDTO)));
+            @Valid @RequestBody SignupDTO signupDTO) {
+        signupLogger.info(signupDTO.getUsername());
+        return ResponseEntity.ok().body(new BaseResponse<>(signupService.signupProcess(request, signupDTO)));
     }
 
     @PostMapping("/members/refreshtoken/reissue")
@@ -102,17 +98,10 @@ public class AuthController {
 
     @PatchMapping("/members/password/reset")
     public ResponseEntity<BaseResponse<Members>> resetUserPassword(HttpServletRequest request,
-            @Valid @RequestBody BasicUserInfoDTO resetPasswordDTO) {
+            @Valid @RequestBody SignupDTO resetPasswordDTO) {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(reissueService.reissueUserPassword(request, resetPasswordDTO)));
     }
 
-    // 로그인 이후 마이페이지에서 바로 비밀번호 변경이라 이메일 인증 필요없음
-    @PatchMapping("/members/password")
-    public ResponseEntity<BaseResponse<Members>> updateUserPassword(HttpServletRequest request,
-            @Valid @RequestBody UpdatePasswordDTO passwordDTO) {
-        String passwordToUpdate = passwordDTO.getPassword();
-        return ResponseEntity.ok()
-                .body(new BaseResponse<>(reissueService.updateUserPassword(request, passwordToUpdate)));
-    }
+
 }
