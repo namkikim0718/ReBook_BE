@@ -1,6 +1,6 @@
 package com.be.rebook.auth.service;
 
-import com.be.rebook.auth.dto.BasicUserInfoDTO;
+import com.be.rebook.auth.dto.SignupDTO;
 import com.be.rebook.auth.dto.TokenDto;
 import com.be.rebook.auth.entity.Members;
 import com.be.rebook.auth.repository.MembersRepository;
@@ -10,17 +10,10 @@ import com.be.rebook.common.exception.ErrorCode;
 import com.be.rebook.auth.jwt.JWTUtil;
 import com.be.rebook.auth.jwt.type.TokenCategory;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
 
 @Service
 public class ReissueService {
@@ -40,11 +33,9 @@ public class ReissueService {
     }
 
     @Transactional
-    public Members reissueUserPassword(HttpServletRequest request, BasicUserInfoDTO resetPasswordDTO) {
-        String mailToken = null;
-        mailToken = request.getHeader("Authorization");
+    public Members reissueUserPassword(HttpServletRequest request, SignupDTO resetPasswordDTO) {
+        String mailToken = resetPasswordDTO.getMailauth();
         mailToken = mailToken.substring(7);
-        mailToken = mailToken.replaceAll("\uFFFD", "");
 
         if (mailToken == null) {
             // NO_TOKEN_CONTENT
@@ -67,37 +58,6 @@ public class ReissueService {
                 .build();
 
         membersRepository.save(member);
-        return Members.builder()
-                .username(username)
-                .build();
-    }
-
-    @Transactional
-    public Members updateUserPassword(HttpServletRequest request, String passwordToUpdate) {
-        String accessToken = request.getHeader("Authorization");
-
-        if (accessToken == null) {
-            // NO_TOKEN_CONTENT
-            throw new BaseException(ErrorCode.NO_TOKEN_CONTENT);
-        }
-
-        accessToken = accessToken.substring(7);
-
-        if (Boolean.TRUE.equals(jwtUtil.isExpired(accessToken))) {
-            throw new BaseException(ErrorCode.EXPIRED_TOKEN);
-        }
-
-        String username = jwtUtil.getUsername(accessToken);
-
-        Members member = membersRepository.findByUsername(username)
-                .orElseThrow(() -> new BaseException(ErrorCode.NO_USER_INFO));
-
-        Members updatedMember = member
-                .toBuilder()
-                .password(bCryptPasswordEncoder.encode(passwordToUpdate + username))
-                .build();
-
-        membersRepository.save(updatedMember);
         return Members.builder()
                 .username(username)
                 .build();
