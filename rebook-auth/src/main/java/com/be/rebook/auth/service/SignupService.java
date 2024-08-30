@@ -128,7 +128,7 @@ public class SignupService {
             String mailToken = jwtUtil
                     .createJwt(TokenCategory.MAILAUTH,
                             username,
-                            null,
+                            "ROLE_USER",
                             TokenCategory.MAILAUTH.getExpiry());
             response.setHeader("Authorization", mailToken);
         }
