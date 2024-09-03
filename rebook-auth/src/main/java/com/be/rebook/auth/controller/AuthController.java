@@ -57,16 +57,6 @@ public class AuthController {
         if (refreshTokenCookie == null) {
             throw new BaseException(ErrorCode.NO_TOKEN_CONTENT); // TODO : 적절한 Exception 처리
         }
-
-        TokenDto newToken = reissueService.reissueToken(refreshTokenCookie.getValue());
-
-//        response.setHeader(TokenCategory.ACCESS.getName(), newToken.getAccessToken());
-        response.setHeader("Authorization", newToken.getAccessToken());
-        cookieUtil
-                .createCookie(TokenCategory.REFRESH.getName(),
-                        newToken.getRefreshToken(),
-                        TokenCategory.REFRESH.getExpiry().intValue() / 1000, response);
-        return ResponseEntity.ok().body(new BaseResponse<TokenDto>(newToken));
     }
 
     @PostMapping("/members/signup/mail")
