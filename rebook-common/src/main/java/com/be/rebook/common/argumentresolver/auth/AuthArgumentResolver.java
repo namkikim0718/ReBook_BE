@@ -3,6 +3,7 @@ package com.be.rebook.common.argumentresolver.auth;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final RestClientFactory restClientFactory;
@@ -37,19 +39,23 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
         try {
             String authorizationHeader = webRequest.getHeader("Authorization");
+            log.info("authorizationHeader={}", authorizationHeader);
 
             AuthServiceRestClient authServiceRestClient = restClientFactory.createAuthServiceRestClient(
                     null);
 
             ResponseEntity<BaseResponse<MemberLoginInfo>> res;
             try {
+                log.info("첫번째 try 진입");
                 res = authServiceRestClient.authenticate(authorizationHeader);
             } catch (Exception e) {
+                log.info("첫번째 catch 진입");
                 // 예외 발생 시 즉시 응답 작성 후 null 반환
                 handleUnauthorizedResponse(response, "인증에 실패했습니다.");
                 return null;
             }
 
+            log.info("첫번재 try-catch 끝");
             System.out.println(LocalDateTime.now());
 
             if (res.getStatusCode().is2xxSuccessful()) {
