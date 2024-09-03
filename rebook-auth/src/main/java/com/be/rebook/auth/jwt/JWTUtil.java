@@ -82,8 +82,8 @@ public class JWTUtil {
         int expiryInSec = TokenCategory.REFRESH.getExpiry().intValue() / 1000;
         redisTemplate.opsForValue().set(username, refreshToken, expiryInSec, TimeUnit.SECONDS);
     }
-
     public String getRefreshTokenByUsername(String username) {
         return redisTemplate.opsForValue().get(username);
     }
+
 }

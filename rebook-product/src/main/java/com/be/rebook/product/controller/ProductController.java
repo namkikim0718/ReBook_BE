@@ -63,7 +63,7 @@ public class ProductController {
 
     /**
      * 내가 쓴 글 조회
-     */
+     */NO_TOKEN_CONTENT
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<List<ProductListResponseDTO>>> findProductsByMember(
             @Auth MemberLoginInfo memberLoginInfo) {
