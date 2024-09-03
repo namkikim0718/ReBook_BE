@@ -12,6 +12,9 @@ public enum ErrorCode {
      * 인증 에러
      */
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
+    NO_MAIL_AUTH_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 요청된 인증 코드가 존재하지 않습니다."),
+    MAIL_AUTH_CODE_INCORRECT(HttpStatus.BAD_REQUEST, "입력한 이메일 인증 번호가 틀립니다."),
+    MAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패했습니다."),
 
     /**
      * 멤버 에러
@@ -22,8 +25,6 @@ public enum ErrorCode {
     EXISTING_USER_INFO(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다."),
     NO_UNIVERSITY_INFO(HttpStatus.NOT_FOUND, "해당 대학교 정보가 존재하지 않습니다."),
     NO_MAJOR_INFO(HttpStatus.NOT_FOUND, "해당 전공 정보가 존재하지 않습니다."),
-    NO_MAIL_AUTH_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 요청된 인증 코드가 존재하지 않습니다."),
-    MAIL_AUTH_CODE_INCORRECT(HttpStatus.BAD_REQUEST, "입력한 이메일 인증 번호가 틀립니다."),
     PROFILE_PIC_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "S3 서버에서 이미지 업로딩 중 오류가 발생했습니다."),
     PROFILE_PIC_DELETE_ERROR(HttpStatus.BAD_REQUEST, "S3 서버에서 이미지 삭제 중 오류가 발생했습니다."),
 
