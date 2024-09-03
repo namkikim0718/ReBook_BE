@@ -19,6 +19,7 @@ import com.be.rebook.common.restclients.RestClientFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+
 @RequiredArgsConstructor
 @Slf4j
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
