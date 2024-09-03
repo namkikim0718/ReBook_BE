@@ -2,6 +2,7 @@ package com.be.rebook.common.restclients;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,10 @@ public class RestClientFactory {
 
     private final DiscoveryClient discoveryClient;
 
+    // "rebook-auth"
+    @Value("${eureka.auth.serviceid}")
+    private String serviceID;
+
     /**
      * 인스턴스 목록 중에서 선택된 인스턴스를 이용하여 AuthServiceRestClient 인터페이스를 구현한 클라이언트를 생성한다.
      * 
@@ -29,7 +34,7 @@ public class RestClientFactory {
      */
     public AuthServiceRestClient createAuthServiceRestClient(
             InstanceSelectionStrategy instanceSelectionStrategy) {
-        ServiceInstance instance = findInstance("rebook-auth", instanceSelectionStrategy);
+        ServiceInstance instance = findInstance(serviceID, instanceSelectionStrategy);
 
         RestClient restClient = RestClient.create(instance.getUri().toString());
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
