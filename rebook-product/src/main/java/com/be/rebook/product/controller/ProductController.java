@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.be.rebook.product.dto.ProductRequestDTO.*;
@@ -45,9 +46,15 @@ public class ProductController {
      */
     @PutMapping("{productId}")
     public ResponseEntity<BaseResponse<Long>> updateProduct(@PathVariable("productId") Long productId,
-            @Auth MemberLoginInfo memberLoginInfo,
-            @RequestPart("productRequest") ProductUpdateRequestDTO productUpdateRequestDTO,
-            @RequestPart("imageFiles") List<MultipartFile> imageFiles) throws IOException {
+                                                            @Auth MemberLoginInfo memberLoginInfo,
+                                                            @RequestPart("productRequest") ProductUpdateRequestDTO productUpdateRequestDTO,
+                                                            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> imageFiles) throws IOException {
+
+        // Null 체크를 통해 imageFiles가 전달되지 않은 경우에도 빈 리스트로 처리
+        if (imageFiles == null) {
+            imageFiles = new ArrayList<>();
+        }
+
         return ResponseEntity.ok().body(new BaseResponse<>(
                 productService.updateProduct(productId, memberLoginInfo, productUpdateRequestDTO, imageFiles)));
     }
