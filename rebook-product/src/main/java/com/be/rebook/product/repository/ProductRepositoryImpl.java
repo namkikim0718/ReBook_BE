@@ -4,6 +4,7 @@ import com.be.rebook.product.dto.ProductRequestDTO;
 import com.be.rebook.product.entity.Product;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,26 +24,24 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public Page<Product> findProductsByFilter(ProductFilterDTO productFilterDTO, Pageable pageable) {
-        List<Product> products = jpaQueryFactory.selectFrom(product)
-                .where(
-                        universityContains(productFilterDTO.getUniversity()),
-                        majorContains(productFilterDTO.getMajor()),
-                        titleContains(productFilterDTO.getTitle()),
-                        priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice()),
-                        lastIdGreaterThan(productFilterDTO.getLastId(), productFilterDTO.getSortOrder())
-                )
-                .orderBy(getOrderSpecifier(productFilterDTO.getSortOrder()))
-                .limit(pageable.getPageSize())
-                .fetch();
 
-        long total = jpaQueryFactory.selectFrom(product)
+        // 서브쿼리를 통해 전체 카운트 값을 포함한 단일 쿼리 작성
+        JPQLQuery<Product> query = jpaQueryFactory.selectFrom(product)
                 .where(
                         universityContains(productFilterDTO.getUniversity()),
                         majorContains(productFilterDTO.getMajor()),
                         titleContains(productFilterDTO.getTitle()),
                         priceBetween(productFilterDTO.getMinPrice(), productFilterDTO.getMaxPrice())
                 )
-                .fetch().size();
+                .orderBy(getOrderSpecifier(productFilterDTO.getSortOrder()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        // 전체 개수를 가져오기 위한 서브쿼리
+        long total = query.fetchCount();
+
+        // 실제 데이터를 가져옴
+        List<Product> products = query.fetch();
 
         return new PageImpl<>(products, pageable, total);
     }
@@ -71,24 +70,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
     }
 
-    private BooleanExpression lastIdGreaterThan(Long lastId, String sortOrder) {
-        if (lastId == null) {
-            return null;
-        }
-
-        if ("asc".equalsIgnoreCase(sortOrder)) {
-            return product.id.gt(lastId); // 오름차순일 경우, lastId보다 큰 값을 가져옴
-        } else {
-            return product.id.lt(lastId); // 내림차순일 경우, lastId보다 작은 값을 가져옴
-        }
-    }
-
     private OrderSpecifier<?> getOrderSpecifier(String order) {
         if ("asc".equalsIgnoreCase(order)) {
-            return product.createdAt.asc();
+            return product.price.asc();
         } else if ("desc".equalsIgnoreCase(order)) {
+            return product.price.desc();
+        } else if ("recent".equalsIgnoreCase(order)) {
             return product.createdAt.desc();
-        } else {
+        } else  {
             return product.createdAt.desc(); // 기본값: 최신순 정렬
         }
     }

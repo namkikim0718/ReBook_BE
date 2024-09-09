@@ -66,9 +66,9 @@ public class Product extends BaseEntity {
      * 상태변경 로직
      */
     public void changeStatus(String status) {
-        if (status.equals("Completed")) {
+        if (status.equals("COMPLETED")) {
             this.status = ProductStatus.COMPLETED;
-        } else if (status.equals("Pending")) {
+        } else if (status.equals("PENDING")) {
             this.status = ProductStatus.PENDING;
         }
     }
