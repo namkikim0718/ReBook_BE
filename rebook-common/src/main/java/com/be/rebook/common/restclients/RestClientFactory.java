@@ -2,6 +2,8 @@ package com.be.rebook.common.restclients;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class RestClientFactory {
 
     private final DiscoveryClient discoveryClient;
+    private static final Logger restclientfactoryLogger = LoggerFactory.getLogger(RestClientFactory.class);
 
     // "rebook-auth"
     @Value("${eureka.auth.serviceid}")
@@ -36,6 +39,7 @@ public class RestClientFactory {
             InstanceSelectionStrategy instanceSelectionStrategy) {
         ServiceInstance instance = findInstance(serviceID, instanceSelectionStrategy);
 
+        restclientfactoryLogger.info("eureka auth URI : {}", instance.getUri().toString());
         RestClient restClient = RestClient.create(instance.getUri().toString());
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
@@ -45,6 +49,7 @@ public class RestClientFactory {
 
     private ServiceInstance findInstance(String serviceId,
             InstanceSelectionStrategy instanceSelectionStrategy) {
+        restclientfactoryLogger.info("eureka auth serviceID : {}", serviceID);
         List<ServiceInstance> instanceList = discoveryClient.getInstances(serviceId);
         instanceSelectionStrategy = instanceSelectionStrategy == null ? new RoundRobinStrategy()
                 : instanceSelectionStrategy;
