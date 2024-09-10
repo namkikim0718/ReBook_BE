@@ -37,7 +37,7 @@ public class RestClientFactory {
      */
     public AuthServiceRestClient createAuthServiceRestClient(
             InstanceSelectionStrategy instanceSelectionStrategy) {
-        ServiceInstance instance = findInstance(serviceID, instanceSelectionStrategy);
+        ServiceInstance instance = findInstance("rebook-auth", instanceSelectionStrategy);
 
         restclientfactoryLogger.info("eureka auth URI : {}", instance.getUri().toString());
         RestClient restClient = RestClient.create(instance.getUri().toString());
