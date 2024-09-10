@@ -74,14 +74,6 @@ public class ProductService {
     public PaginationResponseDTO<ProductListResponseDTO> findAllProductByFilter(
             ProductRequestDTO.ProductFilterDTO productFilterDTO) {
 
-        log.info("dto 까보기");
-        log.info("University: {}, Title: {}, Major: {}, MinPrice: {}, MaxPrice: {}",
-                productFilterDTO.getUniversity(),
-                productFilterDTO.getTitle(),
-                productFilterDTO.getMajor(),
-                productFilterDTO.getMinPrice(),
-                productFilterDTO.getMaxPrice());
-
         Pageable pageable = PageRequest.of(productFilterDTO.getPage(), productFilterDTO.getSize());
 
         Page<ProductListResponseDTO> productPage = productRepository.findProductsByFilter(productFilterDTO, pageable)
