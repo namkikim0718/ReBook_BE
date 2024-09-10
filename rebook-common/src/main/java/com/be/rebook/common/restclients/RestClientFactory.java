@@ -24,10 +24,6 @@ public class RestClientFactory {
     private final DiscoveryClient discoveryClient;
     private static final Logger restclientfactoryLogger = LoggerFactory.getLogger(RestClientFactory.class);
 
-    // "rebook-auth"
-    @Value("${eureka.auth.serviceid}")
-    private String serviceID;
-
     /**
      * 인스턴스 목록 중에서 선택된 인스턴스를 이용하여 AuthServiceRestClient 인터페이스를 구현한 클라이언트를 생성한다.
      * 
@@ -49,7 +45,7 @@ public class RestClientFactory {
 
     private ServiceInstance findInstance(String serviceId,
             InstanceSelectionStrategy instanceSelectionStrategy) {
-        restclientfactoryLogger.info("eureka auth serviceID : {}", serviceID);
+        restclientfactoryLogger.info("eureka auth serviceID : {}", serviceId);
         List<ServiceInstance> instanceList = discoveryClient.getInstances(serviceId);
         instanceSelectionStrategy = instanceSelectionStrategy == null ? new RoundRobinStrategy()
                 : instanceSelectionStrategy;
