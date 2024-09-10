@@ -9,6 +9,7 @@ import com.be.rebook.common.exception.BaseException;
 
 import lombok.RequiredArgsConstructor;
 
+
 @RequiredArgsConstructor
 @Controller
 public class ChatSocketController {

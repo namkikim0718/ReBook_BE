@@ -1,7 +1,6 @@
 package com.be.rebook.chat.dto;
 
 import com.be.rebook.chat.entity.ChatMessage;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ChatMessageDTO { // TODO : ChatMessage 추상화
+public class ChatMessageWithWarningsDTO {
+
     private String senderUsername;
-    private MessageType type;
+    private ChatMessageDTO.MessageType type;
     private String message;
     private Long roomId;
 
@@ -29,7 +29,7 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
         JOIN, TALK, ENTER, READ, ERROR
     }
 
-    public ChatMessageDTO(ChatMessage message) {
+    public ChatMessageWithWarningsDTO(ChatMessage message, String warnings) {
         this.senderUsername = message.getSenderUsername();
         this.type = ChatMessageDTO.MessageType.TALK;
         this.message = message.getMessage();
@@ -37,6 +37,7 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
         this.isRead = message.getIsRead();
         this.chatMessageId = message.getId();
         this.createdAt = message.getCreatedAt().toString();
+        this.warningMessage = warnings;
     }
 
     public void setWarningMessage(String warningMessage) {

@@ -1,7 +1,11 @@
 package com.be.rebook.chat.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.be.rebook.chat.dto.ChatMessageWithWarningsDTO;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +20,7 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -99,9 +104,42 @@ public class ChatService {
             throw new BaseException(ErrorCode.CHAT_SENDER_NOT_EIXIST);
         }
 
+        // AI 모듈에 판별 요청
+        RestTemplate restTemplate = new RestTemplate();
+        String aiEndPoint = "http://rebook45.link/predict";
+
+        HashMap<Object, Object> requestData = new HashMap<>();
+        requestData.put("chat_root_id", message.getRoomId());
+        requestData.put("sender_id", message.getSenderUsername());
+        requestData.put("message", message.getMessage());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<HashMap<Object, Object>> entity = new HttpEntity<>(requestData, headers);
+
+        // POST 요청 보내기
+        ResponseEntity<Map> response = restTemplate.exchange(
+                aiEndPoint,
+                HttpMethod.POST,
+                entity,
+                Map.class
+        );
+
+        Map<String, Object> aiResponse = response.getBody();
+        Integer result = (Integer) aiResponse.get("result");
+        String warningMessage = (String) aiResponse.get("warning_message");
+
+        // 메시지 저장
         ChatMessage chatMessage = new ChatMessage(message, chatRoom);
         chatMessage = chatMessageRepository.save(chatMessage);
 
-        return new ChatMessageDTO(chatMessage);
+        // 메시지 전송 시 경고 메시지와 함께 반환
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO(chatMessage);
+        if (warningMessage != null) {
+            chatMessageDTO.setWarningMessage(warningMessage);
+        }
+
+        return chatMessageDTO;
     }
 }
