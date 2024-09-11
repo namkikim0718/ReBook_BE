@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.be.rebook.chat.dto.ChatMessageWithWarningsDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -106,11 +107,11 @@ public class ChatService {
 
         // AI 모듈에 판별 요청
         RestTemplate restTemplate = new RestTemplate();
-        String aiEndPoint = "http://rebook45.link/predict";
+        String aiEndPoint = "https://192.168.1.55/predict";
 
         HashMap<Object, Object> requestData = new HashMap<>();
-        requestData.put("chat_root_id", message.getRoomId());
-        requestData.put("sender_id", message.getSenderUsername());
+        requestData.put("chat_room_id", message.getRoomId());
+        requestData.put("username", message.getSenderUsername());
         requestData.put("message", message.getMessage());
 
         HttpHeaders headers = new HttpHeaders();
@@ -130,15 +131,21 @@ public class ChatService {
         Integer result = (Integer) aiResponse.get("result");
         String warningMessage = (String) aiResponse.get("warning_message");
 
+        log.info("AI 모듈 접근 완료 {}", response);
+
         // 메시지 저장
         ChatMessage chatMessage = new ChatMessage(message, chatRoom);
-        chatMessage = chatMessageRepository.save(chatMessage);
+        chatMessageRepository.save(chatMessage);
 
         // 메시지 전송 시 경고 메시지와 함께 반환
         ChatMessageDTO chatMessageDTO = new ChatMessageDTO(chatMessage);
         if (warningMessage != null) {
             chatMessageDTO.setWarningMessage(warningMessage);
+            // 경고 메시지가 있으면 추가해서 저장
+            chatMessage.updateWarningMessage(warningMessage);
         }
+
+
 
         return chatMessageDTO;
     }

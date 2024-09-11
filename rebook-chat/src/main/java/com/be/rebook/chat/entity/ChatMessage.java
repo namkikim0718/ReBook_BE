@@ -36,15 +36,22 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
+    private String warningMessage;
+
 
     public void setIsRead(Boolean isRead) {
         this.isRead = isRead;
+    }
+
+    public void updateWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
     }
 
     public ChatMessage(ChatMessageDTO message, ChatRoom chatRoom) {
         this.message = message.getMessage();
         this.senderUsername = message.getSenderUsername();
         this.isRead = false;
+        this.warningMessage = null;
         this.chatRoom = chatRoom;
     }
 }

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.be.rebook.chat.dto.ChatMessageDTO;
-import com.be.rebook.chat.dto.ChatMessageWithWarningsDTO;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
