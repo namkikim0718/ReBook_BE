@@ -1,7 +1,11 @@
 package com.be.rebook.chat.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +20,11 @@ import com.be.rebook.common.exception.BaseException;
 import com.be.rebook.common.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -99,9 +105,48 @@ public class ChatService {
             throw new BaseException(ErrorCode.CHAT_SENDER_NOT_EIXIST);
         }
 
-        ChatMessage chatMessage = new ChatMessage(message, chatRoom);
-        chatMessage = chatMessageRepository.save(chatMessage);
+        // AI 모듈에 판별 요청
+        RestTemplate restTemplate = new RestTemplate();
+        String aiEndPoint = "https://192.168.1.55/predict";
 
-        return new ChatMessageDTO(chatMessage);
+        HashMap<Object, Object> requestData = new HashMap<>();
+        requestData.put("chat_room_id", message.getRoomId());
+        requestData.put("username", message.getSenderUsername());
+        requestData.put("message", message.getMessage());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<HashMap<Object, Object>> entity = new HttpEntity<>(requestData, headers);
+
+        // POST 요청 보내기
+        ResponseEntity<Map> response = restTemplate.exchange(
+                aiEndPoint,
+                HttpMethod.POST,
+                entity,
+                Map.class
+        );
+
+        Map<String, Object> aiResponse = response.getBody();
+        Integer result = (Integer) aiResponse.get("result");
+        String warningMessage = (String) aiResponse.get("warning_message");
+
+        log.info("AI 모듈 접근 완료 {}", response);
+
+        // 메시지 저장
+        ChatMessage chatMessage = new ChatMessage(message, chatRoom);
+        chatMessageRepository.save(chatMessage);
+
+        // 메시지 전송 시 경고 메시지와 함께 반환
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO(chatMessage);
+        if (warningMessage != null) {
+            chatMessageDTO.setWarningMessage(warningMessage);
+            // 경고 메시지가 있으면 추가해서 저장
+            chatMessage.updateWarningMessage(warningMessage);
+        }
+
+
+
+        return chatMessageDTO;
     }
 }

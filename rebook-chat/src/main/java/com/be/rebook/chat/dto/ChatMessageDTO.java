@@ -22,6 +22,9 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
     // 메시지 생성시각
     private String createdAt;
 
+    // 경고 메시지
+    private String warningMessage;
+
     public enum MessageType {
         JOIN, TALK, ENTER, READ, ERROR
     }
@@ -34,6 +37,11 @@ public class ChatMessageDTO { // TODO : ChatMessage 추상화
         this.isRead = message.getIsRead();
         this.chatMessageId = message.getId();
         this.createdAt = message.getCreatedAt().toString();
+        this.warningMessage = message.getWarningMessage();
+    }
+
+    public void setWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
     }
 
     @Override
