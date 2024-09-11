@@ -107,7 +107,7 @@ public class ChatService {
 
         // AI 모듈에 판별 요청
         RestTemplate restTemplate = new RestTemplate();
-        String aiEndPoint = "https://192.168.1.55/predict";
+        String aiEndPoint = "http://192.168.1.55/predict";
 
         HashMap<Object, Object> requestData = new HashMap<>();
         requestData.put("chat_room_id", message.getRoomId());
