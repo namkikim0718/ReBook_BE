@@ -11,5 +11,5 @@ import static com.be.rebook.product.dto.ProductRequestDTO.*;
 
 public interface ProductRepositoryCustom {
 
-    Page<Product> findProductsByFilter(ProductFilterDTO productFilterDTO, Pageable pageable);
+    Page<Product> findProductsByFilter(ProductRequestDTO.ProductFilterDTO productFilterDTO, Pageable pageable);
 }
