@@ -72,5 +72,9 @@ public class ProductRequestDTO {
 
         @Builder.Default
         private String sortOrder = "";
+
+        private Long lastProductId; // 이전 페이지에서 마지막으로 조회된 Product ID
+        private Integer lastPrice;  // 이전 페이지에서 마지막으로 조회된 가격
     }
+
 }
